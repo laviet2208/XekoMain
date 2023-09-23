@@ -1,0 +1,157 @@
+name: xekomain
+description: A new Flutter project.
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.19.6 <3.0.0'
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+  firebase_core: ^2.10.0
+  firebase_auth: ^4.7.2
+  firebase_database: ^10.1.1
+  firebase_storage: ^11.1.1
+  fluttertoast: ^8.2.1
+  auto_size_text: ^3.0.0
+  webview_flutter: ^4.2.0
+  url_launcher: ^6.1.10
+  responsive_builder: ^0.6.4
+  google_nav_bar: ^5.0.6
+  pinput: ^2.2.31
+  flutter_polyline_points: ^1.0.0
+  http:
+  uuid: ^3.0.7
+  flutter_svg: ^2.0.5
+  google_maps_flutter: ^2.3.0
+  geocoding: ^2.1.0
+  flutter_typeahead: ^4.6.2
+  provider: ^6.0.5
+
+  dio: ^5.2.1+1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  assets:
+    - assets/image/mainLogo.png
+    - assets/image/iconbag.png
+    - assets/image/icondelivery.png
+    - assets/image/iconfood.png
+    - assets/image/icongift.png
+    - assets/image/iconmart.png
+    - assets/image/iconoffer.png
+    - assets/image/icontransport.png
+    - assets/image/iconbike.png
+    - assets/image/iconlocation.png
+    - assets/image/linhtinh1.png
+    - assets/image/linhtinh2.png
+    - assets/image/linhtinh3.png
+    - assets/image/linhtinh4.png
+    - assets/image/linhtinh5.png
+    - assets/image/linhtinh6.png
+    - assets/image/pickicon.png
+    - assets/image/backicon.png
+    - assets/image/backicon1.png
+    - assets/image/bluecircle.png
+    - assets/image/locationRounditem.png
+    - assets/image/tickicon.png
+    - assets/image/fire.png
+    - assets/image/rightarrow.png
+    - assets/image/bikeLogo1.png
+    - assets/image/carLogo1.png
+    - assets/image/realmoneyicon.png
+    - assets/image/parcel.png
+    - assets/image/iconorder.png
+    - assets/image/carticon.png
+    - assets/image/stick.png
+    - assets/image/bgfood1.png
+    - assets/image/bgfood2.png
+    - assets/image/bgfood3.png
+    - assets/image/garbageicon.png
+    - assets/image/righticon.png
+    - assets/image/icontrang1/icon_5sao.png
+    - assets/image/icontrang1/icon_anvat.png
+    - assets/image/icontrang1/icon_bun.png
+    - assets/image/icontrang1/icon_com.png
+    - assets/image/icontrang1/icon_khuyenmai.png
+    - assets/image/icontrang1/icon_monnhau.png
+    - assets/image/icontrang1/icon_nuocuong.png
+    - assets/image/icontrang1/icon_thucannhanh.png
+    - assets/image/icontrang1/icon_trasua.png
+    - assets/image/icontrang1/fire.png
+    - assets/image/icontrang1/celebrate.png
+    - assets/image/icontrang1/minibike.png
+    - assets/image/icontrang1/moon.png
+    - assets/image/icontrang1/weather.png
+    - assets/image/icontrang2/iconbiaruou.png
+    - assets/image/icontrang2/icondohop.png
+    - assets/image/icontrang2/icondokho.png
+    - assets/image/icontrang2/icongiadung.png
+    - assets/image/icontrang2/icongiavi.png
+    - assets/image/icontrang2/iconmebe.png
+    - assets/image/icontrang2/iconraucu.png
+    - assets/image/icontrang2/iconthucpham.png
+    - assets/image/icontrang2/icontrungsua.png
+
+  fonts:
+    - family: logo_font_1
+      fonts:
+        - asset: assets/font/logofont1.otf
+
+    - family: Dmsan_regular
+      fonts:
+        - asset: assets/font/DMSans_regu.ttf
+
+
+    - family: arial
+      fonts:
+        - asset: assets/font/arial.TTF
+
+
+    - family: timenew
+      fonts:
+        - asset: assets/font/times.ttf
+
+    - family: roboto
+      fonts:
+        - asset: assets/font/Roboto.ttf
