@@ -1,11 +1,13 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:xekomain/SCREEN/INUSER/PAGE_NOTIFICATION/PageNotification.dart';
 import '../../../FINAL/finalClass.dart';
 import '../../../GENERAL/NormalUser/accountNormal.dart';
 import '../../../GENERAL/Order/foodOrder.dart';
 import '../../../GENERAL/utils/utils.dart';
 import '../PAGE_ACCOUNTINFO/PAGEaccountinfo.dart';
+import '../PAGE_ACTIVITY/PAGEactivity.dart';
 import '../PAGE_COMMINGSOON/PAGEcommingsoon.dart';
 import '../PAGE_HOME/PAGEhome.dart';
 
@@ -20,32 +22,15 @@ class _SCREENmainState extends State<SCREENmain> {
   int selectedIndex = 0;
   final List<foodOrder> isShippingList = [];
 
-  // Future<void> getData(String id) async {
-  //   final reference = FirebaseDatabase.instance.reference();
-  //   DatabaseEvent snapshot = await reference.child('foodOrder').once();
-  //   final dynamic catchOrderData = snapshot.snapshot.value;
-  //   if (catchOrderData != null) {
-  //     isShippingList.clear();
-  //     catchOrderData.forEach((key, value) {
-  //       if (accountNormal.fromJson(value['owner']).id == id) {
-  //         foodOrder thisO = foodOrder.fromJson(value);
-  //         if (thisO.status == 'A' || thisO.status == 'B' || thisO.status == 'C' || thisO.status == 'D') {
-  //           isShippingList.add(thisO);
-  //           setState(() {
-  //
-  //           });
-  //         }
-  //       }
-  //     }
-  //     );
-  //   }
-  // }
-
   Widget getBodyWidget() {
     // Dựa vào selectedIndex, trả về phần body tương ứng
     switch (selectedIndex) {
       case 0 :
         return PAGEhome();
+      case 1 :
+        return PAGEactivity();
+      case 2 :
+        return PageNotification();
       case 3 :
         return PAGEaccountinfo();
       default:
@@ -115,8 +100,8 @@ class _SCREENmainState extends State<SCREENmain> {
               ),
 
               GButton(
-                icon: Icons.account_balance_wallet,
-                text: ("Thanh toán"),
+                icon: Icons.notifications,
+                text: ("Thông báo"),
               ),
 
               GButton(

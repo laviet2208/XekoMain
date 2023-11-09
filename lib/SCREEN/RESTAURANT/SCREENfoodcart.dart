@@ -105,7 +105,7 @@ class _SCREENfoodcartState extends State<SCREENfoodcart> {
                   top: 0,
                   left: 0,
                   child: Container(
-                      height: screenHeight - 10 - screenHeight/8 + 60,
+                      height: screenHeight - screenHeight/5 - 90,
                       width: screenWidth,
                       decoration: BoxDecoration(
 

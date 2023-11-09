@@ -18,7 +18,7 @@ class _SCREENhistorycatchState extends State<SCREENhistorycatch> {
   List<catchOrder> dataList = [];
   void getData() {
     final reference = FirebaseDatabase.instance.reference();
-    reference.child('catchOrder').onValue.listen((event) {
+    reference.child('Order/catchOrder').onValue.listen((event) {
       dataList.clear();
       final dynamic account = event.snapshot.value;
       account.forEach((key, value) {

@@ -1,11 +1,11 @@
-
-
 import 'package:xekomain/FINAL/finalClass.dart';
 
 import '../NormalUser/accountLocation.dart';
 import '../NormalUser/accountNormal.dart';
 import '../Product/Product.dart';
+import '../Product/Voucher.dart';
 import '../Tool/Time.dart';
+import 'Cost.dart';
 
 class foodOrder {
    String id;
@@ -20,6 +20,9 @@ class foodOrder {
    accountNormal owner;
    accountNormal shipper;
    String status;
+   Voucher voucher;
+   Cost costFee;
+   Cost costBiker;
    List<Product> productList;
 
    foodOrder({
@@ -35,7 +38,10 @@ class foodOrder {
      required this.productList,
      required this.cancelTime,
      required this.receiveTime,
-     required this.shipcost
+     required this.shipcost,
+     required this.voucher,
+     required this.costFee,
+     required this.costBiker
    });
 
    Map<dynamic, dynamic> toJson() => {
@@ -51,7 +57,10 @@ class foodOrder {
      'owner' : owner.toJson(),
      'status' : status,
      'productList': productList.map((e) => e.toJson()).toList(),
-     'shipper' : shipper.toJson()
+     'shipper' : shipper.toJson(),
+     'voucher' : voucher.toJson(),
+     'costFee' : costFee.toJson(),
+     'costBiker' : costBiker.toJson()
    };
 
    factory foodOrder.fromJson(Map<dynamic, dynamic> json) {
@@ -84,7 +93,10 @@ class foodOrder {
          cancelTime: Time.fromJson(json['cancelTime']),
          receiveTime: Time.fromJson(json['receiveTime']),
          shipcost: double.parse(json['shipcost'].toString()),
-         shipper: shipper
+         shipper: shipper,
+         voucher: Voucher.fromJson(json['voucher']),
+         costFee: Cost.fromJson(json['costFee']),
+         costBiker: Cost.fromJson(json['costBiker']),
      );
    }
 }

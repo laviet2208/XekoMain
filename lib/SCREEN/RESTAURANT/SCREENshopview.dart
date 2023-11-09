@@ -2,15 +2,14 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:xekomain/FINAL/finalClass.dart';
+import 'package:xekomain/GENERAL/Tool/Tool.dart';
 import 'package:xekomain/SCREEN/INUSER/PAGE_HOME/T%C3%ADnh%20kho%E1%BA%A3ng%20c%C3%A1ch.dart';
-
+import 'SCREENfoodcart.dart';
 import '../../GENERAL/Product/Product.dart';
 import '../../GENERAL/ShopUser/accountShop.dart';
 import '../../GENERAL/Tool/Time.dart';
-import '../../ITEM/ITEMfood.dart';
-import '../INUSER/SCREEN_MAIN/SCREENmain.dart';
+import '../../GENERAL/utils/utils.dart';
 import 'Quản lý danh mục/Item danh mục món ăn.dart';
-import 'SCREENfoodview.dart';
 import 'SCREENshopmain.dart';
 
 class SCREENshopview extends StatefulWidget {
@@ -23,6 +22,8 @@ class SCREENshopview extends StatefulWidget {
 
 class _SCREENshopmainState extends State<SCREENshopview> {
   List<Product> productList = [];
+  double total1 = 0;
+  String totalText = '0 .đ';
   accountShop selectShop = accountShop(openTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), closeTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), phoneNum: '', location: '', name: '', id: '', status: 1, avatarID: '', createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), password: '', isTop: 0, Type: 0, ListDirectory: [], Area: '');
   void getData() {
     final reference = FirebaseDatabase.instance.reference();
@@ -63,6 +64,12 @@ class _SCREENshopmainState extends State<SCREENshopview> {
     return '$formattedHour giờ $formattedMinute phút';
   }
 
+  void updateTotalText() {
+    // Gọi setState để cập nhật giao diện
+    setState(() {});
+  }
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -74,7 +81,11 @@ class _SCREENshopmainState extends State<SCREENshopview> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-
+    total1 = 0;
+    for (int i = 0 ; i < cartList.length ; i++) {
+      total1 = total1 + cartList[i].cost;
+    }
+    totalText = getStringNumber(total1) + ' .đ';
     return WillPopScope(
       child: Scaffold(
           body: Container(
@@ -124,11 +135,11 @@ class _SCREENshopmainState extends State<SCREENshopview> {
                   ),
 
                   Positioned(
-                    top: screenWidth/5*4,
+                    top: screenWidth/5*3,
                     left: 0,
                     child: Container(
                       width: screenWidth,
-                      height: screenHeight - (screenWidth/5*4),
+                      height: screenHeight - (screenWidth/5*3) - 80,
                       decoration: BoxDecoration(
                         color: Colors.white
                       ),
@@ -212,7 +223,13 @@ class _SCREENshopmainState extends State<SCREENshopview> {
                                     onTap: () {
 
                                     },
-                                    child: ITEMdanhsachmonan(width: screenWidth, height: 340, id: selectShop.ListDirectory[index]),
+                                    child: ITEMdanhsachmonan(width: screenWidth, height: 340, id: selectShop.ListDirectory[index], ontap: () { setState(() {
+                                      total1 = 0;
+                                      for (int i = 0 ; i < cartList.length ; i++) {
+                                        total1 = total1 + cartList[i].cost;
+                                      }
+                                      totalText = getStringNumber(total1) + ' .đ';
+                                    }); },),
                                   ),
                                 );
                               },
@@ -220,6 +237,105 @@ class _SCREENshopmainState extends State<SCREENshopview> {
                           )
                         ],
                       ),
+                    ),
+                  ),
+
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    child: GestureDetector(
+                      child: Container(
+                        width: screenWidth,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 2,
+                              blurRadius: 7,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Stack(
+                          children: <Widget>[
+                            Positioned(
+                              top: 10,
+                              left: 10,
+                              child: GestureDetector(
+                                child: Container(
+                                  width: screenWidth - 20,
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: Color.fromARGB(255, 244, 164, 84),
+                                  ),
+                                  child: Stack(
+                                    children: <Widget>[
+                                      Positioned(
+                                        top: 20,
+                                        left: 20,
+                                        child: Container(
+                                          width: screenWidth - 20 - 40,
+                                          height: 20,
+                                          child: RichText(
+                                            text: TextSpan(
+                                              style: TextStyle(
+                                                fontFamily: 'arial',
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold, // Cài đặt FontWeight.bold cho phần còn lại
+                                                color: Colors.white,
+                                              ),
+                                              children: <TextSpan>[
+                                                TextSpan(
+                                                  text: 'Giỏ hàng   |  ',
+                                                ),
+                                                TextSpan(
+                                                  text: cartList.length.toString() + ' món',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.normal, // Cài đặt FontWeight.normal cho "món"
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
+                                      Positioned(
+                                        top: 20,
+                                        right: 20,
+                                        child: Container(
+                                          width: screenWidth - 20 - 40,
+                                          height: 20,
+                                          alignment: Alignment.centerRight,
+                                          child: Text(
+                                            totalText,
+                                            style: TextStyle(
+                                              fontFamily: 'arial',
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold, // Cài đặt FontWeight.bold cho phần còn lại
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      onTap: () {
+                        if (cartList.length == 0) {
+                          toastMessage('Giỏ hàng chưa có sản phẩm nào');
+                        } else {
+                          Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENfoodcart()));
+                        }
+                      },
                     ),
                   )
                 ],

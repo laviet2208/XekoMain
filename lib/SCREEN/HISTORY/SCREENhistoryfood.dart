@@ -20,13 +20,13 @@ class SCREENhistoryfood extends StatefulWidget {
 class _SCREENhistorysendState extends State<SCREENhistoryfood> {
   Future<void> changeStatus(foodOrder order, String status) async {
     final reference = FirebaseDatabase.instance.reference();
-    await reference.child("foodOrder/" + order.id + "/status").set(status);
+    await reference.child("Order/foodOrder/" + order.id + "/status").set(status);
   }
 
   List<foodOrder> dataList = [];
   void getData() {
     final reference = FirebaseDatabase.instance.reference();
-    reference.child('foodOrder').onValue.listen((event) {
+    reference.child('Order/foodOrder').onValue.listen((event) {
       dataList.clear();
       final dynamic account = event.snapshot.value;
       account.forEach((key, value) {

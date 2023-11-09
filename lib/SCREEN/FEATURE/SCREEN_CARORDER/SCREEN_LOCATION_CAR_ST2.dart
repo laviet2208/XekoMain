@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:firebase_database/firebase_database.dart';
@@ -15,6 +16,7 @@ import '../../../GENERAL/NormalUser/accountLocation.dart';
 import '../../../GENERAL/NormalUser/accountNormal.dart';
 import '../../../GENERAL/Product/Voucher.dart';
 import '../../../GENERAL/Tool/Time.dart';
+import '../../../GENERAL/utils/utils.dart';
 import '../../VOUCHER/SCREENvoucherchosen.dart';
 
 class SCREENlocationcarst2 extends StatefulWidget {
@@ -33,11 +35,14 @@ class _SCREENlocationcarst2State extends State<SCREENlocationcarst2> {
   double _destLatitude = 0, _destLongitude = 0;
   Map<MarkerId, Marker> markers = {};
   Map<PolylineId, Polyline> polylines = {};
+  final vouchercontroller = TextEditingController();
   List<LatLng> polylineCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
   String googleAPiKey = "AIzaSyBsVQaVVMXw-y3QgvCWwJe02FWkhqP_wRA";
   bool Loading1 = false;
   double cost = 0;
+  bool isLoading = false;
+  String voucherMoney = '0đ';
 
   void _onMapCreated(GoogleMapController controller) async {
     mapController = controller;
@@ -76,12 +81,12 @@ class _SCREENlocationcarst2State extends State<SCREENlocationcarst2> {
 
   int getCost(double distance) {
     int cost = 0;
-    if (distance >= 2.0) {
-      cost += 20000; // Giá cước cho 2km đầu tiên (10.000 VND/km * 2km)
-      distance -= 2.0; // Trừ đi 2km đã tính giá cước
-      cost = cost + ((distance - 2) * 5000).toInt();
+    if (distance >= carCost.departKM) {
+      cost += carCost.departKM.toInt() * carCost.departCost.toInt(); // Giá cước cho 2km đầu tiên (10.000 VND/km * 2km)
+      distance -= carCost.departKM; // Trừ đi 2km đã tính giá cước
+      cost = cost + ((distance - carCost.departKM) * carCost.perKMcost).toInt();
     } else {
-      cost += (distance * 10000).toInt(); // Giá cước cho khoảng cách dưới 2km
+      cost += (distance * carCost.departCost).toInt(); // Giá cước cho khoảng cách dưới 2km
     }
     return cost;
   }
@@ -89,28 +94,90 @@ class _SCREENlocationcarst2State extends State<SCREENlocationcarst2> {
   Future<void> pushCatchOrder(catchOrder catchorder) async {
     try {
       DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
-      await databaseRef.child('catchOrder').child(catchorder.id).set(catchorder.toJson());
-      Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENwaitdriver(diemdon: widget.diemdon, diemtra: widget.diemtra,)));
-    } catch (error) {
-      print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
-      throw error;
-    }
-  }
-
-  Future<void> pushVoucherdata(List<Voucher> list) async {
-    try {
-      DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
-      await databaseRef.child('normalUser/' + currentAccount.id + "/voucherList").remove();
-      if (list.isNotEmpty) {
-        for (int i = 0 ; i < list.length ; i++) {
-          await databaseRef.child('normalUser/' + currentAccount.id + "/voucherList/" + i.toString()).set(list[i].toJson());
-        }
+      await databaseRef.child('Order/catchOrder').child(catchorder.id).set(catchorder.toJson());
+      if (mounted) {
+        toastMessage('Đặt đơn thành công , vui lòng kiểm tra lịch sử');
+        Navigator.push(context, MaterialPageRoute(builder: (context) => SCREENwaitdriver(diemdon: widget.diemdon, diemtra: widget.diemtra,)));
       }
     } catch (error) {
       print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
       throw error;
     }
   }
+
+  void VoucherChange() {
+    if (chosenvoucher.id != '') {
+      voucherMoney = (chosenvoucher.type == 0) ? (getStringNumber(chosenvoucher.totalmoney) + 'đ') : (getStringNumber(chosenvoucher.totalmoney) + '%');
+    } else {
+      voucherMoney = (chosenvoucher.type == 0) ? '0đ' : '0%';
+    }
+  }
+
+  Future<void> getData1(String id) async {
+    final reference = FirebaseDatabase.instance.reference();
+    await reference.child("VoucherStorage/" + id).onValue.listen((event) {
+      final dynamic orders = event.snapshot.value;
+      if (orders != null) {
+        Voucher a = Voucher.fromJson(orders);
+        if (a.useCount < a.maxCount) {
+          if (compareTimes(Time(second: DateTime.now().second, minute: DateTime.now().minute, hour: DateTime.now().hour, day: DateTime.now().day, month: DateTime.now().month, year: DateTime.now().year), a.endTime) && compareTimes(a.startTime, Time(second: DateTime.now().second, minute: DateTime.now().minute, hour: DateTime.now().hour, day: DateTime.now().day, month: DateTime.now().month, year: DateTime.now().year))) {
+            if (a.mincost <= cost) {
+              if (a.totalmoney < cost) {
+                if (a.LocationId == currentAccount.Area) {
+                  if (a.Otype == '1') {
+                    chosenvoucher.totalmoney = a.totalmoney;
+                    chosenvoucher.id = a.id;
+                    chosenvoucher.startTime = a.startTime;
+                    chosenvoucher.endTime = a.endTime;
+                    chosenvoucher.LocationId = a.LocationId;
+                    chosenvoucher.tenchuongtrinh = a.tenchuongtrinh;
+                    chosenvoucher.useCount = a.useCount;
+                    VoucherChange();
+                    Navigator.of(context).pop();
+                    setState(() {
+
+                    });
+                  } else {
+                    toastMessage('Voucher không áp dụng');
+                  }
+                } else {
+                  toastMessage('Voucher không áp dụng cho khu vực này');
+                }
+              } else {
+                toastMessage('Giá trị đơn phái lớn hơn số tiền giảm');
+              }
+            } else {
+              toastMessage('Đơn của bạn chưa đủ điều kiện áp dụng');
+            }
+          } else {
+            toastMessage('Voucher không trong thời hạn dùng');
+          }
+        } else {
+          toastMessage('Voucher này đã hết lượt dùng');
+        }
+
+      }
+
+      setState(() {
+
+      });
+    });
+  }
+
+  Future<void> pushVoucherData(int count, String id) async {
+    try {
+      DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
+      await databaseRef.child("VoucherStorage/" + id).child('useCount').set(count);
+      if (mounted) {
+        toastMessage('Đặt đơn thành công , vui lòng kiểm tra lịch sử');
+        Navigator.push(context, MaterialPageRoute(builder: (context) => SCREENwaitdriver(diemdon: widget.diemdon, diemtra: widget.diemtra,)));
+      }
+    } catch (error) {
+      print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
+      throw error;
+    }
+  }
+
 
   @override
   void initState() {
@@ -125,7 +192,12 @@ class _SCREENlocationcarst2State extends State<SCREENlocationcarst2> {
     _addMarker(LatLng(_destLatitude, _destLongitude), "destination", BitmapDescriptor.defaultMarkerWithHue(90));
     _getPolyline();
     if (chosenvoucher.id != 'NA') {
-      cost = getCost(widget.Distance).toDouble() - chosenvoucher.totalmoney;
+      if (chosenvoucher.type == 0) {
+        cost = getCost(widget.Distance).toDouble() - chosenvoucher.totalmoney;
+      } else {
+        cost = (getCost(widget.Distance).toDouble())/100*(100-chosenvoucher.totalmoney);
+      }
+
     } else {
       cost = getCost(widget.Distance).toDouble();
     }
@@ -178,15 +250,48 @@ class _SCREENlocationcarst2State extends State<SCREENlocationcarst2> {
                       child: Stack(
                         children: <Widget>[
                           Positioned(
-                            top: 10,
+                            top: 5,
                             left: 10,
-                            child: Text(
-                              "Đặt taxi ( " + double.parse(widget.Distance.toStringAsFixed(1)).toString() + " km )",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontFamily: "arial",
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
+                            child: Container(
+                              height: 40,
+                              width: screenWidth - 10,
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    child: Padding(
+                                      padding: EdgeInsets.all(4),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                                fit: BoxFit.cover,
+                                                image: AssetImage('assets/image/minicar.png')
+                                            )
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+
+                                  Container(width: 5,),
+
+                                  Container(
+                                    width: screenWidth - 10 - 10 - 40,
+                                    height: 40,
+                                    child: Padding(
+                                      padding: EdgeInsets.only(top: 10, bottom: 10),
+                                      child: AutoSizeText(
+                                        "Loại phương tiện",
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontFamily: "arial",
+                                          fontWeight: FontWeight.normal,
+                                          fontSize: 200,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
                               ),
                             ),
                           ),
@@ -212,7 +317,7 @@ class _SCREENlocationcarst2State extends State<SCREENlocationcarst2> {
                                       decoration: BoxDecoration(
                                           image: DecorationImage(
                                               fit: BoxFit.cover,
-                                              image: AssetImage('assets/image/carLogo1.png')
+                                              image: AssetImage('assets/image/mainLogo.png')
                                           )
                                       ),
                                     ),
@@ -223,30 +328,16 @@ class _SCREENlocationcarst2State extends State<SCREENlocationcarst2> {
                                     left: 10 + screenHeight/14 + 15,
                                     child: Container(
                                       child: Text(
-                                        'XeKo Car',
+                                        'Xe taxi 4 chỗ',
                                         style: TextStyle(
                                             fontFamily: 'arial',
                                             color: Colors.black,
-                                            fontWeight: FontWeight.bold,
+                                            fontWeight: FontWeight.normal,
                                             fontSize: 18
                                         ),
                                       ),
                                     ),
                                   ),
-
-                                  Positioned(
-                                    top: (screenHeight/10)/3,
-                                    right: 10,
-                                    child: Text(
-                                      getStringNumber(cost) + "đ",
-                                      style: TextStyle(
-                                          fontFamily: 'arial',
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18
-                                      ),
-                                    ),
-                                  )
                                 ],
                               ),
                             ),
@@ -257,7 +348,7 @@ class _SCREENlocationcarst2State extends State<SCREENlocationcarst2> {
                             left: 0,
                             child: Container(
                               width: screenWidth,
-                              height: screenHeight/7,
+                              height: screenHeight/2.5 - 50 - screenHeight/10,
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 boxShadow: [
@@ -273,41 +364,318 @@ class _SCREENlocationcarst2State extends State<SCREENlocationcarst2> {
                               child: Stack(
                                 children: <Widget>[
                                   Positioned(
-                                    top: 10,
+                                    bottom: 10 + screenHeight/15 + 20 + 30,
                                     left: 20,
                                     child: Container(
-                                      width: 42,
-                                      height: 21,
-                                      decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: AssetImage('assets/image/realmoneyicon.png')
-                                          )
+                                      child: Text(
+                                        'Tổng phí vận chuyển',
+                                            style: TextStyle(
+                                                fontFamily: 'arial',
+                                                color: Colors.grey,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18
+                                            ),
                                       ),
                                     ),
                                   ),
 
                                   Positioned(
-                                    top: 13,
-                                    left: 20 + 42 + 10,
+                                    bottom: 10 + screenHeight/15 + 20 + 30,
+                                    right: 10,
                                     child: Text(
-                                      'Sử dụng tiền mặt',
+                                      getStringNumber(cost) + ".đ",
                                       style: TextStyle(
                                           fontFamily: 'arial',
-                                          fontSize: 14,
+                                          color: Colors.black,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.black
+                                          fontSize: 22
                                       ),
                                     ),
                                   ),
 
+                                  Positioned(
+                                    bottom: 10 + screenHeight/15 + 20,
+                                    left: 20,
+                                    child: Container(
+                                      child: Text(
+                                        'Chi phí vận chuyển(' + double.parse(widget.Distance.toStringAsFixed(1)).toString() + "km)",
+                                        style: TextStyle(
+                                            fontFamily: 'arial',
+                                            color: Colors.grey,
+                                            fontWeight: FontWeight.normal,
+                                            fontSize: 15
+                                        ),
+                                      ),
+                                    ),
+                                  ),
 
+                                  Positioned(
+                                    bottom: 10 + screenHeight/15 + 20,
+                                    right: 10,
+                                    child: RichText(
+                                      text: TextSpan(
+                                        children: [
+                                          TextSpan(
+                                            text: getStringNumber(cost) + "đ",
+                                            style: TextStyle(
+                                              fontFamily: 'arial',
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.normal,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: " - " + voucherMoney,
+                                            style: TextStyle(
+                                              fontFamily: 'arial',
+                                              color: Colors.red, // Đặt màu đỏ cho phần này
+                                              fontWeight: FontWeight.normal,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                  ),
+
+                                  Positioned(
+                                    top: screenHeight/19,
+                                    left: 0,
+                                    child: Container(
+                                      width: screenWidth,
+                                      height: 1,
+                                      decoration: BoxDecoration(
+                                        color: Color.fromARGB(
+                                            255, 255, 217, 169)
+                                      ),
+                                    ),
+                                  ),
+
+                                  Positioned(
+                                    top: 0,
+                                    left: 0,
+                                    child: Container(
+                                      width: screenWidth,
+                                      height: screenHeight/19 - 1,
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: screenWidth/2-0.5,
+                                            height: screenHeight/19 - 1,
+                                            child: Row(
+                                              children: [
+                                                Container(width: 5,),
+
+                                                Container(
+                                                  height: screenHeight/19 - 1,
+                                                  width: screenHeight/19 - 1,
+                                                  child: Padding(
+                                                    padding: EdgeInsets.all(8),
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                        image: DecorationImage(
+                                                          fit: BoxFit.cover,
+                                                          image: AssetImage('assets/image/ghichu.png')
+                                                        )
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+
+                                                Container(
+                                                  height: screenHeight/19 - 1,
+                                                  width: screenWidth/2-0.5 - 3 - screenHeight/19 - 1 - 10,
+                                                  child: Padding(
+                                                    padding: EdgeInsets.only(top: 13, bottom: 13),
+                                                    child: AutoSizeText(
+                                                      'Ghi chú',
+                                                      style: TextStyle(
+                                                        fontSize: 160,
+                                                        fontFamily: 'roboto',
+                                                        fontStyle: FontStyle.normal,
+                                                        color: Colors.black
+                                                      ),
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+
+                                          Padding(
+                                            padding: EdgeInsets.only(top: 8,bottom: 8),
+                                            child: Container(
+                                              width: 1,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.black
+                                              ),
+                                            ),
+                                          ),
+
+                                          GestureDetector(
+                                            child: Container(
+                                              width: screenWidth/2-0.5,
+                                              height: screenHeight/19 - 1,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.white
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Container(width: 5,),
+
+                                                  Container(
+                                                    height: screenHeight/19 - 1,
+                                                    width: screenHeight/19 - 1,
+                                                    child: Padding(
+                                                      padding: EdgeInsets.all(8),
+                                                      child: Container(
+                                                        decoration: BoxDecoration(
+                                                            image: DecorationImage(
+                                                                fit: BoxFit.cover,
+                                                                image: AssetImage('assets/image/khuyenmai.png')
+                                                            )
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+
+                                                  Container(
+                                                    height: screenHeight/19 - 1,
+                                                    width: screenWidth/2-0.5 - 3 - screenHeight/19 - 1 - 10,
+                                                    child: Padding(
+                                                      padding: EdgeInsets.only(top: 13, bottom: 13),
+                                                      child: AutoSizeText(
+                                                        'Khuyến mãi',
+                                                        style: TextStyle(
+                                                            fontSize: 160,
+                                                            fontFamily: 'roboto',
+                                                            fontStyle: FontStyle.normal,
+                                                            color: Colors.black
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                              onTap: () {
+                                                vouchercontroller.clear();
+                                                chosenvoucher.changeToDefault();
+                                                VoucherChange();
+                                                setState(() {
+
+                                                });
+                                                showDialog(
+                                                    context: context,
+                                                    builder: (BuildContext context) {
+                                                      return AlertDialog(
+                                                        content: Container(
+                                                            width: screenWidth,
+                                                            height: 90,
+                                                            child: Stack(
+                                                              children: <Widget>[
+                                                                Positioned(
+                                                                  top: 0,
+                                                                  left: 0,
+                                                                  child: Container(
+                                                                    height: 15,
+                                                                    child: AutoSizeText(
+                                                                      'Nhập mã voucher',
+                                                                      style: TextStyle(
+                                                                          fontSize: 100,
+                                                                          color: Color.fromARGB(255, 244, 164, 84),
+                                                                          fontWeight: FontWeight.bold
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+
+                                                                Positioned(
+                                                                  top: 50,
+                                                                  left: 0,
+                                                                  child: Container(
+                                                                    height: 40,
+                                                                    width: screenWidth/1.5,
+                                                                    decoration: BoxDecoration(
+                                                                        borderRadius: BorderRadius.circular(10),
+                                                                        border: Border.all(
+                                                                            color: Colors.orange,
+                                                                            width: 1
+                                                                        )
+                                                                    ),
+                                                                    child: Padding(
+                                                                      padding: EdgeInsets.only(left: 10),
+                                                                      child: Form(
+                                                                        child: TextFormField(
+                                                                          controller: vouchercontroller,
+                                                                          style: TextStyle(
+                                                                            color: Colors.black,
+                                                                            fontFamily: 'arial',
+                                                                          ),
+
+                                                                          decoration: InputDecoration(
+                                                                            border: InputBorder.none,
+                                                                            hintText: 'Nhập mã voucher',
+                                                                            hintStyle: TextStyle(
+                                                                              color: Colors.grey,
+                                                                              fontFamily: 'arial',
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                              ],
+                                                            )
+                                                        ),
+
+                                                        actions: <Widget>[
+                                                          TextButton(
+                                                            child: isLoading ? CircularProgressIndicator() : Text('Xác nhận'),
+                                                            onPressed: isLoading ? null : () async {
+                                                              setState(() {
+                                                                isLoading = true;
+                                                              });
+                                                              if (vouchercontroller.text.isNotEmpty) {
+                                                                await getData1(vouchercontroller.text.toString());
+                                                              } else {
+                                                                toastMessage('Vui lòng nhập mã');
+                                                              }
+                                                              setState(() {
+                                                                isLoading = false; // Dừng hiển thị loading
+                                                              });
+                                                            },
+                                                          ),
+
+                                                          TextButton(
+                                                            child: Text('Hủy'),
+                                                            onPressed: () {
+                                                              chosenvoucher.changeToDefault();
+                                                              vouchercontroller.clear();
+                                                              VoucherChange();
+                                                              Navigator.of(context).pop();
+                                                              setState(() {
+
+                                                              });
+                                                            },
+                                                          ),
+                                                        ],
+                                                      );
+                                                    });
+                                              }
+                                          )
+                                        ],
+                                      )
+                                    ),
+                                  ),
                                   ///Nút đặt xe
                                   Positioned(
                                     bottom: 10,
                                     left: 10,
                                     child: Container(
-                                      width: screenWidth/2 - 20,
+                                      width: screenWidth - 20,
                                       height: screenHeight/15,
                                       child: ButtonType1(Height: screenHeight/10, Width: screenWidth/2 - 20, color: Color.fromARGB(255, 244, 164, 84), radiusBorder: 30, title: 'Đặt xe', fontText: 'arial', colorText: Colors.white,
                                         onTap: () async {
@@ -321,7 +689,6 @@ class _SCREENlocationcarst2State extends State<SCREENlocationcarst2> {
                                                 newlist.add(currentAccount.voucherList[i]);
                                               }
                                             }
-                                            await pushVoucherdata(newlist);
                                           }
                                           accountNormal shipper = accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: '');
 
@@ -337,34 +704,18 @@ class _SCREENlocationcarst2State extends State<SCREENlocationcarst2> {
                                               startTime: getCurrentTime(),
                                               cancelTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
                                               receiveTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
-                                              type: 2
+                                              type: 2,
+                                              voucher: chosenvoucher,
+                                              costFee: carCost
                                           );
+                                          if (chosenvoucher.id != '') {
+                                            await pushVoucherData(chosenvoucher.useCount + 1, chosenvoucher.id);
+                                          }
                                           await pushCatchOrder(thiscatch);
-                                          setState(() {
-                                            Loading1 = false;
-                                          });
                                         }, loading: Loading1,
                                       ),
                                     ),
                                   ),
-
-                                  ///Nút vouvher
-                                  Positioned(
-                                    bottom: 10,
-                                    right: 10,
-                                    child: Container(
-                                      width: screenWidth/2 - 20,
-                                      height: screenHeight/15,
-                                      child: ButtonType1(Height: screenHeight/10, Width: screenWidth/2 - 20, color: Color.fromARGB(255, 255, 247, 237), radiusBorder: 30, title: 'Ưu đãi', fontText: 'arial', colorText: Color.fromARGB(255, 255, 123, 64),
-                                          onTap: () {
-                                            chosenvoucher.id = 'NA';
-                                            chosenvoucher.mincost = 0;
-                                            chosenvoucher.totalmoney = 0;
-                                            Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENvoucherchosen(type: 2, distance: widget.Distance,)));
-                                          }
-                                      ),
-                                    ),
-                                  )
                                 ],
                               ),
                             ),

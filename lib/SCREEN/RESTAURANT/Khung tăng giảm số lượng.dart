@@ -9,7 +9,7 @@ class QuantitySelector extends StatefulWidget {
 }
 
 class _QuantitySelectorState extends State<QuantitySelector> {
-  int quantity = 1; // Số lượng ban đầu
+  int quantity = 1;
 
   void increment() {
     setState(() {

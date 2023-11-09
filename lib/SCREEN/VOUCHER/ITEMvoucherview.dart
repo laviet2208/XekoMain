@@ -32,12 +32,12 @@ class ITENvoucherview extends StatelessWidget {
             top: 10,
             left: 10,
             child: Text(
-              "RabitVoucher",
+              "XekoVoucher - " + voucher.tenchuongtrinh,
               style: TextStyle(
-                fontWeight: FontWeight.normal,
+                fontWeight: FontWeight.bold,
                 fontSize: 14,
                 fontFamily: 'arial',
-                color: Colors.grey
+                color: Color.fromARGB(255, 244, 164, 84)
               ),
             ),
           ),
@@ -60,7 +60,7 @@ class ITENvoucherview extends StatelessWidget {
             top: 55,
             left: 10,
             child: Text(
-              "Giảm giá trực tiếp vào đơn hàng",
+              "Nhập mã : " +voucher.id ,
               style: TextStyle(
                   fontWeight: FontWeight.normal,
                   fontSize: 15,
@@ -68,18 +68,6 @@ class ITENvoucherview extends StatelessWidget {
                   color: Colors.black
               ),
             ),
-          ),
-
-          Positioned(
-            top: 100,
-            left: 0,
-            child: Container(
-              width: width,
-              height: 1,
-              decoration: BoxDecoration(
-                color: Colors.grey
-              ),
-            )
           ),
 
           Positioned(

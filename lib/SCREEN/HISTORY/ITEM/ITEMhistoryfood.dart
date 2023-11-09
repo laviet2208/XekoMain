@@ -224,6 +224,18 @@ class ITEMhistoryfood extends StatelessWidget {
                 ),
               )
           ),
+
+          Positioned(
+            bottom: 0,
+            left: 40,
+            child: Container(
+              width: width - 80,
+              height: 1,
+              decoration: BoxDecoration(
+                color: Colors.grey
+              ),
+            ),
+          )
         ],
       ),
     );

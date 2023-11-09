@@ -6,7 +6,7 @@ import '../../ITEM/ITEMfood.dart';
 
 
 class PAGEfood extends StatefulWidget {
-  const PAGEfood({Key? key}) : super(key: key);
+  const  PAGEfood({Key? key}) : super(key: key);
 
   @override
   State<PAGEfood> createState() => _PAGEhomeState();
@@ -17,7 +17,7 @@ class _PAGEhomeState extends State<PAGEfood> {
 
   void getData() {
     final reference = FirebaseDatabase.instance.reference();
-    reference.child("foodOrder").onValue.listen((event) {
+    reference.child("Order/foodOrder").onValue.listen((event) {
       orderList.clear();
       final dynamic orders = event.snapshot.value;
       orders.forEach((key, value) {

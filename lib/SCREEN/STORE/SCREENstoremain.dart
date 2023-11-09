@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:xekomain/FINAL/finalClass.dart';
 import 'package:xekomain/SCREEN/STORE/Qu%E1%BA%A3n%20l%C3%BD%20data.dart';
+import 'package:xekomain/SCREEN/STORE/SCREENstorecart.dart';
 import '../../GENERAL/utils/utils.dart';
 import '../INUSER/SCREEN_MAIN/SCREENmain.dart';
 import '../RESTAURANT/Quản lý danh mục/Danh mục.dart';
@@ -259,7 +260,7 @@ class _SCREENshopmainState extends State<SCREENstoremain> {
                         if (storeList.length == 0) {
                           toastMessage('Giỏ hàng chưa có sản phẩm nào');
                         } else {
-
+                          Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENstorecart()));
                         }
                       },
                       child: Container(
@@ -296,7 +297,7 @@ class _SCREENshopmainState extends State<SCREENstoremain> {
                                   borderRadius: BorderRadius.circular(9),
                                 ),
                                 child: Text(
-                                  cartList.length.toString(),
+                                  storeList.length.toString(),
                                   style: TextStyle(
                                     fontFamily: 'arial',
                                     color: Colors.white,

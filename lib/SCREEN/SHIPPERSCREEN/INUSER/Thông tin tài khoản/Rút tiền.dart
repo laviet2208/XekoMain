@@ -70,6 +70,10 @@ class _ScreenRutTienState extends State<ScreenRutTien> {
                               )
                           ),
                         ),
+
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENmainshipping()));
+                        },
                       ),
                     ),
 

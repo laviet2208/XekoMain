@@ -11,6 +11,7 @@ import '../../../GENERAL/Ads/ADStype1.dart';
 import '../../../GENERAL/Ads/ADStype2.dart';
 import '../../../GENERAL/NormalUser/accountNormal.dart';
 import '../../../GENERAL/Order/catchOrder.dart';
+import '../../../GENERAL/Product/Voucher.dart';
 import '../../../GENERAL/ShopUser/accountShop.dart';
 import '../../../GENERAL/Tool/Tool.dart';
 import '../../../GENERAL/utils/utils.dart';
@@ -37,13 +38,13 @@ class _PAGEhomeState extends State<PAGEhome> {
   final accountLocation diemdon = accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: '');
   final accountLocation diemtra = accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: '');
   bool iscar = false;
-
+  String catchID = '';
   bool loadingBike = false;
   bool loadingCar = false;
 
   Future<bool> getData(String id) async {
     final reference = FirebaseDatabase.instance.reference();
-    DatabaseEvent snapshot = await reference.child('catchOrder').once();
+    DatabaseEvent snapshot = await reference.child('Order/catchOrder').once();
     bool ch = false;
     final dynamic catchOrderData = snapshot.snapshot.value;
     if (catchOrderData != null) {
@@ -86,6 +87,9 @@ class _PAGEhomeState extends State<PAGEhome> {
   List<accountShop> shopList = [];
   List<ADStype1> ADStype1List = [];
   List<ADStype2> ADStype2List = [];
+
+  int voucherCount = 0;
+  String VoucherCountText = '';
 
   // Hàm sắp xếp danh sách nhà hàng dựa trên khoảng cách tới vị trí hiện tại
   void sortRestaurantsByDistance(List<accountShop> restaurants, double currentLat, double currentLon) {
@@ -159,6 +163,23 @@ class _PAGEhomeState extends State<PAGEhome> {
     });
   }
 
+  void getVoucherData() {
+    final reference = FirebaseDatabase.instance.reference();
+    reference.child("VoucherStorage").onValue.listen((event) {
+      voucherCount = 0;
+      final dynamic restaurant = event.snapshot.value;
+      restaurant.forEach((key, value) {
+        Voucher voucher = Voucher.fromJson(value);
+        if (voucher.LocationId == currentAccount.Area) {
+          voucherCount = voucherCount + 1;
+        }
+      });
+      setState(() {
+
+      });
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -167,6 +188,7 @@ class _PAGEhomeState extends State<PAGEhome> {
     getADStop();
     getADStype1Data();
     getADStype2Data();
+    getVoucherData();
   }
 
   @override
@@ -269,6 +291,7 @@ class _PAGEhomeState extends State<PAGEhome> {
                     width: 56,
                     child: GestureDetector(
                       onTap: () {
+                        chosenvoucher.changeToDefault();
                         Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENshopmain()));
                       },
                       child: Stack(
@@ -317,6 +340,7 @@ class _PAGEhomeState extends State<PAGEhome> {
                     width: 56,
                     child: GestureDetector(
                       onTap: () async {
+                        chosenvoucher.changeToDefault();
                         setState(() {
                           loadingCar = true;
                         });
@@ -388,6 +412,7 @@ class _PAGEhomeState extends State<PAGEhome> {
                     width: 56,
                     child: GestureDetector(
                       onTap: () async {
+                        chosenvoucher.changeToDefault();
                         setState(() {
                           loadingBike = true;
                         });
@@ -459,6 +484,7 @@ class _PAGEhomeState extends State<PAGEhome> {
                     width: 56,
                     child: GestureDetector(
                       onTap: () {
+                        chosenvoucher.changeToDefault();
                         currentReceiver.changeToDefault();
                         currentitemdetail.changeToDefault();
                         Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENitemsend()));
@@ -509,6 +535,7 @@ class _PAGEhomeState extends State<PAGEhome> {
                     width: 56,
                     child: GestureDetector(
                       onTap: () {
+                        chosenvoucher.changeToDefault();
                         Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENvoucherview()));
                       },
                       child: Stack(
@@ -553,11 +580,11 @@ class _PAGEhomeState extends State<PAGEhome> {
                   ),
 
                   //mục mua sắm
-
                   Container(
                     width: 56,
                     child: GestureDetector(
                       onTap: () {
+                        chosenvoucher.changeToDefault();
                         Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENstoremain()));
                       },
                       child: Stack(
@@ -641,7 +668,7 @@ class _PAGEhomeState extends State<PAGEhome> {
                             bottom: 10,
                             left: 10,
                             child: Text(
-                              currentAccount.voucherList.length.toString(),
+                              voucherCount.toString() + ' Mã khả dụng',
                               style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.black,

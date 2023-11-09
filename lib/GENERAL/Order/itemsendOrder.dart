@@ -3,7 +3,9 @@ import 'package:xekomain/FINAL/finalClass.dart';
 
 import '../NormalUser/accountLocation.dart';
 import '../NormalUser/accountNormal.dart';
+import '../Product/Voucher.dart';
 import '../Tool/Time.dart';
+import 'Cost.dart';
 import 'Receiver.dart';
 import 'item_details.dart';
 
@@ -20,6 +22,8 @@ class itemsendOrder {
   final item_details itemdetails;
   final accountNormal shipper;
   final String status;
+  final Cost costFee;
+  final Voucher voucher;
 
   itemsendOrder({
     required this.id,
@@ -33,7 +37,9 @@ class itemsendOrder {
     required this.receiveTime,
     required this.locationset,
     required this.receiver,
-    required this.itemdetails
+    required this.itemdetails,
+    required this.voucher,
+    required this.costFee
   });
 
   Map<dynamic, dynamic> toJson() => {
@@ -48,7 +54,9 @@ class itemsendOrder {
     'receiver' : receiver.toJson(),
     'itemdetails' : itemdetails.toJson(),
     'shipper' : shipper.toJson(),
-    'status' : status
+    'status' : status,
+    'voucher' : voucher.toJson(),
+    'costFee' : costFee.toJson()
   };
 
   factory itemsendOrder.fromJson(Map<dynamic, dynamic> json) {
@@ -73,6 +81,8 @@ class itemsendOrder {
       locationset: accountLocation.fromJson(json['locationset']),
       receiver: Receiver.fromJson(json['receiver']),
       itemdetails: item_details.fromJson(json['itemdetails']),
+      voucher: Voucher.fromJson(json['voucher']),
+      costFee: Cost.fromJson(json['costFee']),
     );
   }
 }

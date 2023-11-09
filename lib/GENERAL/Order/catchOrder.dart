@@ -1,10 +1,12 @@
 
 
 import 'package:xekomain/FINAL/finalClass.dart';
+import 'package:xekomain/GENERAL/Product/Voucher.dart';
 
 import '../NormalUser/accountLocation.dart';
 import '../NormalUser/accountNormal.dart';
 import '../Tool/Time.dart';
+import 'Cost.dart';
 
 class catchOrder {
   String id;
@@ -12,12 +14,14 @@ class catchOrder {
   accountLocation locationGet;
   int type;
   double cost;
+  Voucher voucher;
   Time startTime;
   Time receiveTime;
   Time endTime;
   Time cancelTime;
   accountNormal owner;
   accountNormal shipper;
+  Cost costFee;
   String status;
 
   catchOrder({
@@ -32,7 +36,9 @@ class catchOrder {
     required this.startTime,
     required this.cancelTime,
     required this.receiveTime,
-    required this.type
+    required this.type,
+    required this.voucher,
+    required this.costFee
   });
 
   Map<dynamic, dynamic> toJson() => {
@@ -47,7 +53,9 @@ class catchOrder {
     'owner' : owner.toJson(),
     'status' : status,
     'shipper' : shipper.toJson(),
-    'type' : type
+    'type' : type,
+    'voucher' : voucher.toJson(),
+    'costFee' : costFee.toJson()
   };
 
   factory catchOrder.fromJson(Map<dynamic, dynamic> json) {
@@ -72,6 +80,8 @@ class catchOrder {
         receiveTime: Time.fromJson(json['receiveTime']),
         shipper: shipper,
         type: int.parse(json['type'].toString()),
+        voucher: Voucher.fromJson(json['voucher']),
+        costFee: Cost.fromJson(json['costFee']),
     );
   }
 }

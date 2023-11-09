@@ -9,7 +9,8 @@ class ITEMdanhsachmonan extends StatefulWidget {
   final double width;
   final double height;
   final String id;
-  const ITEMdanhsachmonan({Key? key, required this.width, required this.height, required this.id}) : super(key: key);
+  final VoidCallback ontap;
+  const ITEMdanhsachmonan({Key? key, required this.width, required this.height, required this.id, required this.ontap}) : super(key: key);
 
   @override
   State<ITEMdanhsachmonan> createState() => _ITEMdanhsachmonanState();
@@ -94,7 +95,7 @@ class _ITEMdanhsachmonanState extends State<ITEMdanhsachmonan> {
                       onTap: () {
 
                       },
-                      child: ITEMfoodIndirect(id: foodDirectory.foodList[index]),),
+                      child: ITEMfoodIndirect(id: foodDirectory.foodList[index], ontap: () { widget.ontap(); },),),
                   );
                 },
               ),

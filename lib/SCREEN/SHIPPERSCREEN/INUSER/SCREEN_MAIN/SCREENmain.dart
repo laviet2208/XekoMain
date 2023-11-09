@@ -50,10 +50,10 @@ class _SCREENmainState extends State<SCREENmainshipping> {
                 Text(
                   title,
                   style: TextStyle(
-                    fontFamily: "logo_font_1",
+                    fontFamily: "roboto",
                     fontSize: screenWidth/19.65,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 0, 177, 79),
+                    color: Color.fromARGB(255, 244, 164, 84),
                   ),
                 ),
 
@@ -72,7 +72,7 @@ class _SCREENmainState extends State<SCREENmainshipping> {
           child: GNav(
             backgroundColor: Colors.white,
             color: Colors.grey,
-            activeColor: Color.fromARGB(255, 0, 177, 79),
+            activeColor: Color.fromARGB(255, 244, 164, 84),
             tabBackgroundColor: Color.fromARGB(100, 200, 225, 252),
             gap: 8,
             onTabChange: (index) {

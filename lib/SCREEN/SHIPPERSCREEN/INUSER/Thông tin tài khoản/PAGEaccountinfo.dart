@@ -6,6 +6,7 @@ import 'package:xekomain/SCREEN/SHIPPERSCREEN/INUSER/Th%C3%B4ng%20tin%20t%C3%A0i
 import '../../../../FINAL/finalClass.dart';
 import '../../../../GENERAL/utils/utils.dart';
 import '../PAGE_HISTORY/PAGEhistory.dart';
+import '../SCREEN_NOTICE/SCREENnotice.dart';
 import '../SCREENhistory/SCREENhistory.dart';
 import 'Nạp tiền.dart';
 
@@ -214,6 +215,69 @@ class _PAGEaccountinfoState extends State<PAGEaccountinfo> {
             ),
 
             Container(height: 20,),
+
+            ///Thông báo
+            Padding(
+              padding: EdgeInsets.only(left: 20, right: 10),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder:(context) => ScreenNotice()));
+                },
+                child: Container(
+                  height: 60,
+                  decoration: BoxDecoration(
+
+                  ),
+                  child: Stack(
+                    children: <Widget>[
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        child: Container(
+                            width: (screenWidth-30)/3*2,
+                            height: 60,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Thông báo',
+                              style: TextStyle(
+                                  fontFamily: 'arial',
+                                  fontSize: 16,
+                                  color: Color.fromARGB(255, 32, 32, 32),
+                                  fontWeight: FontWeight.normal
+                              ),
+                            )
+                        ),
+                      ),
+
+                      Positioned(
+                        top: 20,
+                        right: 0,
+                        child: Container(
+                          height: 20,
+                          width: 20,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: AssetImage('assets/image/righticon.png')
+                              )
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            Padding(
+              padding: EdgeInsets.only(left: 20, right: 10),
+              child: Container(
+                height: 1,
+                decoration: BoxDecoration(
+                    color: Colors.blueGrey
+                ),
+              ),
+            ),
 
             ///chăm sóc khách hàng
             Padding(

@@ -460,7 +460,7 @@ class _SCREENbikeorderState extends State<SCREENbikeorder> {
                                                       decoration: InputDecoration(
                                                         filled: true,
                                                         fillColor: Colors.white,
-                                                        hintText: 'Tìm kiếm điểm đón',
+                                                        hintText: 'Tìm kiếm điểm đi',
                                                         focusedBorder: OutlineInputBorder(
                                                           borderSide: BorderSide(color: Colors.white),
                                                           borderRadius: BorderRadius.circular(25.7),

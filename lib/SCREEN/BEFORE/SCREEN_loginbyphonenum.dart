@@ -109,15 +109,15 @@ class _LoginScreenMobiState extends State<SCREENlogin> {
                   text: "Nhập số điện thoại chính xác của bạn để đăng nhập ",
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.black, // Màu của phần còn lại của văn bản
+                    color: Colors.black,
                   ),
                   children: <TextSpan>[
                     TextSpan(
                       text: "XEKO",
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.bold, // Để in đậm phần này
-                        color: Colors.red, // Để đặt màu đỏ cho phần này
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
                       ),
                     ),
                   ],
@@ -183,7 +183,7 @@ class _LoginScreenMobiState extends State<SCREENlogin> {
                         loading = true;
                       });
                       try {
-                        if (phone == '886163653') {
+                        if (phone == '886163653' || phone == '859755239' || phone == '987654321') {
                           if (await checkData(phone)) {
                             await getData(phone);
                             setState(() {

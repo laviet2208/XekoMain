@@ -459,7 +459,7 @@ class _SCREENcarorderState extends State<SCREENcarorder> {
                                                         decoration: InputDecoration(
                                                           filled: true,
                                                           fillColor: Colors.white,
-                                                          hintText: 'Tìm kiếm điểm đón',
+                                                          hintText: 'Tìm kiếm điểm đi',
                                                           focusedBorder: OutlineInputBorder(
                                                             borderSide: BorderSide(color: Colors.white),
                                                             borderRadius: BorderRadius.circular(25.7),

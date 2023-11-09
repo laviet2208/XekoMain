@@ -57,7 +57,21 @@ class _ITEMfoodincartState extends State<ITEMfoodincart> {
               style: TextStyle(
                   fontSize: 14,
                   fontFamily: 'arial',
-                  color: Colors.deepOrange,
+                  color: Color.fromARGB(255, 244, 164, 84),
+                  fontWeight: FontWeight.normal
+              ),
+            ),
+          ),
+
+          Positioned(
+            bottom: 10,
+            left: 10,
+            child: Text(
+              'Giá tiền : ' + getStringNumber(widget.food.cost) + '.đ',
+              style: TextStyle(
+                  fontSize: 14,
+                  fontFamily: 'arial',
+                  color: Color.fromARGB(255, 244, 164, 84),
                   fontWeight: FontWeight.bold
               ),
             ),

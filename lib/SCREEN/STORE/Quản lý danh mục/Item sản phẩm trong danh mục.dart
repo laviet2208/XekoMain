@@ -280,21 +280,21 @@ class _ITEMrestaurantIndirectState extends State<ITEMproductIndirect> {
                           ),
 
                           onTap: () {
-                            if (cartList.isEmpty) {
+                            if (storeList.isEmpty) {
                               for (int i = 0 ; i < quantitySelector.data.second ; i++) {
-                                cartList.add(product);
+                                storeList.add(product);
                               }
                               toastMessage('Bạn đã thêm ' + quantitySelector.data.second.toString() + " " + product.name);
                               Navigator.of(context).pop();
                             } else {
-                              if (product.owner.id == cartList[0].owner.id) {
+                              if (product.owner.id == storeList[0].owner.id) {
                                 for (int i = 0 ; i < quantitySelector.data.second ; i++) {
-                                  cartList.add(product);
+                                  storeList.add(product);
                                 }
                                 toastMessage('Bạn đã thêm ' + quantitySelector.data.second.toString() + " " + product.name);
                                 Navigator.of(context).pop();
                               } else {
-                                toastMessage('Bạn không thể thêm món từ 2 nhà hàng khác nhau');
+                                toastMessage('Bạn không thể thêm món từ 2 cửa hàng khác nhau');
                               }
                             }
                           },

@@ -37,7 +37,7 @@ class _PAGEhistoryState extends State<PAGEhistory> {
 
   void getDatacatch() {
     final reference = FirebaseDatabase.instance.reference();
-    reference.child("catchOrder").onValue.listen((event) {
+    reference.child("Order/catchOrder").onValue.listen((event) {
       orderList.clear();
       itemcount1 = 0;
       final dynamic orders = event.snapshot.value;
@@ -66,7 +66,7 @@ class _PAGEhistoryState extends State<PAGEhistory> {
 
   void getDatafood() {
     final reference = FirebaseDatabase.instance.reference();
-    reference.child("foodOrder").onValue.listen((event) {
+    reference.child("Order/foodOrder").onValue.listen((event) {
       foodList.clear();
       itemcount3 = 0;
       final dynamic orders = event.snapshot.value;
@@ -88,7 +88,7 @@ class _PAGEhistoryState extends State<PAGEhistory> {
 
   void getDatasend() {
     final reference = FirebaseDatabase.instance.reference();
-    reference.child("itemsendOrder").onValue.listen((event) {
+    reference.child("Order/itemsendOrder").onValue.listen((event) {
       sendList.clear();
       itemcount2 = 0;
       final dynamic orders = event.snapshot.value;

@@ -22,7 +22,17 @@ class ITEMfood extends StatelessWidget {
     Future<void> changeStatus(String sta) async {
       try {
         DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
-        await databaseRef.child('foodOrder/' + order.id + '/status').set(sta);
+        await databaseRef.child('foodOrder/' + currentAccount.id + '/status').set(sta);
+      } catch (error) {
+        print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
+        throw error;
+      }
+    }
+
+    Future<void> changeMoney(double money) async {
+      try {
+        DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
+        await databaseRef.child('normalUser/' + order.owner.id + '/totalMoney').set(money);
       } catch (error) {
         print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
         throw error;
@@ -138,7 +148,7 @@ class ITEMfood extends StatelessWidget {
 
               ),
               child: Text(
-                'Giao tới : ' + destination,
+                compactString(40, 'Giao tới : ' + destination),
                 style: TextStyle(
                     fontFamily: 'arial',
                     fontSize: 15,
@@ -150,7 +160,7 @@ class ITEMfood extends StatelessWidget {
           ),
 
           Positioned(
-            top: 66,
+            top: 34,
             left: 70,
             child: Container(
               width: width/3*2,
@@ -158,20 +168,35 @@ class ITEMfood extends StatelessWidget {
               decoration: BoxDecoration(
 
               ),
-              child: Text(
-                'Thời gian đặt: ' + getAllTimeString(order.startTime),
-                style: TextStyle(
-                    fontFamily: 'arial',
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.grey
+              child: RichText(
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'Thời gian đặt : ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: getAllTimeString(order.startTime), // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.black,
+                        fontWeight: FontWeight.normal, // Để viết bình thường
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
 
           Positioned(
-            top: 90,
+            top: 58,
             left: 70,
             child: Container(
               width: width - 80,
@@ -179,20 +204,35 @@ class ITEMfood extends StatelessWidget {
               decoration: BoxDecoration(
 
               ),
-              child: Text(
-                '+Số điện thoại liên lạc : ' + order.owner.phoneNum ,
-                style: TextStyle(
-                    fontFamily: 'arial',
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.grey
+              child: RichText(
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: '+ SĐT người nhận: ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: (order.owner.phoneNum[0] == '0') ? order.owner.phoneNum : ('0' + order.owner.phoneNum), // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.blueAccent,
+                        fontWeight: FontWeight.normal, // Để viết bình thường
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
 
           Positioned(
-            top: 115,
+            top: 82,
             left: 70,
             child: Container(
               width: width - 100,
@@ -200,20 +240,35 @@ class ITEMfood extends StatelessWidget {
               decoration: BoxDecoration(
 
               ),
-              child: Text(
-                '+ Đ/c nhà hàng : ' + locationSet ,
-                style: TextStyle(
-                    fontFamily: 'arial',
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.grey
+              child: RichText(
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: '+ Đc nhà hàng: ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: locationSet, // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.blueAccent,
+                        fontWeight: FontWeight.normal, // Để viết bình thường
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
 
           Positioned(
-            top: 140,
+            top: 106,
             left: 70,
             child: Container(
               width: width - 100,
@@ -221,20 +276,35 @@ class ITEMfood extends StatelessWidget {
               decoration: BoxDecoration(
 
               ),
-              child: Text(
-                '+ Tên nhà hàng : ' + compactString(17, order.productList[0].owner.name),
-                style: TextStyle(
-                    fontFamily: 'arial',
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.grey
+              child: RichText(
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: '+ Tên nhà hàng: ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: compactString(17, order.productList[0].owner.name), // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.blueAccent,
+                        fontWeight: FontWeight.normal, // Để viết bình thường
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
 
           Positioned(
-            top: 165,
+            top: 130,
             left: 70,
             child: Container(
               width: width - 100,
@@ -242,20 +312,35 @@ class ITEMfood extends StatelessWidget {
               decoration: BoxDecoration(
 
               ),
-              child: Text(
-                '+ Giá trị đơn : ' + getStringNumber(order.cost) + 'đ',
-                style: TextStyle(
-                    fontFamily: 'arial',
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.grey
+              child: RichText(
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: '+ Giá trị đơn: ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: getStringNumber(order.cost) + '.đ', // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.deepPurple,
+                        fontWeight: FontWeight.bold, // Để viết bình thường
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
 
           Positioned(
-            top: 190,
+            top: 154,
             left: 70,
             child: Container(
               width: width - 100,
@@ -263,20 +348,107 @@ class ITEMfood extends StatelessWidget {
               decoration: BoxDecoration(
 
               ),
-              child: Text(
-                '+ Phí ship : ' + getStringNumber(order.shipcost) + 'đ',
-                style: TextStyle(
-                    fontFamily: 'arial',
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.grey
+              child: RichText(
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: '+ Phí ship: ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: getStringNumber(order.shipcost) + '.đ', // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.deepPurple,
+                        fontWeight: FontWeight.bold, // Để viết bình thường
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
 
           Positioned(
-            top: 215,
+            top: 178,
+            left: 70,
+            child: Container(
+              width: width - 100,
+              height: 60,
+              decoration: BoxDecoration(
+
+              ),
+              child: RichText(
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: '+ Chiết khấu quán: ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: getStringNumber(order.cost * (order.costFee.discount/100)) + '.đ (' + order.costFee.discount.toInt().toString() + '%)', // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.redAccent,
+                        fontWeight: FontWeight.bold, // Để viết bình thường
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          Positioned(
+            top: 202,
+            left: 70,
+            child: Container(
+              width: width - 100,
+              height: 60,
+              decoration: BoxDecoration(
+
+              ),
+              child: RichText(
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: '+ Chiết khấu ship: ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: getStringNumber(order.shipcost * (order.costBiker.discount/100)) + '.đ (' + order.costBiker.discount.toInt().toString() + '%)', // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.redAccent,
+                        fontWeight: FontWeight.bold, // Để viết bình thường
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          Positioned(
+            top: 228,
             left: 70,
             child: Container(
               width: width - 100,
@@ -289,33 +461,39 @@ class ITEMfood extends StatelessWidget {
                 style: TextStyle(
                     fontFamily: 'arial',
                     fontSize: 15,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.redAccent
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red
                 ),
               ),
             ),
           ),
 
           Positioned(
-            top: 245,
+            top: 255,
             left: 70,
             child: Container(
               width: width - 95,
               height: 40,
               child: ButtonType1(Height: 40, Width: width/4, color: Color.fromARGB(255, 0, 177, 79), radiusBorder: 20, title: acceptText, fontText: 'arial', colorText: Colors.white,
                   onTap: () async {
-                    if (order.status == 'B') {
-                      toastMessage('đang nhận đơn');
-                      await changeShipper(currentAccount);
-                      await changeStatus('C');
-                      toastMessage('đã nhận đơn');
+                    if ((order.cost * (order.costFee.discount/100)) <= currentAccount.totalMoney) {
+                      if (order.status == 'B') {
+                        toastMessage('đang nhận đơn');
+                        await changeShipper(currentAccount);
+                        await changeMoney(currentAccount.totalMoney - (order.cost * (order.costFee.discount/100)));
+                        await changeStatus('C');
+                        toastMessage('đã nhận đơn');
+                      } else {
+                        toastMessage('ví bạn không đủ tiền để nhận đơn này');
+                      }
                     }
+
                   }),
             ),
           ),
 
           Positioned(
-            top: 295,
+            top: 305,
             left: 70,
             child: Container(
               width: width/4,
@@ -329,7 +507,7 @@ class ITEMfood extends StatelessWidget {
           ),
 
           Positioned(
-            top: 295,
+            top: 305,
             left: 70 + width/4 + 2,
             child: Container(
               width: width/4,
@@ -343,7 +521,7 @@ class ITEMfood extends StatelessWidget {
           ),
 
           Positioned(
-            top: 295,
+            top: 305,
             left: 70 + width/2 + 4,
             child: Container(
               width: width/4,

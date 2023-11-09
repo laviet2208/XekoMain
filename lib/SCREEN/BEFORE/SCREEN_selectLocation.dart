@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:xekomain/GENERAL/NormalUser/accountLocation.dart';
 import 'package:xekomain/GENERAL/Tool/Tool.dart';
@@ -15,6 +14,7 @@ import 'package:xekomain/SCREEN/INUSER/SCREEN_MAIN/SCREENmain.dart';
 
 import '../../FINAL/finalClass.dart';
 import '../../GENERAL/NormalUser/Area.dart';
+import '../../GENERAL/Order/Cost.dart';
 import '../../GENERAL/models/autocomplate_prediction.dart';
 import '../../GENERAL/models/place_auto_complate_response.dart';
 import '../../ITEM/ITEMplaceAutoComplete.dart';
@@ -166,6 +166,58 @@ class _SCREENselectLocationState extends State<SCREENselectLocation> {
     } catch (error) {
       print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
       throw error;
+    }
+  }
+
+  Future<void> getBikecost(String id) async {
+    final reference = FirebaseDatabase.instance.reference();
+    DatabaseEvent snapshot = await reference.child('CostFee/' + id + '/Bike').once();
+    final dynamic catchOrderData = snapshot.snapshot.value;
+    if (catchOrderData != null) {
+      Cost cost = Cost.fromJson(catchOrderData);
+      bikeCost.discount = cost.discount;
+      bikeCost.perKMcost = cost.perKMcost;
+      bikeCost.departCost = cost.departCost;
+      bikeCost.departKM = cost.departKM;
+    }
+  }
+
+  Future<void> getCarcost(String id) async {
+    final reference = FirebaseDatabase.instance.reference();
+    DatabaseEvent snapshot = await reference.child('CostFee/' + id + '/Car').once();
+    final dynamic catchOrderData = snapshot.snapshot.value;
+    if (catchOrderData != null) {
+      Cost cost = Cost.fromJson(catchOrderData);
+      carCost.discount = cost.discount;
+      carCost.perKMcost = cost.perKMcost;
+      carCost.departCost = cost.departCost;
+      carCost.departKM = cost.departKM;
+    }
+  }
+
+  Future<void> getFoodcost(String id) async {
+    final reference = FirebaseDatabase.instance.reference();
+    DatabaseEvent snapshot = await reference.child('CostFee/' + id + '/Food').once();
+    final dynamic catchOrderData = snapshot.snapshot.value;
+    if (catchOrderData != null) {
+      Cost cost = Cost.fromJson(catchOrderData);
+      FoodCost.discount = cost.discount;
+      FoodCost.perKMcost = cost.perKMcost;
+      FoodCost.departCost = cost.departCost;
+      FoodCost.departKM = cost.departKM;
+    }
+  }
+
+  Future<void> getSendcost(String id) async {
+    final reference = FirebaseDatabase.instance.reference();
+    DatabaseEvent snapshot = await reference.child('CostFee/' + id + '/Item').once();
+    final dynamic catchOrderData = snapshot.snapshot.value;
+    if (catchOrderData != null) {
+      Cost cost = Cost.fromJson(catchOrderData);
+      ItemCost.discount = cost.discount;
+      ItemCost.perKMcost = cost.perKMcost;
+      ItemCost.departCost = cost.departCost;
+      ItemCost.departKM = cost.departKM;
     }
   }
 
@@ -493,6 +545,10 @@ class _SCREENselectLocationState extends State<SCREENselectLocation> {
                                     child: Text('Tiếp tục'),
                                     onPressed: () async {
                                       await pushData(currentAccount.locationHis);
+                                      await getBikecost(currentAccount.Area);
+                                      await getCarcost(currentAccount.Area);
+                                      await getFoodcost(currentAccount.Area);
+                                      await getSendcost(currentAccount.Area);
                                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => SCREENmain(),),);
                                     },
                                   ),

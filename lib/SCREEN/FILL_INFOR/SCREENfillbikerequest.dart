@@ -1,13 +1,17 @@
+import 'dart:io';
+import 'package:camera/camera.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-
-
+import 'package:image/image.dart' as img;
+import 'package:path_provider/path_provider.dart';
 import '../../FINAL/finalClass.dart';
 import '../../GENERAL/Tool/Tool.dart';
 import '../../GENERAL/request/bikerRequest.dart';
 import '../../GENERAL/utils/utils.dart';
 import '../../OTHER/Button/Buttontype1.dart';
 import '../INUSER/SCREEN_MAIN/SCREENmain.dart';
+import 'CameraPreviewScreen.dart';
 
 class SCREENfillbikerequest extends StatefulWidget {
   const SCREENfillbikerequest({Key? key}) : super(key: key);
@@ -22,7 +26,27 @@ class _SCREENfillbikerequestState extends State<SCREENfillbikerequest> {
   final cmndcontroller = TextEditingController();
   final addresscontroller = TextEditingController();
   final typecontroller = TextEditingController();
+  bool _isCameraOpen = false;
   bool loading = false;
+
+  CameraController? _controller;
+  XFile? _imageFile;
+  XFile? _imageFile1;
+  void _initializeCamera() async {
+    final cameras = await availableCameras();
+    final firstCamera = cameras.first;
+
+    _controller = CameraController(firstCamera, ResolutionPreset.high);
+
+    await _controller!.initialize();
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {});
+  }
+
   Future<void> pushCatchOrder(bikeRequest request) async {
     try {
       DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
@@ -33,6 +57,100 @@ class _SCREENfillbikerequestState extends State<SCREENfillbikerequest> {
       throw error;
     }
   }
+
+  void _takePicture() async {
+    if (!_controller!.value.isInitialized) {
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CameraPreviewScreen(controller: _controller!),
+      ),
+    ).then((imagePath) {
+      if (imagePath != null) {
+        setState(() {
+          _imageFile = XFile(imagePath);
+        });
+      }
+    });
+  }
+
+  void _takePicture1() async {
+    if (!_controller!.value.isInitialized) {
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CameraPreviewScreen(controller: _controller!),
+      ),
+    ).then((imagePath) {
+      if (imagePath != null) {
+        setState(() {
+          _imageFile1 = XFile(imagePath);
+        });
+      }
+    });
+  }
+
+  void uploadImageToFirebaseStorage(XFile? imageFile, int type) async {
+    if (imageFile == null) {
+      print('XFile không tồn tại hoặc không hợp lệ.');
+      return;
+    }
+
+    // Kiểm tra xem đường dẫn của XFile trỏ đến tệp hợp lệ hay không
+    final file = File(imageFile.path);
+    if (!file.existsSync()) {
+      print('Tệp ảnh không tồn tại hoặc không hợp lệ.');
+      return;
+    }
+
+    // Tạo một tham chiếu đến thư mục CCCD trong Firebase Storage
+    final ref = FirebaseStorage.instance.ref().child('CCCD');
+
+    // Tạo tên file ngẫu nhiên hoặc sử dụng tên file tùy ý
+    final fileName = (type == 1) ? currentAccount.id + '_T' : currentAccount.id + '_S';
+
+    try {
+      // Đọc dữ liệu của tệp ảnh
+      final fileData = File(imageFile.path);
+
+      // Chuyển đổi tệp ảnh thành định dạng PNG
+      final originalImage = img.decodeImage(fileData.readAsBytesSync());
+      final pngImage = img.encodePng(originalImage!);
+
+      // Tạo một tệp ảnh tạm thời với định dạng PNG
+      final tempFile = File('${(await getTemporaryDirectory()).path}/$fileName.png');
+      tempFile.writeAsBytesSync(pngImage);
+
+      // Tải ảnh lên Firebase Storage
+      await ref.child('$fileName.png').putFile(tempFile);
+
+      // Xóa tệp ảnh tạm thời
+      tempFile.delete();
+
+      print('Đã tải ảnh lên Firebase Storage');
+    } catch (e) {
+      print('Lỗi khi tải ảnh lên Firebase Storage: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeCamera();
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -431,6 +549,118 @@ class _SCREENfillbikerequestState extends State<SCREENfillbikerequest> {
 
             Padding(
               padding: EdgeInsets.only(left: 10, right: 10),
+              child: Container(
+                height: 200,
+                child: Stack(
+                  children:<Widget>[
+                    Positioned(
+                      top: 10,
+                      left: 0,
+                      child: GestureDetector(
+                        child: Container(
+                          width: (screenWidth - 30 - 20) / 2,
+                          height: 160,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 2,
+                              color: Color.fromARGB(255, 244, 164, 84),
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                            child: _imageFile1 == null
+                                ? Text(
+                              '+',
+                              style: TextStyle(
+                                fontSize: 24,
+                                color: Color.fromARGB(255, 244, 164, 84),
+                              ),
+                            ): Image.file(File(_imageFile1!.path)),
+                          ),
+                        ),
+
+                        onTap: () {
+                          _takePicture1();
+                        },
+                      ),
+                    ),
+
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      child: Container(
+                        width: (screenWidth - 30 -20)/2,
+                        alignment: Alignment.center,
+                        child: Text(
+                          textAlign: TextAlign.center,
+                          'Mặt trước CCCD',
+                          style: TextStyle(
+                            fontFamily: 'arial',
+                            color: Colors.black,
+                            fontSize: 13
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    Positioned(
+                      top: 10,
+                      right: 0,
+                        child: GestureDetector(
+                          child: Container(
+                            width: (screenWidth - 30 - 20) / 2,
+                            height: 160,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                width: 2,
+                                color: Color.fromARGB(255, 244, 164, 84),
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(
+                              child: _imageFile == null
+                                  ? Text(
+                                '+',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  color: Color.fromARGB(255, 244, 164, 84),
+                                ),
+                              ): Image.file(File(_imageFile!.path)),
+                            ),
+                          ),
+
+                          onTap: () {
+                            _takePicture();
+                          },
+                        ),
+                    ),
+
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: (screenWidth - 30 -20)/2,
+                        alignment: Alignment.center,
+                        child: Text(
+                          textAlign: TextAlign.center,
+                          'Mặt sau CCCD',
+                          style: TextStyle(
+                              fontFamily: 'arial',
+                              color: Colors.black,
+                              fontSize: 13
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            Container(height: 30,),
+
+            Padding(
+              padding: EdgeInsets.only(left: 10, right: 10),
               child: ButtonType1(Height: 60, Width: screenWidth-20, color: Color.fromARGB(255, 244, 164, 84), radiusBorder: 30, title: 'Gửi yêu cầu', fontText: 'arial', colorText: Colors.white,
                   onTap: () async{
                      setState(() {
@@ -447,8 +677,10 @@ class _SCREENfillbikerequestState extends State<SCREENfillbikerequest> {
                              address: addresscontroller.text.toString(),
                              type: int.parse(typecontroller.text.toString()),
                              owner: currentAccount);
-
+                         uploadImageToFirebaseStorage(_imageFile, 1);
+                         uploadImageToFirebaseStorage(_imageFile1, 2);
                          await pushCatchOrder(rq);
+
                          setState(() {
                            loading = false;
                          });

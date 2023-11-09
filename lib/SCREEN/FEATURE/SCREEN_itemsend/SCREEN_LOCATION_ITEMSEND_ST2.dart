@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:xekomain/GENERAL/Order/itemsendOrder.dart';
@@ -41,18 +42,21 @@ class _SCREENlocationitemsendst2State extends State<SCREENlocationitemsendst2> {
   final Typecontroller = TextEditingController();
   final Feecontroller = TextEditingController();
   double cost = 0;
+  bool isLoading = false;
+  String voucherMoney = '0đ';
+  final vouchercontroller = TextEditingController();
 
   bool bookingloading = false;
   bool voucherloading = false;
 
   int getCost(double distance) {
     int cost = 0;
-    if (distance >= 2.0) {
-      cost += 20000; // Giá cước cho 2km đầu tiên (10.000 VND/km * 2km)
-      distance -= 2.0; // Trừ đi 2km đã tính giá cước
-      cost = cost + ((distance - 2) * 5000).toInt();
+    if (distance >= ItemCost.departKM) {
+      cost += ItemCost.departKM.toInt() * ItemCost.departCost.toInt(); // Giá cước cho 2km đầu tiên (10.000 VND/km * 2km)
+      distance -= ItemCost.departKM; // Trừ đi 2km đã tính giá cước
+      cost = cost + ((distance - ItemCost.departKM) * ItemCost.perKMcost).toInt();
     } else {
-      cost += (distance * 10000).toInt(); // Giá cước cho khoảng cách dưới 2km
+      cost += (distance * ItemCost.departCost).toInt(); // Giá cước cho khoảng cách dưới 2km
     }
     return cost;
   }
@@ -60,26 +64,87 @@ class _SCREENlocationitemsendst2State extends State<SCREENlocationitemsendst2> {
   Future<void> pushitemSendOrder(itemsendOrder itemsend) async {
     try {
       DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
-      await databaseRef.child('itemsendOrder').child(itemsend.id).set(itemsend.toJson());
+      await databaseRef.child('Order/itemsendOrder').child(itemsend.id).set(itemsend.toJson());
       print('Đẩy Order thành công');
       setState(() {
         bookingloading = false;
       });
-      Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENmain()));
+      if (mounted) {
+        toastMessage('Đặt đơn thành công , vui lòng kiểm tra lịch sử');
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SCREENmain()));
+      }
     } catch (error) {
       print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
       throw error;
     }
   }
 
-  Future<void> pushVoucherdata(List<Voucher> list) async {
+  void VoucherChange() {
+    if (chosenvoucher.id != '') {
+      voucherMoney = (chosenvoucher.type == 0) ? (getStringNumber(chosenvoucher.totalmoney) + 'đ') : (getStringNumber(chosenvoucher.totalmoney) + '%');
+    } else {
+      voucherMoney = (chosenvoucher.type == 0) ? '0đ' : '0%';
+    }
+  }
+
+  Future<void> getData1(String id) async {
+    final reference = FirebaseDatabase.instance.reference();
+    await reference.child("VoucherStorage/" + id).onValue.listen((event) {
+      final dynamic orders = event.snapshot.value;
+      if (orders != null) {
+        Voucher a = Voucher.fromJson(orders);
+        if (a.useCount < a.maxCount) {
+          if (compareTimes(Time(second: DateTime.now().second, minute: DateTime.now().minute, hour: DateTime.now().hour, day: DateTime.now().day, month: DateTime.now().month, year: DateTime.now().year), a.endTime) && compareTimes(a.startTime, Time(second: DateTime.now().second, minute: DateTime.now().minute, hour: DateTime.now().hour, day: DateTime.now().day, month: DateTime.now().month, year: DateTime.now().year))) {
+            if (a.mincost <= cost) {
+              if (a.totalmoney < cost) {
+                if (a.LocationId == currentAccount.Area) {
+                  if (a.Otype == '1') {
+                    chosenvoucher.totalmoney = a.totalmoney;
+                    chosenvoucher.id = a.id;
+                    chosenvoucher.startTime = a.startTime;
+                    chosenvoucher.endTime = a.endTime;
+                    chosenvoucher.LocationId = a.LocationId;
+                    chosenvoucher.tenchuongtrinh = a.tenchuongtrinh;
+                    chosenvoucher.useCount = a.useCount;
+                    VoucherChange();
+                    Navigator.of(context).pop();
+                    setState(() {
+
+                    });
+                  } else {
+                    toastMessage('Voucher không áp dụng');
+                  }
+                } else {
+                  toastMessage('Voucher không áp dụng cho khu vực này');
+                }
+              } else {
+                toastMessage('Giá trị đơn phái lớn hơn số tiền giảm');
+              }
+            } else {
+              toastMessage('Đơn của bạn chưa đủ điều kiện áp dụng');
+            }
+          } else {
+            toastMessage('Voucher không trong thời hạn dùng');
+          }
+        } else {
+          toastMessage('Voucher này đã hết lượt dùng');
+        }
+
+      }
+
+      setState(() {
+
+      });
+    });
+  }
+
+  Future<void> pushVoucherData(int count, String id) async {
     try {
       DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
-      await databaseRef.child('normalUser/' + currentAccount.id + "/voucherList").remove();
-      if (list.isNotEmpty) {
-        for (int i = 0 ; i < list.length ; i++) {
-          await databaseRef.child('normalUser/' + currentAccount.id + "/voucherList/" + i.toString()).set(list[i].toJson());
-        }
+      await databaseRef.child("VoucherStorage/" + id).child('useCount').set(count);
+      if (mounted) {
+        toastMessage('Đặt đơn thành công , vui lòng kiểm tra lịch sử');
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SCREENmain()));
       }
     } catch (error) {
       print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
@@ -102,14 +167,10 @@ class _SCREENlocationitemsendst2State extends State<SCREENlocationitemsendst2> {
       setlocation = widget.diemdon.firstText;
     }
 
-    cost = getCost(widget.Distance).toDouble();
-
-    if (chosenvoucher.id != 'NA') {
-      cost = cost - chosenvoucher.totalmoney;
-    }
   }
   @override
   Widget build(BuildContext context) {
+    cost = getCost(widget.Distance).toDouble();
     currentReceiver.location = widget.diemtra;
     if (currentReceiver.name != "NA") {
       receiverManText = currentReceiver.name + '-' + currentReceiver.phoneNum;
@@ -1175,6 +1236,20 @@ class _SCREENlocationitemsendst2State extends State<SCREENlocationitemsendst2> {
                 ),
 
                 Positioned(
+                  bottom: screenHeight/6,
+                  right: 18,
+                  child: Text(
+                    "- " + voucherMoney,
+                    style: TextStyle(
+                        fontFamily: 'arial',
+                        color: Color.fromARGB(255, 244, 164, 84),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14
+                    ),
+                  ),
+                ),
+
+                Positioned(
                   bottom: 60,
                   left: 18,
                   child: Container(
@@ -1182,42 +1257,43 @@ class _SCREENlocationitemsendst2State extends State<SCREENlocationitemsendst2> {
                     height: 60,
                     child: ButtonType1(Height: 60, Width: screenWidth/2 - 28, color: Color.fromARGB(255, 244, 164, 84), radiusBorder: 30, title: 'Đặt đơn', fontText: 'arial', colorText: Colors.white,
                         onTap: () async {
-                           setState(() {
-                             bookingloading = true;
-                           });
+                           if (currentReceiver.name != 'NA') {
+                             if (currentitemdetail.type != 'NA') {
+                               setState(() {
+                                 bookingloading = true;
+                               });
 
-                           if (chosenvoucher.id != 'NA') {
-                             List<Voucher> newlist = [];
-                             for (int i = 0 ; i < currentAccount.voucherList.length ; i++) {
-                               if (chosenvoucher.id != currentAccount.voucherList[i].id) {
-                                 newlist.add(currentAccount.voucherList[i]);
+                               itemsendOrder itemorder = itemsendOrder(
+                                   id: generateID(20),
+                                   cost: cost.toDouble() - chosenvoucher.totalmoney,
+                                   owner: currentAccount,
+                                   shipper: accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: ''),
+                                   status: 'A',
+                                   endTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
+                                   startTime: getCurrentTime(),
+                                   cancelTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
+                                   receiveTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
+                                   locationset: widget.diemdon,
+                                   receiver: currentReceiver,
+                                   itemdetails: currentitemdetail,
+                                   voucher: chosenvoucher,
+                                   costFee: ItemCost
+                               );
+                               if (chosenvoucher.id != '') {
+                                 await pushVoucherData(chosenvoucher.useCount + 1, chosenvoucher.id);
                                }
+                               await pushitemSendOrder(itemorder);
+                             } else {
+                               toastMessage('Bạn vui lòng hoàn thiện thông tin hàng hóa');
                              }
-                             currentReceiver.changeToDefault();
-                             currentitemdetail.changeToDefault();
-                             await pushVoucherdata(newlist);
+                           } else {
+                             toastMessage('Bạn vui lòng hoàn thiện thông tin người nhận');
                            }
-
-                           itemsendOrder itemorder = itemsendOrder(
-                               id: generateID(20),
-                               cost: cost.toDouble(),
-                               owner: currentAccount,
-                               shipper: accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: ''),
-                               status: 'A',
-                               endTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
-                               startTime: getCurrentTime(),
-                               cancelTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
-                               receiveTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
-                               locationset: widget.diemdon,
-                               receiver: currentReceiver,
-                               itemdetails: currentitemdetail
-                           );
-
-                           await pushitemSendOrder(itemorder);
                         }, loading: bookingloading),
                   ),
                 ),
 
+                //Nút ưu đãi
                 Positioned(
                   bottom: 60,
                   right: 18,
@@ -1226,8 +1302,112 @@ class _SCREENlocationitemsendst2State extends State<SCREENlocationitemsendst2> {
                     height: 60,
                     child: ButtonType1(Height: 60, Width: screenWidth/2 - 28, color: Color.fromARGB(255, 255, 247, 237), radiusBorder: 30, title: 'Ưu đãi', fontText: 'arial', colorText: Color.fromARGB(255, 255, 123, 64),
                         onTap: () {
+                          vouchercontroller.clear();
+                          chosenvoucher.changeToDefault();
+                          VoucherChange();
+                          setState(() {
 
-                        }, loading: voucherloading),
+                          });
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  content: Container(
+                                      width: screenWidth,
+                                      height: 90,
+                                      child: Stack(
+                                        children: <Widget>[
+                                          Positioned(
+                                            top: 0,
+                                            left: 0,
+                                            child: Container(
+                                              height: 15,
+                                              child: AutoSizeText(
+                                                'Nhập mã voucher',
+                                                style: TextStyle(
+                                                    fontSize: 100,
+                                                    color: Color.fromARGB(255, 244, 164, 84),
+                                                    fontWeight: FontWeight.bold
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+
+                                          Positioned(
+                                            top: 50,
+                                            left: 0,
+                                            child: Container(
+                                              height: 40,
+                                              width: screenWidth/1.5,
+                                              decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  border: Border.all(
+                                                      color: Colors.orange,
+                                                      width: 1
+                                                  )
+                                              ),
+                                              child: Padding(
+                                                padding: EdgeInsets.only(left: 10),
+                                                child: Form(
+                                                  child: TextFormField(
+                                                    controller: vouchercontroller,
+                                                    style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontFamily: 'arial',
+                                                    ),
+
+                                                    decoration: InputDecoration(
+                                                      border: InputBorder.none,
+                                                      hintText: 'Nhập mã voucher',
+                                                      hintStyle: TextStyle(
+                                                        color: Colors.grey,
+                                                        fontFamily: 'arial',
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                  ),
+
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: isLoading ? CircularProgressIndicator() : Text('Xác nhận'),
+                                      onPressed: isLoading ? null : () async {
+                                        setState(() {
+                                          isLoading = true;
+                                        });
+                                        if (vouchercontroller.text.isNotEmpty) {
+                                          await getData1(vouchercontroller.text.toString());
+                                        } else {
+                                          toastMessage('Vui lòng nhập mã');
+                                        }
+                                        setState(() {
+                                          isLoading = false; // Dừng hiển thị loading
+                                        });
+                                      },
+                                    ),
+
+                                    TextButton(
+                                      child: Text('Hủy'),
+                                      onPressed: () {
+                                        chosenvoucher.changeToDefault();
+                                        vouchercontroller.clear();
+                                        VoucherChange();
+                                        Navigator.of(context).pop();
+                                        setState(() {
+
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                );
+                              });
+                        },
+                        loading: voucherloading),
                   ),
                 )
               ],

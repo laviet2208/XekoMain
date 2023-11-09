@@ -10,9 +10,11 @@ import '../../../GENERAL/Tool/Tool.dart';
 import '../../../GENERAL/utils/utils.dart';
 import '../../INUSER/PAGE_HOME/Tính khoảng cách.dart';
 import '../Khung tăng giảm số lượng.dart';
+import '../SCREENshopview.dart';
 class ITEMfoodIndirect extends StatefulWidget {
   final String id;
-  const ITEMfoodIndirect({Key? key, required this.id}) : super(key: key);
+  final VoidCallback ontap;
+  const ITEMfoodIndirect({Key? key, required this.id, required this.ontap}) : super(key: key);
 
   @override
   State<ITEMfoodIndirect> createState() => _ITEMrestaurantIndirectState();
@@ -284,14 +286,22 @@ class _ITEMrestaurantIndirectState extends State<ITEMfoodIndirect> {
                               for (int i = 0 ; i < quantitySelector.data.second ; i++) {
                                 cartList.add(product);
                               }
+                              setState(() {
+
+                              });
                               toastMessage('Bạn đã thêm ' + quantitySelector.data.second.toString() + " " + product.name);
+                              widget.ontap();
                               Navigator.of(context).pop();
                             } else {
                               if (product.owner.id == cartList[0].owner.id) {
                                 for (int i = 0 ; i < quantitySelector.data.second ; i++) {
                                   cartList.add(product);
                                 }
+                                setState(() {
+
+                                });
                                 toastMessage('Bạn đã thêm ' + quantitySelector.data.second.toString() + " " + product.name);
+                                widget.ontap();
                                 Navigator.of(context).pop();
                               } else {
                                 toastMessage('Bạn không thể thêm món từ 2 nhà hàng khác nhau');

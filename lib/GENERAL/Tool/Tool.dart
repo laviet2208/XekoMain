@@ -26,7 +26,7 @@ String getTimeString(Time time) {
 
 //chuyển 1 biến time qua String dưới dạng giờ phút giây ngày tháng năm
 String getAllTimeString(Time time) {
-  return time.hour.toString() + ":" + time.minute.toString() + ":" + time.second.toString() + "  /" + time.day.toString() + "/" + time.month.toString() + "/" + time.year.toString();
+  return time.hour.toString() + ":" + time.minute.toString() + ":" + time.second.toString() + " " + time.day.toString() + "/" + time.month.toString() + "/" + time.year.toString();
 }
 
 //chuyển 1 biến double qua string , phân tách hàng nghìn
@@ -77,6 +77,45 @@ String compactString(int n, String str) {
   }
   return str.substring(0, n) + "...";
 }
+
+bool compareTimes(Time time1, Time time2) {
+  if (time1.year < time2.year) {
+    return true;
+  } else if (time1.year > time2.year) {
+    return false;
+  }
+
+  if (time1.month < time2.month) {
+    return true;
+  } else if (time1.month > time2.month) {
+    return false;
+  }
+
+  if (time1.day < time2.day) {
+    return true;
+  } else if (time1.day > time2.day) {
+    return false;
+  }
+
+  if (time1.hour < time2.hour) {
+    return true;
+  } else if (time1.hour > time2.hour) {
+    return false;
+  }
+
+  if (time1.minute < time2.minute) {
+    return true;
+  } else if (time1.minute > time2.minute) {
+    return false;
+  }
+
+  if (time1.second < time2.second) {
+    return true;
+  }
+
+  return false;
+}
+
 
 Time getCurrentTime() {
   DateTime now = DateTime.now();

@@ -35,7 +35,7 @@ class _PAGEhomeState extends State<ScreenWait> {
 
   Future<bool> getData(String id) async {
     final reference = FirebaseDatabase.instance.reference();
-    DatabaseEvent snapshot = await reference.child('catchOrder').once();
+    DatabaseEvent snapshot = await reference.child('Order/catchOrder').once();
     bool ch = false;
     final dynamic catchOrderData = snapshot.snapshot.value;
     if (catchOrderData != null) {

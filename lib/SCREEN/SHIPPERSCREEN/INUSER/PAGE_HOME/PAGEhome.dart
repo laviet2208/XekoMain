@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:xekomain/FINAL/finalClass.dart';
 import '../../../../GENERAL/Order/catchOrder.dart';
 import '../../ITEM/ITEMcatch.dart';
 
@@ -16,13 +17,13 @@ class _PAGEhomeState extends State<PAGEhome> {
   
     void getData() {
     final reference = FirebaseDatabase.instance.reference();
-    reference.child("catchOrder").onValue.listen((event) {
+    reference.child("Order/catchOrder").onValue.listen((event) {
       orderList.clear();
       final dynamic orders = event.snapshot.value;
       orders.forEach((key, value) {
         catchOrder catchorder = catchOrder.fromJson(value);
 
-        if (catchorder.status == "A") {
+        if (catchorder.status == "A" && catchorder.owner.Area == currentAccount.Area && currentAccount.type == catchorder.type) {
           orderList.add(catchorder);
         }
       });

@@ -21,7 +21,17 @@ class ITEMcatch extends StatelessWidget {
     Future<void> changeStatus(String sta) async {
       try {
         DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
-        await databaseRef.child('catchOrder/' + order.id + '/status').set(sta);
+        await databaseRef.child('Order/catchOrder/' + order.id + '/status').set(sta);
+      } catch (error) {
+        print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
+        throw error;
+      }
+    }
+
+    Future<void> changeMoney(double money) async {
+      try {
+        DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
+        await databaseRef.child('normalUser/' + currentAccount.id + '/totalMoney').set(money);
       } catch (error) {
         print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
         throw error;
@@ -31,7 +41,7 @@ class ITEMcatch extends StatelessWidget {
     Future<void> changeShipper(accountNormal ship) async {
       try {
         DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
-        await databaseRef.child('catchOrder/' + order.id + '/shipper').set(ship.toJson());
+        await databaseRef.child('Order/catchOrder/' + order.id + '/shipper').set(ship.toJson());
       } catch (error) {
         print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
         throw error;
@@ -150,7 +160,7 @@ class ITEMcatch extends StatelessWidget {
 
               ),
               child: Text(
-                'Chuyến đi tới : ' + destination,
+                compactString(40, 'Chuyến đi tới: ' + destination),
                 style: TextStyle(
                     fontFamily: 'arial',
                     fontSize: 15,
@@ -162,7 +172,7 @@ class ITEMcatch extends StatelessWidget {
           ),
 
           Positioned(
-            top: 66,
+            top: 34,
             left: 70,
             child: Container(
               width: width/3*2,
@@ -170,20 +180,35 @@ class ITEMcatch extends StatelessWidget {
               decoration: BoxDecoration(
 
               ),
-              child: Text(
-                'Thời gian đặt: ' + getAllTimeString(order.startTime),
-                style: TextStyle(
-                    fontFamily: 'arial',
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.grey
+              child: RichText(
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'Thời gian đặt : ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: getAllTimeString(order.startTime), // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.black,
+                        fontWeight: FontWeight.normal, // Để viết bình thường
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
 
           Positioned(
-            top: 90,
+            top: 58,
             left: 70,
             child: Container(
               width: width - 80,
@@ -191,20 +216,71 @@ class ITEMcatch extends StatelessWidget {
               decoration: BoxDecoration(
 
               ),
-              child: Text(
-                '+Số điện thoại liên lạc : ' + order.owner.phoneNum ,
-                style: TextStyle(
-                    fontFamily: 'arial',
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.grey
+              child: RichText(
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: '+ SĐT khách hàng: ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: (order.owner.phoneNum[0] == '0') ? order.owner.phoneNum : ('0' + order.owner.phoneNum), // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.redAccent,
+                        fontWeight: FontWeight.normal, // Để viết bình thường
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
 
           Positioned(
-            top: 115,
+            top: 82,
+            left: 70,
+            child: Container(
+              width: width - 80,
+              height: 60,
+              decoration: BoxDecoration(
+
+              ),
+              child: RichText(
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: '+ Đón tại: ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: compactString(25, locationSet), // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.deepPurple,
+                        fontWeight: FontWeight.normal, // Để viết bình thường
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          Positioned(
+            top: 106,
             left: 70,
             child: Container(
               width: width - 100,
@@ -212,20 +288,35 @@ class ITEMcatch extends StatelessWidget {
               decoration: BoxDecoration(
 
               ),
-              child: Text(
-                '+ Đón khách tại : ' + locationSet ,
-                style: TextStyle(
-                    fontFamily: 'arial',
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.grey
+              child: RichText(
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: '+ Giá trị đơn: ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: getStringNumber(order.cost) + '.đ', // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.blueAccent,
+                        fontWeight: FontWeight.bold, // Để viết bình thường
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
 
           Positioned(
-            top: 175,
+            top: 130,
             left: 70,
             child: Container(
               width: width - 100,
@@ -233,13 +324,28 @@ class ITEMcatch extends StatelessWidget {
               decoration: BoxDecoration(
 
               ),
-              child: Text(
-                '+ Giá trị đơn : ' + getStringNumber(order.cost) + 'đ' ,
-                style: TextStyle(
-                    fontFamily: 'arial',
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.grey
+              child: RichText(
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: '+ Chiết khấu: ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: getStringNumber(order.cost * (order.costFee.discount/100)) + '.đ (' + order.costFee.discount.toInt().toString() + '%)', // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.blueAccent,
+                        fontWeight: FontWeight.bold, // Để viết bình thường
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -253,12 +359,18 @@ class ITEMcatch extends StatelessWidget {
               height: 40,
               child: ButtonType1(Height: 40, Width: width - 95, color: Color.fromARGB(255, 0, 177, 79), radiusBorder: 20, title: acceptText, fontText: 'arial', colorText: Colors.white,
                   onTap: () async {
-                    if (order.status == 'A') {
-                      toastMessage('đang nhận đơn');
-                      await changeShipper(currentAccount);
-                      await changeStatus('B');
-                      toastMessage('đã nhận đơn');
+                    if ((order.cost * (order.costFee.discount/100)) <= currentAccount.totalMoney) {
+                      if (order.status == 'A') {
+                        toastMessage('đang nhận đơn');
+                        await changeShipper(currentAccount);
+                        await changeStatus('B');
+                        await changeMoney(currentAccount.totalMoney - (order.cost * (order.costFee.discount/100)));
+                        toastMessage('đã nhận đơn');
+                      }
+                    } else {
+                      toastMessage('ví bạn không đủ tiền để nhận đơn này');
                     }
+
                   }),
             ),
           ),
@@ -273,7 +385,7 @@ class ITEMcatch extends StatelessWidget {
               height: 40,
               child: ButtonType1(Height: 40, Width: width/4, color: Colors.blueAccent, radiusBorder: 20, title: 'Số điện thoại', fontText: 'arial', colorText: Colors.white,
                   onTap: () {
-                    copyToClipboard(order.owner.phoneNum);
+                    copyToClipboard((order.owner.phoneNum[0] == '0') ? order.owner.phoneNum : ('0' + order.owner.phoneNum));
                     toastMessage('đã copy số điện thoại');
                   }),
             ),

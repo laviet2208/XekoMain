@@ -1,6 +1,8 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 import '../../FINAL/finalClass.dart';
+import '../../GENERAL/Product/Voucher.dart';
 import '../INUSER/SCREEN_MAIN/SCREENmain.dart';
 import 'ITEMvoucherview.dart';
 
@@ -12,6 +14,30 @@ class SCREENvoucherview extends StatefulWidget {
 }
 
 class _SCREENvoucherviewState extends State<SCREENvoucherview> {
+  final List<Voucher> voucherList = [];
+  void getVoucherData() {
+    final reference = FirebaseDatabase.instance.reference();
+    reference.child("VoucherStorage").onValue.listen((event) {
+      voucherList.clear();
+      final dynamic restaurant = event.snapshot.value;
+      restaurant.forEach((key, value) {
+        Voucher voucher = Voucher.fromJson(value);
+        if (voucher.LocationId == currentAccount.Area) {
+          voucherList.add(voucher);
+        }
+      });
+      setState(() {
+
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getVoucherData();
+  }
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -44,7 +70,7 @@ class _SCREENvoucherviewState extends State<SCREENvoucherview> {
                               height: screenHeight/6,
                               width: screenWidth,
                               decoration: BoxDecoration(
-                                  color: Color.fromARGB(255, 0, 82, 57)
+                                  color: Color.fromARGB(255, 244, 164, 84)
                               ),
 
                               child: Stack(
@@ -78,21 +104,6 @@ class _SCREENvoucherviewState extends State<SCREENvoucherview> {
                                       ),
                                     ),
                                   ),
-
-                                  Positioned(
-                                    right: 0,
-                                    bottom: 40,
-                                    child: Container(
-                                      width: screenWidth/3,
-                                      height: screenWidth/6,
-                                      decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: AssetImage('assets/image/stick.png')
-                                          )
-                                      ),
-                                    ),
-                                  )
                                 ],
                               ),
                             ),
@@ -140,7 +151,7 @@ class _SCREENvoucherviewState extends State<SCREENvoucherview> {
                                       top: 20,
                                       left: 50,
                                       child: Text(
-                                        'Voucher của tôi',
+                                        'Kho voucher Xeko',
                                         style: TextStyle(
                                           fontSize: 20,
                                           fontFamily: 'arial',
@@ -168,12 +179,12 @@ class _SCREENvoucherviewState extends State<SCREENvoucherview> {
 
                           ),
                           child: GridView.builder(
-                            itemCount: currentAccount.voucherList.length,
+                            itemCount: voucherList.length,
                             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 1, // số phần tử trên mỗi hàng
                               mainAxisSpacing: 0, // khoảng cách giữa các hàng
                               crossAxisSpacing: 0, // khoảng cách giữa các cột
-                              childAspectRatio: 2.3, // tỷ lệ chiều rộng và chiều cao
+                              childAspectRatio: 3.2, // tỷ lệ chiều rộng và chiều cao
                             ),
                             itemBuilder: (context, index) {
                               return Padding(
@@ -182,7 +193,7 @@ class _SCREENvoucherviewState extends State<SCREENvoucherview> {
                                   onTap: () {
 
                                   },
-                                  child: ITENvoucherview(voucher: currentAccount.voucherList[index], width: screenWidth - 20, height: screenWidth/2,),
+                                  child: ITENvoucherview(voucher: voucherList[index], width: screenWidth - 20, height: screenWidth/2,),
                                 ),
                               );
                             },

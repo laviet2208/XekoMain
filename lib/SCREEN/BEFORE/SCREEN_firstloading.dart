@@ -35,6 +35,8 @@ class _SCREENfirstloadingState extends State<SCREENfirstloading> {
             Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENselectLocation()));
           } else if (currentAccount.status == 1 && currentAccount.type == 2) {
             Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENmainshipping()));
+          } else if (currentAccount.status == 1 && currentAccount.type == 3) {
+            Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENmainshipping()));
           }
         }
       }

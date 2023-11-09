@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -8,12 +9,14 @@ import 'package:xekomain/FINAL/finalClass.dart';
 import 'package:xekomain/GENERAL/Order/foodOrder.dart';
 import 'package:xekomain/GENERAL/Tool/Tool.dart';
 import 'package:xekomain/OTHER/Button/Buttontype1.dart';
+import 'package:xekomain/SCREEN/INUSER/SCREEN_MAIN/SCREENmain.dart';
 import 'package:xekomain/SCREEN/RESTAURANT/SCREENshopmain.dart';
 
 import '../../../GENERAL/NormalUser/accountLocation.dart';
 import '../../../GENERAL/NormalUser/accountNormal.dart';
 import '../../../GENERAL/Product/Voucher.dart';
 import '../../../GENERAL/Tool/Time.dart';
+import '../../../GENERAL/utils/utils.dart';
 import '../../VOUCHER/SCREENvoucherchosen.dart';
 
 class SCREENlocationfood1 extends StatefulWidget {
@@ -28,6 +31,7 @@ class SCREENlocationfood1 extends StatefulWidget {
 
 class _SCREENlocationbikest2State extends State<SCREENlocationfood1> {
   late GoogleMapController mapController;
+  final vouchercontroller = TextEditingController();
   double _originLatitude = 0, _originLongitude = 0;
   double _destLatitude = 0, _destLongitude = 0;
   Map<MarkerId, Marker> markers = {};
@@ -37,6 +41,8 @@ class _SCREENlocationbikest2State extends State<SCREENlocationfood1> {
   String googleAPiKey = "AIzaSyBsVQaVVMXw-y3QgvCWwJe02FWkhqP_wRA";
   bool Loading1 = false;
   double total = 0;
+  bool isLoading = false;
+  String voucherMoney = '0đ';
 
   void _onMapCreated(GoogleMapController controller) async {
     mapController = controller;
@@ -75,22 +81,98 @@ class _SCREENlocationbikest2State extends State<SCREENlocationfood1> {
 
   int getCost(double distance) {
     int cost = 0;
-    if (distance >= 2.0) {
-      cost += 20000; // Giá cước cho 2km đầu tiên (10.000 VND/km * 2km)
-      distance -= 2.0; // Trừ đi 2km đã tính giá cước
-      cost = cost + ((distance - 2) * 5000).toInt();
+    if (distance >= FoodCost.departKM) {
+      cost += FoodCost.departKM.toInt() * FoodCost.departCost.toInt();
+      distance -= FoodCost.departKM;
+      cost = cost + ((distance - FoodCost.departKM) * FoodCost.perKMcost).toInt();
     } else {
-      cost += (distance * 10000).toInt(); // Giá cước cho khoảng cách dưới 2km
+      cost += (distance * FoodCost.departCost).toInt();
     }
     return cost;
   }
 
+  void VoucherChange() {
+    if (chosenvoucher.id != '') {
+      voucherMoney = (chosenvoucher.type == 0) ? (getStringNumber(chosenvoucher.totalmoney) + 'đ') : (getStringNumber(chosenvoucher.totalmoney) + '%');
+    } else {
+      voucherMoney = (chosenvoucher.type == 0) ? '0đ' : '0%';
+    }
+  }
+
+  Future<void> getData1(String id) async {
+    final reference = FirebaseDatabase.instance.reference();
+    await reference.child("VoucherStorage/" + id).onValue.listen((event) {
+      final dynamic orders = event.snapshot.value;
+      if (orders != null) {
+        Voucher a = Voucher.fromJson(orders);
+        if (a.useCount < a.maxCount) {
+          if (compareTimes(Time(second: DateTime.now().second, minute: DateTime.now().minute, hour: DateTime.now().hour, day: DateTime.now().day, month: DateTime.now().month, year: DateTime.now().year), a.endTime) && compareTimes(a.startTime, Time(second: DateTime.now().second, minute: DateTime.now().minute, hour: DateTime.now().hour, day: DateTime.now().day, month: DateTime.now().month, year: DateTime.now().year))) {
+            if (a.mincost <= getCost(widget.Distance)) {
+              if (a.totalmoney < getCost(widget.Distance)) {
+                if (a.LocationId == currentAccount.Area) {
+                  if (a.Otype == '1' || a.Otype == cartList[0].id) {
+                    chosenvoucher.totalmoney = a.totalmoney;
+                    chosenvoucher.id = a.id;
+                    chosenvoucher.startTime = a.startTime;
+                    chosenvoucher.endTime = a.endTime;
+                    chosenvoucher.LocationId = a.LocationId;
+                    chosenvoucher.tenchuongtrinh = a.tenchuongtrinh;
+                    chosenvoucher.useCount = a.useCount;
+                    VoucherChange();
+                    Navigator.of(context).pop();
+                    setState(() {
+
+                    });
+                  } else {
+                    toastMessage('Voucher không áp được cho nhà hàng này');
+                  }
+                } else {
+                  toastMessage('Voucher không áp dụng cho khu vực này');
+                }
+              } else {
+                toastMessage('Giá trị đơn phái lớn hơn số tiền giảm');
+              }
+            } else {
+              toastMessage('Đơn của bạn chưa đủ điều kiện áp dụng');
+            }
+          } else {
+            toastMessage('Voucher không trong thời hạn dùng');
+          }
+        } else {
+          toastMessage('Voucher này đã hết lượt dùng');
+        }
+
+      }
+
+      setState(() {
+
+      });
+    });
+  }
+
   Future<void> pushfoodOrder(foodOrder foodorder) async {
     try {
+        DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
+        await databaseRef.child('Order/foodOrder').child(foodorder.id).set(foodorder.toJson());
+        cartList.clear();
+        if (mounted) {
+          toastMessage('Đặt đơn thành công , vui lòng kiểm tra lịch sử');
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SCREENmain()));
+        }
+    } catch (error) {
+      print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
+      throw error;
+    }
+  }
+
+  Future<void> pushVoucherData(int count, String id) async {
+    try {
       DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
-      await databaseRef.child('foodOrder').child(foodorder.id).set(foodorder.toJson());
-      cartList.clear();
-      Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENshopmain()));
+      await databaseRef.child("VoucherStorage/" + id).child('useCount').set(count);
+      if (mounted) {
+        toastMessage('Đặt đơn thành công , vui lòng kiểm tra lịch sử');
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SCREENmain()));
+      }
     } catch (error) {
       print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
       throw error;
@@ -113,7 +195,12 @@ class _SCREENlocationbikest2State extends State<SCREENlocationfood1> {
     }
 
     if (chosenvoucher.id != 'NA') {
-      total = total - chosenvoucher.totalmoney;
+      if (chosenvoucher.type == 0) {
+        total = total - chosenvoucher.totalmoney;
+      } else {
+        total = total/100*(100-chosenvoucher.totalmoney);
+      }
+
     }
 
     _addMarker(LatLng(_originLatitude, _originLongitude), "origin", BitmapDescriptor.defaultMarker);
@@ -237,7 +324,21 @@ class _SCREENlocationbikest2State extends State<SCREENlocationfood1> {
                                           fontSize: 18
                                       ),
                                     ),
-                                  )
+                                  ),
+
+                                  Positioned(
+                                    bottom: (screenHeight/10)/5,
+                                    right: 10,
+                                    child: Text(
+                                      "- " + voucherMoney,
+                                      style: TextStyle(
+                                          fontFamily: 'arial',
+                                          color: Colors.green,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -388,10 +489,16 @@ class _SCREENlocationbikest2State extends State<SCREENlocationfood1> {
                                                 productList: cartList,
                                                 cancelTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
                                                 receiveTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
-                                                shipcost: getCost(widget.Distance).toDouble()
+                                                shipcost: getCost(widget.Distance).toDouble() - chosenvoucher.totalmoney,
+                                                voucher: chosenvoucher,
+                                                costFee: FoodCost,
+                                                costBiker: bikeCost
                                             );
-
+                                            if (chosenvoucher.id != '') {
+                                               await pushVoucherData(chosenvoucher.useCount + 1, chosenvoucher.id);
+                                            }
                                             await pushfoodOrder(foodorder);
+
                                         }, loading: Loading1,
                                       ),
                                     ),
@@ -406,7 +513,110 @@ class _SCREENlocationbikest2State extends State<SCREENlocationfood1> {
                                       height: screenHeight/15,
                                       child: ButtonType1(Height: screenHeight/10, Width: screenWidth/2 - 20, color: Color.fromARGB(255, 255, 247, 237), radiusBorder: 30, title: 'Ưu đãi', fontText: 'arial', colorText: Color.fromARGB(255, 255, 123, 64),
                                           onTap: () {
+                                            vouchercontroller.clear();
+                                            chosenvoucher.changeToDefault();
+                                            VoucherChange();
+                                            setState(() {
 
+                                            });
+                                            showDialog(
+                                                context: context,
+                                                builder: (BuildContext context) {
+                                                  return AlertDialog(
+                                                    content: Container(
+                                                        width: screenWidth,
+                                                        height: 90,
+                                                        child: Stack(
+                                                          children: <Widget>[
+                                                            Positioned(
+                                                              top: 0,
+                                                              left: 0,
+                                                              child: Container(
+                                                                height: 15,
+                                                                child: AutoSizeText(
+                                                                  'Nhập mã voucher',
+                                                                  style: TextStyle(
+                                                                      fontSize: 100,
+                                                                      color: Color.fromARGB(255, 244, 164, 84),
+                                                                      fontWeight: FontWeight.bold
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+
+                                                            Positioned(
+                                                              top: 50,
+                                                              left: 0,
+                                                              child: Container(
+                                                                height: 40,
+                                                                width: screenWidth/1.5,
+                                                                decoration: BoxDecoration(
+                                                                    borderRadius: BorderRadius.circular(10),
+                                                                    border: Border.all(
+                                                                        color: Colors.orange,
+                                                                        width: 1
+                                                                    )
+                                                                ),
+                                                                child: Padding(
+                                                                  padding: EdgeInsets.only(left: 10),
+                                                                  child: Form(
+                                                                    child: TextFormField(
+                                                                      controller: vouchercontroller,
+                                                                      style: TextStyle(
+                                                                        color: Colors.black,
+                                                                        fontFamily: 'arial',
+                                                                      ),
+
+                                                                      decoration: InputDecoration(
+                                                                        border: InputBorder.none,
+                                                                        hintText: 'Nhập mã voucher',
+                                                                        hintStyle: TextStyle(
+                                                                          color: Colors.grey,
+                                                                          fontFamily: 'arial',
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            )
+                                                          ],
+                                                        )
+                                                    ),
+
+                                                    actions: <Widget>[
+                                                      TextButton(
+                                                        child: isLoading ? CircularProgressIndicator() : Text('Xác nhận'),
+                                                        onPressed: isLoading ? null : () async {
+                                                          setState(() {
+                                                            isLoading = true;
+                                                          });
+                                                          if (vouchercontroller.text.isNotEmpty) {
+                                                            await getData1(vouchercontroller.text.toString());
+                                                          } else {
+                                                            toastMessage('Vui lòng nhập mã');
+                                                          }
+                                                          setState(() {
+                                                            isLoading = false; // Dừng hiển thị loading
+                                                          });
+                                                        },
+                                                      ),
+
+                                                      TextButton(
+                                                        child: Text('Hủy'),
+                                                        onPressed: () {
+                                                          chosenvoucher.changeToDefault();
+                                                          vouchercontroller.clear();
+                                                          VoucherChange();
+                                                          Navigator.of(context).pop();
+                                                          setState(() {
+
+                                                          });
+                                                        },
+                                                      ),
+                                                    ],
+                                                  );
+                                                });
                                           }
                                       ),
                                     ),

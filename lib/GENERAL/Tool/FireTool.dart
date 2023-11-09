@@ -9,7 +9,7 @@ Future<void> pushCatchOrder(catchOrder catchorder) async {
     DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
 
 // Đẩy dữ liệu catchOrder lên mục catchOrder với khóa chính là id của catch
-    await databaseRef.child('catchOrder').child(catchorder.id).set(catchorder.toJson());
+    await databaseRef.child('Order/catchOrder').child(catchorder.id).set(catchorder.toJson());
 
     print('Đẩy catchOrder thành công');
   } catch (error) {
