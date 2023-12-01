@@ -4,6 +4,8 @@ import 'package:xekomain/GENERAL/NormalUser/accountNormal.dart';
 
 import '../../FINAL/finalClass.dart';
 import '../../GENERAL/Order/catchOrder.dart';
+import '../FEATURE/SCREEN_BIKEORDER/Chi tiết lịch sử.dart';
+import '../FEATURE/SCREEN_BIKEORDER/SCREEN_waitbiker.dart';
 import '../INUSER/SCREEN_MAIN/SCREENmain.dart';
 import 'ITEM/ITEMhistorycatch.dart';
 
@@ -107,12 +109,13 @@ class _SCREENhistorycatchState extends State<SCREENhistorycatch> {
                 height: screenHeight - 100,
                 child: ListView.builder(
                   itemCount: dataList.length,
+                  padding: EdgeInsets.zero,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 0.0),
                       child: InkWell(
                         onTap: () {
-
+                          Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENwaitbikerHis(diemdon: dataList[index].locationSet,diemtra: dataList[index].locationGet, id: dataList[index].id,)));
                         },
                         child: ITEMhistorycatch(order: dataList[index], width: screenWidth, height: 120),
                       ),

@@ -180,7 +180,7 @@ class ITEMsendhistory extends StatelessWidget {
 
               ),
               child: Text(
-                'Thời gian đặt: ' + getAllTimeString(order.startTime),
+                'Thời gian đặt: ' + getAllTimeString(order.S1time),
                 style: TextStyle(
                     fontFamily: 'arial',
                     fontSize: 15,

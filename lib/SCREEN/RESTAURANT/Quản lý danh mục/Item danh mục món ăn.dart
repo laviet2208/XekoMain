@@ -8,35 +8,19 @@ import 'Item món ăn trong danh mục.dart';
 class ITEMdanhsachmonan extends StatefulWidget {
   final double width;
   final double height;
-  final String id;
+  final FoodDirectory foodDirectory;
   final VoidCallback ontap;
-  const ITEMdanhsachmonan({Key? key, required this.width, required this.height, required this.id, required this.ontap}) : super(key: key);
+  const ITEMdanhsachmonan({Key? key, required this.width, required this.height, required this.foodDirectory, required this.ontap}) : super(key: key);
 
   @override
   State<ITEMdanhsachmonan> createState() => _ITEMdanhsachmonanState();
 }
 
 class _ITEMdanhsachmonanState extends State<ITEMdanhsachmonan> {
-  FoodDirectory foodDirectory = FoodDirectory(id: '', mainName: '', foodList: [], ownerID: '');
-
-  void getData() {
-    final reference = FirebaseDatabase.instance.reference();
-    reference.child("FoodDirectory/" + widget.id).onValue.listen((event) {
-      final dynamic restaurant = event.snapshot.value;
-      FoodDirectory acc = FoodDirectory.fromJson(restaurant);
-      foodDirectory.id = acc.id;
-      foodDirectory.mainName = acc.mainName;
-      foodDirectory.foodList = acc.foodList;
-      foodDirectory.ownerID = acc.ownerID;
-      setState(() {});
-    });
-  }
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getData();
   }
 
   @override
@@ -65,7 +49,7 @@ class _ITEMdanhsachmonanState extends State<ITEMdanhsachmonan> {
             top: 5,
             left: 30,
             child: Text(
-              compactString(20, foodDirectory.mainName),
+              compactString(20, widget.foodDirectory.mainName),
               style: TextStyle(
                   fontFamily: 'DMSans_regu',
                   color: Colors.black,
@@ -87,7 +71,7 @@ class _ITEMdanhsachmonanState extends State<ITEMdanhsachmonan> {
 
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: foodDirectory.foodList.length,
+                itemCount: widget.foodDirectory.foodList.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Padding(
                     padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
@@ -95,7 +79,7 @@ class _ITEMdanhsachmonanState extends State<ITEMdanhsachmonan> {
                       onTap: () {
 
                       },
-                      child: ITEMfoodIndirect(id: foodDirectory.foodList[index], ontap: () { widget.ontap(); },),),
+                      child: ITEMfoodIndirect(id: widget.foodDirectory.foodList[index], ontap: () { widget.ontap(); },),),
                   );
                 },
               ),

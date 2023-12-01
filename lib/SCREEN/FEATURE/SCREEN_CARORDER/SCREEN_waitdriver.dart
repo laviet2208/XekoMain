@@ -42,12 +42,12 @@ class _SCREENwaitdriverState extends State<SCREENwaitdriver> {
       owner: accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: ''),
       shipper: accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: ''),
       status: 'o',
-      endTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
-      startTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
-      cancelTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
-      receiveTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
+      S1time: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
+      S2time: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
+      S3time: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
+      S4time: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
       type: 1,
-      voucher: Voucher(id: 'NA', totalmoney: 0, mincost: 0, startTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), endTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), useCount: 0, maxCount: 0, tenchuongtrinh: '', LocationId: '', type: 1, Otype: ''),
+      voucher: Voucher(id: 'NA', totalmoney: 0, mincost: 0, startTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), endTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), useCount: 0, maxCount: 0, tenchuongtrinh: '', LocationId: '', type: 1, Otype: '', perCustom: 0, CustomList: [], maxSale: 0),
       costFee: Cost(departKM: 0, departCost: 0, perKMcost: 0, discount: 0)
   );
 
@@ -56,30 +56,16 @@ class _SCREENwaitdriverState extends State<SCREENwaitdriver> {
   String locationget = "";
   String Tmoney = "";
   String status = "";
-  String previous = "";
 
   void getData(String id) {
     final reference = FirebaseDatabase.instance.reference();
     reference.child('Order/catchOrder').onValue.listen((event) {
       final dynamic catchorder = event.snapshot.value;
       catchorder.forEach((key, value) {
-        if (accountNormal.fromJson(value['owner']).id == id && (value['status'].toString() == 'A' || value['status'].toString() == 'B' || value['status'].toString() == 'C')) {
+        if (accountNormal.fromJson(value['owner']).id == id) {
           if (value['status'].toString() == 'A' || value['status'].toString() == 'B' || value['status'].toString() == 'C') {
             catchOrder thisO = catchOrder.fromJson(value);
-            thiscatch.shipper = thisO.shipper;
-            thiscatch.locationSet = thisO.locationSet;
-            thiscatch.cost = thisO.cost;
-            thiscatch.locationGet = thisO.locationGet;
-            thiscatch.id = thisO.id;
-            thiscatch.owner = thisO.owner;
-            thiscatch.status = thisO.status;
-            thiscatch.endTime = thisO.endTime;
-            thiscatch.startTime = thisO.startTime;
-            thiscatch.cancelTime = thisO.cancelTime;
-            thiscatch.receiveTime = thisO.receiveTime;
-            thiscatch.type = thisO.type;
-            previous = thisO.status;
-
+            thiscatch.setDataFromJson(value);
             setState(() {
               _originLatitude = thisO.locationSet.Latitude;
               _originLongitude = thisO.locationSet.Longitude;
@@ -89,7 +75,7 @@ class _SCREENwaitdriverState extends State<SCREENwaitdriver> {
 
               _addMarker(LatLng(_destLatitude, _destLongitude), "destination", BitmapDescriptor.defaultMarkerWithHue(90));
               _getPolyline();
-              startTime = getAllTimeString(thisO.startTime);
+              startTime = getAllTimeString(thisO.S1time);
 
               if (thisO.locationSet.firstText == "NA") {
                 locationset = thisO.locationSet.Longitude.toString() + " , " + thisO.locationSet.Latitude.toString();
@@ -106,13 +92,13 @@ class _SCREENwaitdriverState extends State<SCREENwaitdriver> {
               Tmoney = getStringNumber(thisO.cost) + "đ";
 
               if (thisO.status == 'A') {
-                status = 'đang đợi tài xế , bạn có thể hủy đơn';
+                status = 'đang đợi tài xế nhận đơn';
               }
               if (thisO.status == 'B') {
-                status = getAllTimeString(thisO.receiveTime) + ' .Tài xế ' + thisO.shipper.name + " - " + thisO.shipper.phoneNum + ' đang đến , bạn có thể hủy đơn nhưng nghĩ kỹ nhé!';
+                status = getAllTimeString(thisO.S1time) + ' .Tài xế ' + thisO.shipper.name + " - " + thisO.shipper.phoneNum + ' đang đến , bạn có thể hủy đơn nhưng nghĩ kỹ nhé!';
               }
               if (thisO.status == 'C') {
-                status = 'Đã đón bạn , hành trình bắt đầu! đơn được nhận lúc' + getAllTimeString(thisO.receiveTime);
+                status = 'Đã đón bạn , hành trình bắt đầu! đơn được nhận lúc' + getAllTimeString(thisO.S1time);
               }
 
               if (thisO.status == 'E' || thisO.status == 'F' || thisO.status == 'G' || thisO.status == 'D') {
@@ -131,27 +117,13 @@ class _SCREENwaitdriverState extends State<SCREENwaitdriver> {
       DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
       await databaseRef.child('Order/catchOrder/' + thiscatch.id + "/status").set(status);
       databaseRef = FirebaseDatabase.instance.reference();
-      await databaseRef.child('Order/catchOrder/' + thiscatch.id + "/cancelTime").set(getCurrentTime().toJson());
+      await databaseRef.child('Order/catchOrder/' + thiscatch.id + "/S4time").set(getCurrentTime().toJson());
       toastMessage('đã hủy đơn');
       Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENmain()));
     } catch (error) {
       print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
       throw error;
     }
-  }
-
-  void listenToCatchOrderStatus(String id) {
-    DatabaseReference catchOrderRef = FirebaseDatabase.instance.reference().child('Order/catchOrder/' + id);
-
-    catchOrderRef.onChildChanged.listen((event) {
-      final dynamic catchOrder = event.snapshot.value;
-
-      String status = catchOrder['status'];
-      if (status == 'D') {
-        // Xử lý khi status chuyển sang 'D'
-        print('Status changed to D');
-      }
-    });
   }
 
   _addPolyLine() {
@@ -369,7 +341,7 @@ class _SCREENwaitdriverState extends State<SCREENwaitdriver> {
                                     height: 30,
                                     width: screenWidth - 40 - 30 - 30,
                                     child: AutoSizeText(
-                                      'Đặt lúc : ' + getAllTimeString(thiscatch.startTime),
+                                      'Đặt lúc : ' + getAllTimeString(thiscatch.S1time),
                                       style: TextStyle(
                                           fontFamily: 'arial',
                                           color: Colors.black,
@@ -543,7 +515,7 @@ class _SCREENwaitdriverState extends State<SCREENwaitdriver> {
                                       text: TextSpan(
                                         children: [
                                           TextSpan(
-                                            text: getStringNumber(thiscatch.cost) + "đ",
+                                            text: getStringNumber(thiscatch.cost),
                                             style: TextStyle(
                                               fontFamily: 'arial',
                                               color: Colors.black,
@@ -552,7 +524,7 @@ class _SCREENwaitdriverState extends State<SCREENwaitdriver> {
                                             ),
                                           ),
                                           TextSpan(
-                                            text: " - " + getStringNumber(thiscatch.voucher.totalmoney) + "đ",
+                                            text: "( - " + getStringNumber(thiscatch.voucher.totalmoney) + (thiscatch.voucher.type == 1 ? '%)' : 'đ)'),
                                             style: TextStyle(
                                               fontFamily: 'arial',
                                               color: Colors.red, // Đặt màu đỏ cho phần này
@@ -702,16 +674,47 @@ class _SCREENwaitdriverState extends State<SCREENwaitdriver> {
                                 Padding(
                                   padding: EdgeInsets.only(top: 7, bottom: 7),
                                   child: Container(
-                                    height: 30,
                                     width: screenWidth - 40 - 30 - 30,
-                                    child: AutoSizeText(
-                                      'Tài xế ' + thiscatch.shipper.name + ' đang đến',
-                                      style: TextStyle(
-                                          fontFamily: 'arial',
-                                          color: Colors.black,
-                                          fontSize: 200,
-                                          fontWeight: (thiscatch.status == 'B') ?  FontWeight.bold : FontWeight.normal
-                                      ),
+                                    child: Stack(
+                                      children: <Widget>[
+                                        Positioned(
+                                          top: 0,
+                                          left: 0,
+                                          child: Container(
+                                            height: 16,
+                                            width: screenWidth - 40 - 30 - 30,
+                                            child: AutoSizeText(
+                                              'Tài xế ' + thiscatch.shipper.name + ' đang đến',
+                                              style: TextStyle(
+                                                  fontFamily: 'arial',
+                                                  color: Colors.black,
+                                                  fontSize: 200,
+                                                  fontWeight: (thiscatch.status == 'B') ?  FontWeight.bold : FontWeight.normal
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+
+                                        Positioned(
+                                          top: 0,
+                                          right: 0,
+                                          child: Container(
+                                            height: 16,
+                                            width: screenWidth - 40 - 30 - 30,
+                                            alignment: Alignment.centerRight,
+                                            child: AutoSizeText(
+                                              ((thiscatch. S2time.hour < 10) ? '0' + thiscatch. S2time.hour.toString() : thiscatch. S2time.hour.toString()) + ':' + ((thiscatch. S2time.minute < 10) ? '0' + thiscatch. S2time.minute.toString() : thiscatch. S2time.minute.toString()) + ',ngày ' + ((thiscatch.S2time.day < 10) ? '0' + thiscatch. S2time.day.toString() : thiscatch. S2time.day.toString()) + '/' + ((thiscatch.S2time.month < 10) ? '0' + thiscatch. S2time.month.toString() : thiscatch. S2time.month.toString()),
+                                              textAlign: TextAlign.end,
+                                              style: TextStyle(
+                                                  fontFamily: 'arial',
+                                                  color: Colors.black,
+                                                  fontSize: 200,
+                                                  fontWeight: (thiscatch.status == 'B') ?  FontWeight.bold : FontWeight.normal
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -766,16 +769,47 @@ class _SCREENwaitdriverState extends State<SCREENwaitdriver> {
                                 Padding(
                                   padding: EdgeInsets.only(top: 7, bottom: 7),
                                   child: Container(
-                                    height: 30,
                                     width: screenWidth - 40 - 30 - 30,
-                                    child: AutoSizeText(
-                                      'Hành trình bắt đầu ',
-                                      style: TextStyle(
-                                          fontFamily: 'arial',
-                                          color: Colors.black,
-                                          fontSize: 200,
-                                          fontWeight: (thiscatch.status == 'C') ?  FontWeight.bold : FontWeight.normal
-                                      ),
+                                    child: Stack(
+                                      children: <Widget>[
+                                        Positioned(
+                                          top: 0,
+                                          left: 0,
+                                          child: Container(
+                                            height: 16,
+                                            width: screenWidth - 40 - 30 - 30,
+                                            child: AutoSizeText(
+                                              'Hành trình bắt đầu ',
+                                              style: TextStyle(
+                                                  fontFamily: 'arial',
+                                                  color: Colors.black,
+                                                  fontSize: 200,
+                                                  fontWeight: (thiscatch.status == 'C') ?  FontWeight.bold : FontWeight.normal
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+
+                                        Positioned(
+                                          top: 0,
+                                          right: 0,
+                                          child: Container(
+                                            height: 16,
+                                            width: screenWidth - 40 - 30 - 30,
+                                            alignment: Alignment.centerRight,
+                                            child: AutoSizeText(
+                                              ((thiscatch.S3time.hour < 10) ? '0' + thiscatch. S3time.hour.toString() : thiscatch. S3time.hour.toString()) + ':' + ((thiscatch. S3time.minute < 10) ? '0' + thiscatch. S3time.minute.toString() : thiscatch. S3time.minute.toString()) + ',ngày ' + ((thiscatch.S3time.day < 10) ? '0' + thiscatch. S3time.day.toString() : thiscatch. S3time.day.toString()) + '/' + ((thiscatch.S3time.month < 10) ? '0' + thiscatch. S3time.month.toString() : thiscatch. S3time.month.toString()),
+                                              textAlign: TextAlign.end,
+                                              style: TextStyle(
+                                                  fontFamily: 'arial',
+                                                  color: Colors.black,
+                                                  fontSize: 200,
+                                                  fontWeight: (thiscatch.status == 'B') ?  FontWeight.bold : FontWeight.normal
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -830,16 +864,47 @@ class _SCREENwaitdriverState extends State<SCREENwaitdriver> {
                                 Padding(
                                   padding: EdgeInsets.only(top: 7, bottom: 7),
                                   child: Container(
-                                    height: 30,
                                     width: screenWidth - 40 - 30 - 30,
-                                    child: AutoSizeText(
-                                      'Hoàn thành ',
-                                      style: TextStyle(
-                                          fontFamily: 'arial',
-                                          color: Colors.black,
-                                          fontSize: 200,
-                                          fontWeight: (thiscatch.status == 'E' || thiscatch.status == 'F' || thiscatch.status == 'G' || thiscatch.status == 'D') ?  FontWeight.bold : FontWeight.normal
-                                      ),
+                                    child: Stack(
+                                      children: <Widget>[
+                                        Positioned(
+                                          top: 0,
+                                          left: 0,
+                                          child: Container(
+                                            height: 16,
+                                            width: screenWidth - 40 - 30 - 30,
+                                            child: AutoSizeText(
+                                              'Hoàn thành ',
+                                              style: TextStyle(
+                                                  fontFamily: 'arial',
+                                                  color: Colors.black,
+                                                  fontSize: 200,
+                                                  fontWeight: (thiscatch.status == 'C') ?  FontWeight.bold : FontWeight.normal
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+
+                                        Positioned(
+                                          top: 0,
+                                          right: 0,
+                                          child: Container(
+                                            height: 16,
+                                            width: screenWidth - 40 - 30 - 30,
+                                            alignment: Alignment.centerRight,
+                                            child: AutoSizeText(
+                                              ((thiscatch.S4time.hour < 10) ? '0' + thiscatch. S4time.hour.toString() : thiscatch. S4time.hour.toString()) + ':' + ((thiscatch. S4time.minute < 10) ? '0' + thiscatch. S4time.minute.toString() : thiscatch. S4time.minute.toString()) + ',ngày ' + ((thiscatch.S4time.day < 10) ? '0' + thiscatch. S4time.day.toString() : thiscatch. S4time.day.toString()) + '/' + ((thiscatch.S4time.month < 10) ? '0' + thiscatch. S4time.month.toString() : thiscatch. S4time.month.toString()),
+                                              textAlign: TextAlign.end,
+                                              style: TextStyle(
+                                                  fontFamily: 'arial',
+                                                  color: Colors.black,
+                                                  fontSize: 200,
+                                                  fontWeight: (thiscatch.status == 'B') ?  FontWeight.bold : FontWeight.normal
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),

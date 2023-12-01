@@ -2,30 +2,34 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:xekomain/GENERAL/Order/Cost.dart';
+import 'package:xekomain/GENERAL/Order/Receiver.dart';
 import 'package:xekomain/GENERAL/Order/catchOrder.dart';
+import 'package:xekomain/GENERAL/Order/foodOrder.dart';
+import 'package:xekomain/GENERAL/Order/item_details.dart';
+import 'package:xekomain/GENERAL/Order/itemsendOrder.dart';
 import 'package:xekomain/GENERAL/Product/Voucher.dart';
 import 'package:xekomain/GENERAL/utils/utils.dart';
 import 'package:xekomain/OTHER/Button/Buttontype1.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:xekomain/SCREEN/INUSER/SCREEN_MAIN/SCREENmain.dart';
-
+import 'package:xekomain/SCREEN/HISTORY/SCREENhistorysend.dart';
 import '../../../FINAL/finalClass.dart';
 import '../../../GENERAL/NormalUser/accountLocation.dart';
 import '../../../GENERAL/NormalUser/accountNormal.dart';
 import '../../../GENERAL/Tool/Time.dart';
 import '../../../GENERAL/Tool/Tool.dart';
 
-class SCREENwaitbiker extends StatefulWidget {
+class SCREENitemHisDetail extends StatefulWidget {
+  final String id;
   final accountLocation diemdon;
   final accountLocation diemtra;
-  const SCREENwaitbiker({Key? key, required this.diemdon, required this.diemtra}) : super(key: key);
+  const SCREENitemHisDetail({Key? key, required this.id, required this.diemdon, required this.diemtra}) : super(key: key);
 
   @override
-  State<SCREENwaitbiker> createState() => _SCREENwaitbikerState();
+  State<SCREENitemHisDetail> createState() => _SCREENwaitbikerState();
 }
 
-class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
+class _SCREENwaitbikerState extends State<SCREENitemHisDetail> {
   late GoogleMapController mapController;
   double _originLatitude = 0, _originLongitude = 0;
   double _destLatitude = 0, _destLongitude = 0;
@@ -34,107 +38,89 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
   List<LatLng> polylineCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
   String googleAPiKey = "AIzaSyBsVQaVVMXw-y3QgvCWwJe02FWkhqP_wRA";
-  catchOrder thiscatch = catchOrder(
-      id: '',
-      locationSet: accountLocation(phoneNum: "NA", LocationID: "NA", Latitude: -1, Longitude: -1, firstText: "NA", secondaryText: "NA"),
-      locationGet: accountLocation(phoneNum: "NA", LocationID: "NA", Latitude: -1, Longitude: -1, firstText: "NA", secondaryText: "NA"),
-      cost: -1,
-      owner: accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: ''),
-      shipper: accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: ''),
-      status: 'o',
-      S1time: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
-      S2time: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
-      S3time: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
-      S4time: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
-      type: 1,
-      voucher: Voucher(id: 'NA', totalmoney: 0, mincost: 0, startTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), endTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), useCount: 0, maxCount: 0, tenchuongtrinh: '', LocationId: '', type: 1, Otype: '', perCustom: 0, CustomList: [], maxSale: 0),
-      costFee: Cost(departKM: 0, departCost: 0, perKMcost: 0, discount: 0)
-  );
+
+  itemsendOrder thiscatch = itemsendOrder(
+    id: '',
+    cost: -1,
+    owner: accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: ''),
+    shipper: accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: ''), status: '',
+    locationset: accountLocation(phoneNum: "NA", LocationID: "NA", Latitude: -1, Longitude: -1, firstText: "NA", secondaryText: "NA"), receiver: Receiver(location: accountLocation(phoneNum: "NA", LocationID: "NA", Latitude: -1, Longitude: -1, firstText: "NA", secondaryText: "NA"), locationNote: '', name: '', phoneNum: '', note: ''),
+    itemdetails: item_details(weight: 0, type: '', codFee: 0),
+    voucher: Voucher(id: 'NA', totalmoney: 0, mincost: 0, startTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), endTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), useCount: 0, maxCount: 0, tenchuongtrinh: '', LocationId: '', type: 1, Otype: '', perCustom: 0, CustomList: [], maxSale: 0),
+    costFee: Cost(departKM: 0, departCost: 0, perKMcost: 0, discount: 0),S1time: getCurrentTime(), S2time: getCurrentTime(),S3time: getCurrentTime(), S4time: getCurrentTime(),);
 
   String startTime = "";
   String locationset = "";
   String locationget = "";
   String Tmoney = "";
-  String status = "";
+  String finalStatus = 'Hoàn thành';
 
   void getData(String id) {
     final reference = FirebaseDatabase.instance.reference();
-    reference.child('Order/catchOrder').onValue.listen((event) {
+    reference.child('Order/itemsendOrder/' + widget.id).onValue.listen((event) {
       final dynamic catchorder = event.snapshot.value;
-      catchorder.forEach((key, value) {
-        if (accountNormal.fromJson(value['owner']).id == id) {
-          if (value['status'].toString() == 'A' || value['status'].toString() == 'B' || value['status'].toString() == 'C') {
-            catchOrder thisO = catchOrder.fromJson(value);
-            thiscatch.setDataFromJson(value);
-            setState(() {
-              _originLatitude = thisO.locationSet.Latitude;
-              _originLongitude = thisO.locationSet.Longitude;
-              _destLatitude = thisO.locationGet.Latitude;
-              _destLongitude = thisO.locationGet.Longitude;
-              _addMarker(LatLng(_originLatitude, _originLongitude), "origin", BitmapDescriptor.defaultMarker);
+      itemsendOrder thisO = itemsendOrder.fromJson(catchorder);
+      thiscatch.setDataFromJson(catchorder);
+      setState(() {
+        _originLatitude = thisO.locationset.Latitude;
+        _originLongitude = thisO.locationset.Longitude;
+        _destLatitude = thisO.receiver.location.Latitude;
+        _destLongitude = thisO.receiver.location.Longitude;
+        _addMarker(LatLng(_originLatitude, _originLongitude), "origin", BitmapDescriptor.defaultMarker);
 
-              _addMarker(LatLng(_destLatitude, _destLongitude), "destination", BitmapDescriptor.defaultMarkerWithHue(90));
-              _getPolyline();
-              startTime = getAllTimeString(thisO.S1time);
-
-              if (thisO.locationSet.firstText == "NA") {
-                locationset = thisO.locationSet.Longitude.toString() + " , " + thisO.locationSet.Latitude.toString();
-              } else {
-                locationset = compactString(30, thisO.locationSet.firstText);
-              }
-
-              if (thisO.locationGet.firstText == "NA") {
-                locationget = thisO.locationGet.Longitude.toString() + " , " + thisO.locationGet.Latitude.toString();
-              } else {
-                locationget = compactString(30, thisO.locationGet.firstText);
-              }
-
-              Tmoney = getStringNumber(thisO.cost) + "đ";
-
-              if (thisO.status == 'A') {
-                status = 'đang đợi tài xế nhận đơn';
-              }
-              if (thisO.status == 'B') {
-                status = getAllTimeString(thisO.S1time) + ' .Tài xế ' + thisO.shipper.name + " - " + thisO.shipper.phoneNum + ' đang đến , bạn có thể hủy đơn nhưng nghĩ kỹ nhé!';
-              }
-              if (thisO.status == 'C') {
-                status = 'Đã đón bạn , hành trình bắt đầu! đơn được nhận lúc' + getAllTimeString(thisO.S1time);
-              }
-
-              if (thisO.status == 'E' || thisO.status == 'F' || thisO.status == 'G' || thisO.status == 'D') {
-                Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENmain()));
-              }
-            });
-          }
+        _addMarker(LatLng(_destLatitude, _destLongitude), "destination", BitmapDescriptor.defaultMarkerWithHue(90));
+        _getPolyline();
+        startTime = getAllTimeString(thisO.S1time);
+        if (thisO.locationset.firstText == "NA") {
+          locationset = thisO.locationset.Longitude.toString() + " , " + thisO.locationset.Latitude.toString();
+        } else {
+          locationset = compactString(30, thisO.locationset.firstText);
         }
-      }
-      );
+        if (thisO.receiver.location.firstText == "NA") {
+          locationget = thisO.receiver.location.Longitude.toString() + " , " + thisO.receiver.location.Latitude.toString();
+        } else {
+          locationget = compactString(30, thisO.receiver.location.firstText);
+        }
+        Tmoney = getStringNumber(thisO.cost) + "đ";
+      });
+
+      setState(() {
+        if (thiscatch.status == "D") {
+          finalStatus = "Hoàn thành";
+        }
+
+        if (thiscatch.status == "G") {
+          finalStatus = 'Bị hủy bởi shipper';
+        }
+
+        if (thiscatch.status == "E" ||thiscatch.status == "F") {
+          finalStatus = 'Bị hủy bởi bạn';
+        }
+
+        if (thiscatch.status == "H") {
+          finalStatus = 'Người nhận không lấy hàng';
+        }
+      });
     });
   }
 
-  Future<void> updateData(String status) async {
-    try {
-      DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
-      await databaseRef.child('Order/catchOrder/' + thiscatch.id + "/status").set(status);
-      databaseRef = FirebaseDatabase.instance.reference();
-      await databaseRef.child('Order/catchOrder/' + thiscatch.id + "/S4time").set(getCurrentTime().toJson());
-      toastMessage('đã hủy đơn');
-      Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENmain()));
-    } catch (error) {
-      print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
-      throw error;
-    }
+  Future<void> changeStatus(itemsendOrder order, String status) async {
+    DatabaseReference reference = FirebaseDatabase.instance.reference();
+    await reference.child("Order/itemsendOrder/" + order.id + "/status").set(status);
+    reference = FirebaseDatabase.instance.reference();
+    await reference.child('Order/itemsendOrder/' + thiscatch.id + "/S4time").set(getCurrentTime().toJson());
+    toastMessage('đã hủy đơn');
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getData(currentAccount.id);
     _originLatitude = widget.diemdon.Latitude;
     _originLongitude = widget.diemdon.Longitude;
     _destLatitude = widget.diemtra.Latitude;
     _destLongitude = widget.diemtra.Longitude;
-    getData(currentAccount.id);
   }
 
   @override
@@ -172,7 +158,7 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                           left: 10,
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENmain()));
+                              Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENhistorysend()));
                             },
                             child: Container(
                               width: 40,
@@ -317,7 +303,7 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                                     height: 30,
                                     width: screenWidth - 40 - 30 - 30,
                                     child: AutoSizeText(
-                                      'Đặt lúc : ' + getAllTimeString(thiscatch.S1time),
+                                      'Đặt lúc ' + getAllTimeString(thiscatch.S1time),
                                       style: TextStyle(
                                           fontFamily: 'arial',
                                           color: Colors.black,
@@ -347,15 +333,10 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                                   width: 10,
                                 ),
 
-                                Container(
-                                  width: 30,
-                                  height: 30,
-                                  decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: AssetImage('assets/image/minibike.png')
-                                      )
-                                  ),
+                                Icon(
+                                  Icons.delivery_dining,
+                                  size: 30,
+                                  color: Color.fromARGB(255, 255, 123, 64),
                                 ),
 
                                 Container(
@@ -368,7 +349,7 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                                     height: 30,
                                     width: screenWidth - 40 - 30 - 30,
                                     child: AutoSizeText(
-                                      'Xe ôm',
+                                      'Giao hàng',
                                       style: TextStyle(
                                           fontFamily: 'arial',
                                           color: Color.fromARGB(255, 255, 123, 64),
@@ -491,7 +472,7 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                                       text: TextSpan(
                                         children: [
                                           TextSpan(
-                                            text: getStringNumber(thiscatch.cost),
+                                            text: getStringNumber(thiscatch.cost) + "đ",
                                             style: TextStyle(
                                               fontFamily: 'arial',
                                               color: Colors.black,
@@ -589,7 +570,7 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                                     height: 30,
                                     width: screenWidth - 40 - 30 - 30,
                                     child: AutoSizeText(
-                                      'Đang đợi tài xế , có thể hủy đơn',
+                                      'Đang đợi tài xế nhận đơn',
                                       style: TextStyle(
                                           fontFamily: 'arial',
                                           color: Colors.black,
@@ -603,8 +584,6 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                                 Container(
                                   width: 10,
                                 ),
-
-
                               ],
                             ),
                           ),
@@ -755,7 +734,7 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                                             height: 16,
                                             width: screenWidth - 40 - 30 - 30,
                                             child: AutoSizeText(
-                                              'Hành trình bắt đầu ',
+                                              'Tài xế đã nhận hàng',
                                               style: TextStyle(
                                                   fontFamily: 'arial',
                                                   color: Colors.black,
@@ -780,7 +759,7 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                                                   fontFamily: 'arial',
                                                   color: Colors.black,
                                                   fontSize: 200,
-                                                  fontWeight: (thiscatch.status == 'B') ?  FontWeight.bold : FontWeight.normal
+                                                  fontWeight: (thiscatch.status == 'C') ?  FontWeight.bold : FontWeight.normal
                                               ),
                                             ),
                                           ),
@@ -828,7 +807,7 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                                   decoration: BoxDecoration(
                                       image: DecorationImage(
                                           fit: BoxFit.cover,
-                                          image: (thiscatch.status == 'E' || thiscatch.status == 'F' || thiscatch.status == 'G' || thiscatch.status == 'D') ? AssetImage('assets/image/redcircle.png') : AssetImage('assets/image/greycircle.png')
+                                          image: (thiscatch.status == 'E' || thiscatch.status == 'F' || thiscatch.status == 'G' || thiscatch.status == 'H' || thiscatch.status == 'D') ? AssetImage('assets/image/redcircle.png') : AssetImage('assets/image/greycircle.png')
                                       )
                                   ),
                                 ),
@@ -850,12 +829,12 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                                             height: 16,
                                             width: screenWidth - 40 - 30 - 30,
                                             child: AutoSizeText(
-                                              'Hoàn thành ',
+                                              finalStatus,
                                               style: TextStyle(
                                                   fontFamily: 'arial',
                                                   color: Colors.black,
                                                   fontSize: 200,
-                                                  fontWeight: (thiscatch.status == 'E' || thiscatch.status == 'F' || thiscatch.status == 'G' || thiscatch.status == 'D' || thiscatch.status == 'H1'|| thiscatch.status == 'H2') ?  FontWeight.bold : FontWeight.normal
+                                                  fontWeight: (thiscatch.status == 'E' || thiscatch.status == 'F' || thiscatch.status == 'G' || thiscatch.status == 'H' || thiscatch.status == 'I' || thiscatch.status == 'J' || thiscatch.status == 'D1') ?  FontWeight.bold : FontWeight.normal
                                               ),
                                             ),
                                           ),
@@ -875,7 +854,7 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                                                   fontFamily: 'arial',
                                                   color: Colors.black,
                                                   fontSize: 200,
-                                                  fontWeight: (thiscatch.status == 'E' || thiscatch.status == 'F' || thiscatch.status == 'G' || thiscatch.status == 'D' || thiscatch.status == 'H1'|| thiscatch.status == 'H2') ?  FontWeight.bold : FontWeight.normal
+                                                  fontWeight: (thiscatch.status == 'E' || thiscatch.status == 'F' || thiscatch.status == 'G' || thiscatch.status == 'H' || thiscatch.status == 'I' || thiscatch.status == 'J' || thiscatch.status == 'D1') ?  FontWeight.bold : FontWeight.normal
                                               ),
                                             ),
                                           ),
@@ -944,7 +923,7 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                                     height: 30,
                                     width: screenWidth - 40 - 30 - 30,
                                     child: AutoSizeText(
-                                      'Điểm đón',
+                                      'Địa chỉ nhận hàng',
                                       style: TextStyle(
                                           fontFamily: 'arial',
                                           color: Colors.black,
@@ -968,7 +947,7 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                             padding: EdgeInsets.only(left: 50, right: 10),
                             child: Container(
                               child: Text(
-                                thiscatch.locationSet.firstText + ',' + thiscatch.locationSet.secondaryText,
+                                thiscatch.locationset.firstText + ',' + thiscatch.locationset.secondaryText,
                                 style: TextStyle(
                                     fontFamily: 'arial',
                                     color: Colors.black,
@@ -1010,7 +989,7 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                                     height: 30,
                                     width: screenWidth - 40 - 30 - 30,
                                     child: AutoSizeText(
-                                      'Điểm đến',
+                                      'Địa chỉ giao hàng',
                                       style: TextStyle(
                                           fontFamily: 'arial',
                                           color: Colors.black,
@@ -1032,7 +1011,7 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                             padding: EdgeInsets.only(left: 50, right: 10),
                             child: Container(
                               child: Text(
-                                thiscatch.locationGet.firstText + ',' + thiscatch.locationGet.secondaryText,
+                                thiscatch.receiver.location.firstText + ',' + thiscatch.receiver.location.secondaryText,
                                 style: TextStyle(
                                     fontFamily: 'arial',
                                     color: Colors.black,
@@ -1055,15 +1034,15 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                     padding: EdgeInsets.only(left: 20, right: 20),
                     child: ButtonType1(Height: (thiscatch.status == "A" || thiscatch.status == "B") ? screenHeight/15 : 0, Width: screenWidth, color: Color.fromARGB(255, 244, 164, 84), radiusBorder: 30, title: 'Hủy chuyến', fontText: 'arial', colorText: Colors.white,
                         onTap: () async {
-                          if (thiscatch.status == "A") {
-                            Time huychuyen = getCurrentTime();
-                            await updateData('E');
-                          }
+                            if (thiscatch.status == 'A') {
+                              await changeStatus(thiscatch, 'E');
+                              toastMessage('đã hủy đơn');
+                            }
 
-                          if (thiscatch.status == "B") {
-                            Time huychuyen = getCurrentTime();
-                            await updateData('F');
-                          }
+                            if (thiscatch.status == 'B') {
+                              await changeStatus(thiscatch, 'F');
+                              toastMessage('đã hủy đơn');
+                            }
                         }
                     ),
                   ),

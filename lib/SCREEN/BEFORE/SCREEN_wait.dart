@@ -172,707 +172,754 @@ class _PAGEhomeState extends State<ScreenWait> {
             color: Colors.white
         ),
 
-        child: ListView(
-          children: [
-            Container(
-              height: screenWidth/(1920/668) + 40,
-              decoration: BoxDecoration(
-                  color: Colors.white
-              ),
-
-              child: Stack(
-                children: <Widget>[
-                  Positioned(
-                    top: 0,
-                    child: Container(
-                      height: screenWidth/(1920/668),
-                      width: screenWidth,
+        child: Stack(
+          children: <Widget>[
+            Positioned(
+              top: 0,
+              left: 0,
+              child: Container(
+                width: screenWidth,
+                height: screenHeight,
+                child: ListView(
+                  children: [
+                    Container(
+                      height: screenWidth/(1920/668) + 40,
                       decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: NetworkImage(adsTOP)
+                          color: Colors.white
+                      ),
+
+                      child: Stack(
+                        children: <Widget>[
+                          Positioned(
+                            top: 0,
+                            child: Container(
+                              height: screenWidth/(1920/668),
+                              width: screenWidth,
+                              decoration: BoxDecoration(
+                                  color: Color.fromARGB(255, 255, 255, 255),
+                                  image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(adsTOP)
+                                  )
+                              ),
+                            ),
+                          ),
+
+                          Positioned(
+                            bottom: 0,
+                            child: Padding(
+                              padding: EdgeInsets.only(left: 10, right: 10),
+                              child: Container(
+                                height: 55,
+                                width: screenWidth - 20,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Color.fromRGBO(255, 255, 255, 1),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.3), // màu của shadow
+                                      spreadRadius: 5, // bán kính của shadow
+                                      blurRadius: 7, // độ mờ của shadow
+                                      offset: Offset(0, 3), // vị trí của shadow
+                                    ),
+                                  ],
+                                ),
+                                child: Form(
+                                  child: TextFormField(
+                                    controller: nameController,
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontFamily: 'Dmsan_regular',
+                                    ),
+
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      prefixIcon: Icon(Icons.search),
+                                      hintText: 'Bạn cần gì trên XEKO?',
+                                      hintStyle: TextStyle(
+                                        color: Colors.grey,
+                                        fontFamily: 'Dmsan_regular',
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                           )
+                        ],
                       ),
                     ),
-                  ),
 
-                  Positioned(
-                    bottom: 0,
-                    child: Padding(
+                    Container(
+                      height: 30,
+                    ),
+
+                    //phần menu các tiểu mục
+                    Container(
+                      height: 76,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: [
+                          Container(
+                            width: 15,
+                          ),
+
+                          //Mục đồ ăn
+                          Container(
+                            width: 56,
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
+                              },
+                              child: Stack(
+                                children: <Widget>[
+                                  Positioned(
+                                    top: 0,
+                                    left: 0,
+                                    child: Container(
+                                      width: 56,
+                                      height: 56,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: AssetImage('assets/image/iconfood.png'),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    child: Container(
+                                      width: 56,
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        'Đồ ăn',
+                                        style: TextStyle(
+                                          fontFamily: 'arial',
+                                          fontSize: 12,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          Container(
+                            width: 25,
+                          ),
+
+                          //Mục Ô tô
+                          Container(
+                            width: 56,
+                            child: GestureDetector(
+                              onTap: () async {
+                                Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
+                              },
+                              child: Stack(
+                                children: <Widget>[
+                                  Positioned(
+                                    top: 0,
+                                    left: 0,
+                                    child: Container(
+                                      width: 56,
+                                      height: 56,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: AssetImage('assets/image/icontransport.png'),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    child: Container(
+                                      width: 56,
+                                      alignment: Alignment.center,
+                                      child: loadingCar ? CircularProgressIndicator(strokeWidth: 4, color: Color.fromARGB(255, 255, 123, 64),) : Text(
+                                        'Ô tô',
+                                        style: TextStyle(
+                                          fontFamily: 'arial',
+                                          fontSize: 12,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          Container(
+                            width: 25,
+                          ),
+
+                          //Mục Xe máy
+                          Container(
+                            width: 56,
+                            child: GestureDetector(
+                              onTap: () async {
+                                Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
+                              },
+                              child: Stack(
+                                children: <Widget>[
+                                  Positioned(
+                                    top: 0,
+                                    left: 0,
+                                    child: Container(
+                                      width: 56,
+                                      height: 56,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: AssetImage('assets/image/iconbike.png'),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    child: Container(
+                                      width: 56,
+                                      alignment: Alignment.center,
+                                      child: loadingBike ? CircularProgressIndicator(strokeWidth: 4, color: Color.fromARGB(255, 255, 123, 64),) : Text(
+                                        'Xe máy',
+                                        style: TextStyle(
+                                          fontFamily: 'arial',
+                                          fontSize: 12,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          Container(
+                            width: 25,
+                          ),
+
+                          //Mục giao hàng
+                          // Container(
+                          //   width: 56,
+                          //   child: GestureDetector(
+                          //     onTap: () {
+                          //       Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENitemsend()));
+                          //     },
+                          //     child: Stack(
+                          //       children: <Widget>[
+                          //         Positioned(
+                          //           top: 0,
+                          //           left: 0,
+                          //           child: Container(
+                          //             width: 56,
+                          //             height: 56,
+                          //             alignment: Alignment.center,
+                          //             decoration: BoxDecoration(
+                          //               image: DecorationImage(
+                          //                 fit: BoxFit.cover,
+                          //                 image: AssetImage('assets/image/icondelivery.png'),
+                          //               ),
+                          //             ),
+                          //           ),
+                          //         ),
+                          //         Positioned(
+                          //           bottom: 0,
+                          //           child: Container(
+                          //             width: 56,
+                          //             alignment: Alignment.center,
+                          //             child: Text(
+                          //               'Giao hàng',
+                          //               style: TextStyle(
+                          //                 fontFamily: 'arial',
+                          //                 fontSize: 12,
+                          //                 color: Colors.black,
+                          //               ),
+                          //             ),
+                          //           ),
+                          //         ),
+                          //       ],
+                          //     ),
+                          //   ),
+                          // ),
+
+                          //Mục Đi chợ
+                          Container(
+                            width: 56,
+                            child: GestureDetector(
+                              onTap: () {
+                                // Xử lý sự kiện click vào hình ảnh ở đây
+                                print('Clicked on image');
+                              },
+                              child: Stack(
+                                children: <Widget>[
+                                  Positioned(
+                                    top: 0,
+                                    left: 0,
+                                    child: Container(
+                                      width: 56,
+                                      height: 56,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: AssetImage('assets/image/iconmart.png'),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    child: Container(
+                                      width: 56,
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        'Đi chợ',
+                                        style: TextStyle(
+                                          fontFamily: 'arial',
+                                          fontSize: 12,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          Container(
+                            width: 25,
+                          ),
+
+                          //Mục ưu đãi
+                          Container(
+                            width: 56,
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
+                              },
+                              child: Stack(
+                                children: <Widget>[
+                                  Positioned(
+                                    top: 0,
+                                    left: 0,
+                                    child: Container(
+                                      width: 56,
+                                      height: 56,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: AssetImage('assets/image/iconoffer.png'),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    child: Container(
+                                      width: 56,
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        'Ưu đãi',
+                                        style: TextStyle(
+                                          fontFamily: 'arial',
+                                          fontSize: 12,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          Container(
+                            width: 25,
+                          ),
+
+                          //mục mua sắm
+
+                          Container(
+                            width: 56,
+                            child: GestureDetector(
+                              onTap: () {
+                                // Xử lý sự kiện click vào hình ảnh ở đây
+                                print('Clicked on image');
+                              },
+                              child: Stack(
+                                children: <Widget>[
+                                  Positioned(
+                                    top: 0,
+                                    left: 0,
+                                    child: Container(
+                                      width: 56,
+                                      height: 56,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: AssetImage('assets/image/iconbag.png'),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    child: Container(
+                                      width: 56,
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        'Mua sắm',
+                                        style: TextStyle(
+                                          fontFamily: 'arial',
+                                          fontSize: 12,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          Container(
+                            width: 25,
+                          ),
+
+                        ],
+                      ),
+                    ),
+
+                    Container(height: 20,),
+
+                    Container(
+                      height: 56,
+                      child: Stack(
+                        children: <Widget>[
+                          Positioned(
+                            top: 0,
+                            left: 10,
+                            child: Container(
+                              width: (screenWidth - 20) / 2 - 10,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                  color: Color.fromARGB(255, 249, 249, 249),
+                                  borderRadius: BorderRadius.circular(10)
+                              ),
+
+                              child: Stack(
+                                children: <Widget>[
+                                  Positioned(
+                                    top: 10,
+                                    left: 10,
+                                    child: Text(
+                                      'Mã khuyến mãi',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.black,
+                                          fontFamily: 'arial'
+                                      ),
+                                    ),
+                                  ),
+
+                                  Positioned(
+                                    bottom: 10,
+                                    left: 10,
+                                    child: Text(
+                                      currentAccount.voucherList.length.toString(),
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.black,
+                                          fontFamily: 'arial',
+                                          fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          Positioned(
+                            top: 0,
+                            right: 10,
+                            child: Container(
+                              width: (screenWidth - 20) / 2 - 10,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                  color: Color.fromARGB(255, 249, 249, 249),
+                                  borderRadius: BorderRadius.circular(10)
+                              ),
+
+                              child: Stack(
+                                children: <Widget>[
+                                  Positioned(
+                                    top: 10,
+                                    left: 10,
+                                    child: Text(
+                                      'Điểm thưởng',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.black,
+                                          fontFamily: 'arial'
+                                      ),
+                                    ),
+                                  ),
+
+                                  Positioned(
+                                    bottom: 10,
+                                    left: 10,
+                                    child: Text(
+                                      'Comming',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.black,
+                                          fontFamily: 'arial',
+                                          fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Container(height: 20,),
+
+                    Padding(
                       padding: EdgeInsets.only(left: 10, right: 10),
                       child: Container(
-                        height: 55,
-                        width: screenWidth - 20,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Color.fromRGBO(255, 255, 255, 1),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.3), // màu của shadow
-                              spreadRadius: 5, // bán kính của shadow
-                              blurRadius: 7, // độ mờ của shadow
-                              offset: Offset(0, 3), // vị trí của shadow
-                            ),
-                          ],
-                        ),
-                        child: Form(
-                          child: TextFormField(
-                            controller: nameController,
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontFamily: 'Dmsan_regular',
-                            ),
-
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              prefixIcon: Icon(Icons.search),
-                              hintText: 'Bạn cần gì trên XEKO?',
-                              hintStyle: TextStyle(
-                                color: Colors.grey,
-                                fontFamily: 'Dmsan_regular',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-
-            Container(
-              height: 30,
-            ),
-
-            //phần menu các tiểu mục
-            Container(
-              height: 76,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  Container(
-                    width: 15,
-                  ),
-
-                  //Mục đồ ăn
-                  Container(
-                    width: 56,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
-                      },
-                      child: Stack(
-                        children: <Widget>[
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            child: Container(
-                              width: 56,
-                              height: 56,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage('assets/image/iconfood.png'),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            child: Container(
-                              width: 56,
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Đồ ăn',
-                                style: TextStyle(
-                                  fontFamily: 'arial',
-                                  fontSize: 12,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  Container(
-                    width: 25,
-                  ),
-
-                  //Mục Ô tô
-                  Container(
-                    width: 56,
-                    child: GestureDetector(
-                      onTap: () async {
-                        Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
-                      },
-                      child: Stack(
-                        children: <Widget>[
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            child: Container(
-                              width: 56,
-                              height: 56,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage('assets/image/icontransport.png'),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            child: Container(
-                              width: 56,
-                              alignment: Alignment.center,
-                              child: loadingCar ? CircularProgressIndicator(strokeWidth: 4, color: Color.fromARGB(255, 255, 123, 64),) : Text(
-                                'Ô tô',
-                                style: TextStyle(
-                                  fontFamily: 'arial',
-                                  fontSize: 12,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  Container(
-                    width: 25,
-                  ),
-
-                  //Mục Xe máy
-                  Container(
-                    width: 56,
-                    child: GestureDetector(
-                      onTap: () async {
-                        Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
-                      },
-                      child: Stack(
-                        children: <Widget>[
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            child: Container(
-                              width: 56,
-                              height: 56,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage('assets/image/iconbike.png'),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            child: Container(
-                              width: 56,
-                              alignment: Alignment.center,
-                              child: loadingBike ? CircularProgressIndicator(strokeWidth: 4, color: Color.fromARGB(255, 255, 123, 64),) : Text(
-                                'Xe máy',
-                                style: TextStyle(
-                                  fontFamily: 'arial',
-                                  fontSize: 12,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  Container(
-                    width: 25,
-                  ),
-
-                  //Mục giao hàng
-                  // Container(
-                  //   width: 56,
-                  //   child: GestureDetector(
-                  //     onTap: () {
-                  //       Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENitemsend()));
-                  //     },
-                  //     child: Stack(
-                  //       children: <Widget>[
-                  //         Positioned(
-                  //           top: 0,
-                  //           left: 0,
-                  //           child: Container(
-                  //             width: 56,
-                  //             height: 56,
-                  //             alignment: Alignment.center,
-                  //             decoration: BoxDecoration(
-                  //               image: DecorationImage(
-                  //                 fit: BoxFit.cover,
-                  //                 image: AssetImage('assets/image/icondelivery.png'),
-                  //               ),
-                  //             ),
-                  //           ),
-                  //         ),
-                  //         Positioned(
-                  //           bottom: 0,
-                  //           child: Container(
-                  //             width: 56,
-                  //             alignment: Alignment.center,
-                  //             child: Text(
-                  //               'Giao hàng',
-                  //               style: TextStyle(
-                  //                 fontFamily: 'arial',
-                  //                 fontSize: 12,
-                  //                 color: Colors.black,
-                  //               ),
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ),
-
-                  //Mục Đi chợ
-                  Container(
-                    width: 56,
-                    child: GestureDetector(
-                      onTap: () {
-                        // Xử lý sự kiện click vào hình ảnh ở đây
-                        print('Clicked on image');
-                      },
-                      child: Stack(
-                        children: <Widget>[
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            child: Container(
-                              width: 56,
-                              height: 56,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage('assets/image/iconmart.png'),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            child: Container(
-                              width: 56,
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Đi chợ',
-                                style: TextStyle(
-                                  fontFamily: 'arial',
-                                  fontSize: 12,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  Container(
-                    width: 25,
-                  ),
-
-                  //Mục ưu đãi
-                  Container(
-                    width: 56,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
-                      },
-                      child: Stack(
-                        children: <Widget>[
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            child: Container(
-                              width: 56,
-                              height: 56,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage('assets/image/iconoffer.png'),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            child: Container(
-                              width: 56,
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Ưu đãi',
-                                style: TextStyle(
-                                  fontFamily: 'arial',
-                                  fontSize: 12,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  Container(
-                    width: 25,
-                  ),
-
-                  //mục mua sắm
-
-                  Container(
-                    width: 56,
-                    child: GestureDetector(
-                      onTap: () {
-                        // Xử lý sự kiện click vào hình ảnh ở đây
-                        print('Clicked on image');
-                      },
-                      child: Stack(
-                        children: <Widget>[
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            child: Container(
-                              width: 56,
-                              height: 56,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage('assets/image/iconbag.png'),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            child: Container(
-                              width: 56,
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Mua sắm',
-                                style: TextStyle(
-                                  fontFamily: 'arial',
-                                  fontSize: 12,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  Container(
-                    width: 25,
-                  ),
-
-                ],
-              ),
-            ),
-
-            Container(height: 20,),
-
-            Container(
-              height: 56,
-              child: Stack(
-                children: <Widget>[
-                  Positioned(
-                    top: 0,
-                    left: 10,
-                    child: Container(
-                      width: (screenWidth - 20) / 2 - 10,
-                      height: 56,
-                      decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 249, 249, 249),
-                          borderRadius: BorderRadius.circular(10)
-                      ),
-
-                      child: Stack(
-                        children: <Widget>[
-                          Positioned(
-                            top: 10,
-                            left: 10,
-                            child: Text(
-                              'Mã khuyến mãi',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black,
-                                  fontFamily: 'arial'
-                              ),
-                            ),
-                          ),
-
-                          Positioned(
-                            bottom: 10,
-                            left: 10,
-                            child: Text(
-                              currentAccount.voucherList.length.toString(),
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black,
-                                  fontFamily: 'arial',
-                                  fontWeight: FontWeight.bold
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  Positioned(
-                    top: 0,
-                    right: 10,
-                    child: Container(
-                      width: (screenWidth - 20) / 2 - 10,
-                      height: 56,
-                      decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 249, 249, 249),
-                          borderRadius: BorderRadius.circular(10)
-                      ),
-
-                      child: Stack(
-                        children: <Widget>[
-                          Positioned(
-                            top: 10,
-                            left: 10,
-                            child: Text(
-                              'Điểm thưởng',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black,
-                                  fontFamily: 'arial'
-                              ),
-                            ),
-                          ),
-
-                          Positioned(
-                            bottom: 10,
-                            left: 10,
-                            child: Text(
-                              'Comming',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black,
-                                  fontFamily: 'arial',
-                                  fontWeight: FontWeight.bold
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            Container(height: 20,),
-
-            Padding(
-              padding: EdgeInsets.only(left: 10, right: 10),
-              child: Container(
-                height: (screenWidth - 20)/(1200/630) + 100,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: ADStype1List.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      child: ITEMadsType1(width: screenWidth - 20, height: (screenWidth - 20)/(300/188), adStype1: ADStype1List[index]),
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
-                      },
-                    );
-                  },
-                ),
-              ),
-            ),
-
-            Container(height: 20,),
-
-            Padding(
-              padding: EdgeInsets.only(left: 10),
-              child: Container(
-                height: 340,
-                decoration: BoxDecoration(
-
-                ),
-
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                        bottom: 312,
-                        left: 0,
-                        child: Container(
-                          width: 30,
-                          height: 30,
-                          decoration: BoxDecoration(
-                              image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage('assets/image/fire.png')
-                              )
-                          ),
-                        )
-                    ),
-
-                    Positioned(
-                      bottom: 312,
-                      left: 30,
-                      child: Text(
-                        "Quán ngon gần bạn",
-                        style: TextStyle(
-                            fontFamily: 'DMSans_regu',
-                            color: Colors.black,
-                            fontSize: screenWidth/18,
-                            fontWeight: FontWeight.bold
-                        ),
-                      ),
-                    ),
-
-                    Positioned(
-                      bottom: 312,
-                      right: 10,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
-
-                        },
-                        child: Text(
-                          'See all',
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            color: Color.fromRGBO(0, 99, 255, 1),
-                            fontFamily: 'Dmsan_regular',
-                            fontSize: screenWidth / 20,
-                            letterSpacing: 0,
-                            fontWeight: FontWeight.normal,
-                            height: 1,
-                          ),
-                        ),
-                      ),
-                    ),
-
-
-                    Positioned(
-                      top: 50,
-                      left: 0,
-                      child: Container(
-                        width: screenWidth,
-                        height: 248,
-                        decoration: BoxDecoration(
-                            color: Colors.white
-                        ),
-
+                        height: (screenWidth - 20)/(1200/630) + 100,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          itemCount: shopList.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Padding(
-                              padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
-                                },
-                                child: ITEMnearsrestaurant(currentshop: shopList[index], distance: CaculateDistance.calculateDistance(CaculateDistance.parseDoubleString(shopList[index].location)[0], CaculateDistance.parseDoubleString(shopList[index].location)[1], currentAccount.locationHis.Latitude, currentAccount.locationHis.Longitude),),
-                              ),
+                          itemCount: ADStype1List.length,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              child: ITEMadsType1(width: screenWidth - 20, height: (screenWidth - 20)/(300/188), adStype1: ADStype1List[index]),
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
+                              },
                             );
                           },
                         ),
                       ),
                     ),
 
-                  ],
-                ),
-              ),
-            ),
+                    Container(height: 20,),
 
-            Padding(
-              padding: EdgeInsets.only(left: 0),
-              child: Container(
-                height: 92 + (ADStype2List.length / 2) * (((screenWidth/2) - 26)/4*5),
-                decoration: BoxDecoration(
+                    Padding(
+                      padding: EdgeInsets.only(left: 10),
+                      child: Container(
+                        height: 340,
+                        decoration: BoxDecoration(
 
-                ),
+                        ),
 
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                      top: 10,
-                      left: 10,
-                      child: Text(
-                        "Ưu đãi khác từ XEKO",
-                        style: TextStyle(
-                            fontFamily: 'DMSans_regu',
-                            color: Colors.black,
-                            fontSize: screenWidth/18,
-                            fontWeight: FontWeight.bold
+                        child: Stack(
+                          children: <Widget>[
+                            Positioned(
+                                bottom: 312,
+                                left: 0,
+                                child: Container(
+                                  width: 30,
+                                  height: 30,
+                                  decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: AssetImage('assets/image/fire.png')
+                                      )
+                                  ),
+                                )
+                            ),
+
+                            Positioned(
+                              bottom: 312,
+                              left: 30,
+                              child: Text(
+                                "Quán ngon gần bạn",
+                                style: TextStyle(
+                                    fontFamily: 'DMSans_regu',
+                                    color: Colors.black,
+                                    fontSize: screenWidth/18,
+                                    fontWeight: FontWeight.bold
+                                ),
+                              ),
+                            ),
+
+                            Positioned(
+                              bottom: 312,
+                              right: 10,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
+
+                                },
+                                child: Text(
+                                  'See all',
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(0, 99, 255, 1),
+                                    fontFamily: 'Dmsan_regular',
+                                    fontSize: screenWidth / 20,
+                                    letterSpacing: 0,
+                                    fontWeight: FontWeight.normal,
+                                    height: 1,
+                                  ),
+                                ),
+                              ),
+                            ),
+
+
+                            Positioned(
+                              top: 50,
+                              left: 0,
+                              child: Container(
+                                width: screenWidth,
+                                height: 248,
+                                decoration: BoxDecoration(
+                                    color: Colors.white
+                                ),
+
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: shopList.length,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return Padding(
+                                      padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
+                                        },
+                                        child: ITEMnearsrestaurant(currentshop: shopList[index], distance: CaculateDistance.calculateDistance(CaculateDistance.parseDoubleString(shopList[index].location)[0], CaculateDistance.parseDoubleString(shopList[index].location)[1], currentAccount.locationHis.Latitude, currentAccount.locationHis.Longitude),),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+
+                          ],
                         ),
                       ),
                     ),
 
-                    Positioned(
-                      top: 45,
-                      left: 0,
+                    Padding(
+                      padding: EdgeInsets.only(left: 0),
                       child: Container(
-                          width: screenWidth,
-                          height: (ADStype2List.length % 2 == 0) ? (ADStype2List.length / 2) * (((screenWidth/2) - 15)/4*5) : ((ADStype2List.length / 2) + 1) * (((screenWidth/2) - 15)/4*5),
-                          decoration: BoxDecoration(
-                              color: Colors.white
-                          ),
+                        height: 92 + (ADStype2List.length / 2) * (((screenWidth/2) - 26)/4*5),
+                        decoration: BoxDecoration(
 
-                          child: GridView.builder(
-                            itemCount: ADStype2List.length,
-                            physics: NeverScrollableScrollPhysics(),
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2, // số phần tử trên mỗi hàng
-                              mainAxisSpacing: 0, // khoảng cách giữa các hàng
-                              crossAxisSpacing: 0, // khoảng cách giữa các cột
-                              childAspectRatio: 0.8, // tỷ lệ chiều rộng và chiều cao
-                            ),
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 13.0),
-                                child: InkWell(
-                                  onTap: () async {
-                                    await _launchInBrowser(Uri.parse(ADStype2List[index].facebookLink));
-                                  },
-                                  child: ITEMadsType2(adStype2: ADStype2List[index], width: (screenWidth/2) - 26,),
+                        ),
+
+                        child: Stack(
+                          children: <Widget>[
+                            Positioned(
+                              top: 10,
+                              left: 10,
+                              child: Text(
+                                "Ưu đãi khác từ XEKO",
+                                style: TextStyle(
+                                    fontFamily: 'DMSans_regu',
+                                    color: Colors.black,
+                                    fontSize: screenWidth/18,
+                                    fontWeight: FontWeight.bold
                                 ),
-                              );
-                            },
-                          )
+                              ),
+                            ),
+
+                            Positioned(
+                              top: 45,
+                              left: 0,
+                              child: Container(
+                                  width: screenWidth,
+                                  height: (ADStype2List.length % 2 == 0) ? (ADStype2List.length / 2) * (((screenWidth/2) - 15)/4*5) : ((ADStype2List.length / 2) + 1) * (((screenWidth/2) - 15)/4*5),
+                                  decoration: BoxDecoration(
+                                      color: Colors.white
+                                  ),
+
+                                  child: GridView.builder(
+                                    itemCount: ADStype2List.length,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2, // số phần tử trên mỗi hàng
+                                      mainAxisSpacing: 0, // khoảng cách giữa các hàng
+                                      crossAxisSpacing: 0, // khoảng cách giữa các cột
+                                      childAspectRatio: 0.8, // tỷ lệ chiều rộng và chiều cao
+                                    ),
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 13.0),
+                                        child: InkWell(
+                                          onTap: () async {
+                                            await _launchInBrowser(Uri.parse(ADStype2List[index].facebookLink));
+                                          },
+                                          child: ITEMadsType2(adStype2: ADStype2List[index], width: (screenWidth/2) - 26,),
+                                        ),
+                                      );
+                                    },
+                                  )
+                              ),
+                            ),
+
+                          ],
+                        ),
                       ),
                     ),
-
                   ],
                 ),
               ),
             ),
+
+            Positioned(
+              bottom: 20,
+              left: 30,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
+                },
+                child: Container(
+                  width: screenWidth - 60,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Color.fromARGB(255, 244, 164, 84),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2), // màu của shadow
+                        spreadRadius: 2, // bán kính của shadow
+                        blurRadius: 7, // độ mờ của shadow
+                        offset: Offset(0, 3), // vị trí của shadow
+                      ),
+                    ],
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Đăng nhập vào XEKO',
+                    style: TextStyle(
+                      fontFamily: 'roboto',
+                      fontSize: 14,
+                      color: Colors.white
+                    ),
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       ),

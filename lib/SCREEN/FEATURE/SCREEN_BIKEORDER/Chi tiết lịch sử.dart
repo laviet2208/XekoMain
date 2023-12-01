@@ -8,6 +8,7 @@ import 'package:xekomain/GENERAL/utils/utils.dart';
 import 'package:xekomain/OTHER/Button/Buttontype1.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:xekomain/SCREEN/HISTORY/SCREENhistorycatch.dart';
 import 'package:xekomain/SCREEN/INUSER/SCREEN_MAIN/SCREENmain.dart';
 
 import '../../../FINAL/finalClass.dart';
@@ -16,16 +17,17 @@ import '../../../GENERAL/NormalUser/accountNormal.dart';
 import '../../../GENERAL/Tool/Time.dart';
 import '../../../GENERAL/Tool/Tool.dart';
 
-class SCREENwaitbiker extends StatefulWidget {
+class SCREENwaitbikerHis extends StatefulWidget {
   final accountLocation diemdon;
   final accountLocation diemtra;
-  const SCREENwaitbiker({Key? key, required this.diemdon, required this.diemtra}) : super(key: key);
+  final String id;
+  const SCREENwaitbikerHis({Key? key, required this.diemdon, required this.diemtra, required this.id}) : super(key: key);
 
   @override
-  State<SCREENwaitbiker> createState() => _SCREENwaitbikerState();
+  State<SCREENwaitbikerHis> createState() => _SCREENwaitbikerState();
 }
 
-class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
+class _SCREENwaitbikerState extends State<SCREENwaitbikerHis> {
   late GoogleMapController mapController;
   double _originLatitude = 0, _originLongitude = 0;
   double _destLatitude = 0, _destLongitude = 0;
@@ -35,7 +37,7 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
   PolylinePoints polylinePoints = PolylinePoints();
   String googleAPiKey = "AIzaSyBsVQaVVMXw-y3QgvCWwJe02FWkhqP_wRA";
   catchOrder thiscatch = catchOrder(
-      id: '',
+      id: generateID(10),
       locationSet: accountLocation(phoneNum: "NA", LocationID: "NA", Latitude: -1, Longitude: -1, firstText: "NA", secondaryText: "NA"),
       locationGet: accountLocation(phoneNum: "NA", LocationID: "NA", Latitude: -1, Longitude: -1, firstText: "NA", secondaryText: "NA"),
       cost: -1,
@@ -59,13 +61,11 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
 
   void getData(String id) {
     final reference = FirebaseDatabase.instance.reference();
-    reference.child('Order/catchOrder').onValue.listen((event) {
+    reference.child('Order/catchOrder/' + widget.id).onValue.listen((event) {
       final dynamic catchorder = event.snapshot.value;
-      catchorder.forEach((key, value) {
-        if (accountNormal.fromJson(value['owner']).id == id) {
-          if (value['status'].toString() == 'A' || value['status'].toString() == 'B' || value['status'].toString() == 'C') {
-            catchOrder thisO = catchOrder.fromJson(value);
-            thiscatch.setDataFromJson(value);
+            catchOrder thisO = catchOrder.fromJson(catchorder);
+            thiscatch.ChangeDataByAnother(thisO);
+
             setState(() {
               _originLatitude = thisO.locationSet.Latitude;
               _originLongitude = thisO.locationSet.Longitude;
@@ -95,20 +95,12 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                 status = 'đang đợi tài xế nhận đơn';
               }
               if (thisO.status == 'B') {
-                status = getAllTimeString(thisO.S1time) + ' .Tài xế ' + thisO.shipper.name + " - " + thisO.shipper.phoneNum + ' đang đến , bạn có thể hủy đơn nhưng nghĩ kỹ nhé!';
+                status = getAllTimeString(thisO.S2time) + ' .Tài xế ' + thisO.shipper.name + " - " + thisO.shipper.phoneNum + ' đang đến , bạn có thể hủy đơn nhưng nghĩ kỹ nhé!';
               }
               if (thisO.status == 'C') {
-                status = 'Đã đón bạn , hành trình bắt đầu! đơn được nhận lúc' + getAllTimeString(thisO.S1time);
-              }
-
-              if (thisO.status == 'E' || thisO.status == 'F' || thisO.status == 'G' || thisO.status == 'D') {
-                Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENmain()));
+                status = 'Đã đón bạn , hành trình bắt đầu! đơn được nhận lúc' + getAllTimeString(thisO.S2time);
               }
             });
-          }
-        }
-      }
-      );
     });
   }
 
@@ -124,6 +116,20 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
       print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
       throw error;
     }
+  }
+
+  void listenToCatchOrderStatus(String id) {
+    DatabaseReference catchOrderRef = FirebaseDatabase.instance.reference().child('Order/catchOrder/' + id);
+
+    catchOrderRef.onChildChanged.listen((event) {
+      final dynamic catchOrder = event.snapshot.value;
+
+      String status = catchOrder['status'];
+      if (status == 'D') {
+        // Xử lý khi status chuyển sang 'D'
+        print('Status changed to D');
+      }
+    });
   }
 
   @override
@@ -172,7 +178,7 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                           left: 10,
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENmain()));
+                              Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENhistorycatch()));
                             },
                             child: Container(
                               width: 40,
@@ -347,15 +353,10 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                                   width: 10,
                                 ),
 
-                                Container(
-                                  width: 30,
-                                  height: 30,
-                                  decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: AssetImage('assets/image/minibike.png')
-                                      )
-                                  ),
+                                Icon(
+                                  Icons.drive_eta,
+                                  color: Color.fromARGB(255, 255, 123, 64),
+                                  size: 30,
                                 ),
 
                                 Container(
@@ -368,7 +369,7 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                                     height: 30,
                                     width: screenWidth - 40 - 30 - 30,
                                     child: AutoSizeText(
-                                      'Xe ôm',
+                                      thiscatch.type == 1 ? 'Xe ôm' : 'Taxi XEKO',
                                       style: TextStyle(
                                           fontFamily: 'arial',
                                           color: Color.fromARGB(255, 255, 123, 64),
@@ -491,7 +492,7 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                                       text: TextSpan(
                                         children: [
                                           TextSpan(
-                                            text: getStringNumber(thiscatch.cost),
+                                            text: getStringNumber(thiscatch.cost) + "đ",
                                             style: TextStyle(
                                               fontFamily: 'arial',
                                               color: Colors.black,
@@ -693,10 +694,6 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                                       ],
                                     ),
                                   ),
-                                ),
-
-                                Container(
-                                  width: 10,
                                 ),
 
 
@@ -1056,12 +1053,10 @@ class _SCREENwaitbikerState extends State<SCREENwaitbiker> {
                     child: ButtonType1(Height: (thiscatch.status == "A" || thiscatch.status == "B") ? screenHeight/15 : 0, Width: screenWidth, color: Color.fromARGB(255, 244, 164, 84), radiusBorder: 30, title: 'Hủy chuyến', fontText: 'arial', colorText: Colors.white,
                         onTap: () async {
                           if (thiscatch.status == "A") {
-                            Time huychuyen = getCurrentTime();
                             await updateData('E');
                           }
 
                           if (thiscatch.status == "B") {
-                            Time huychuyen = getCurrentTime();
                             await updateData('F');
                           }
                         }

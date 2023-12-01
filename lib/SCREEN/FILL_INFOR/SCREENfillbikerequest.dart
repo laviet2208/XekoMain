@@ -26,26 +26,13 @@ class _SCREENfillbikerequestState extends State<SCREENfillbikerequest> {
   final cmndcontroller = TextEditingController();
   final addresscontroller = TextEditingController();
   final typecontroller = TextEditingController();
-  bool _isCameraOpen = false;
   bool loading = false;
 
-  CameraController? _controller;
   XFile? _imageFile;
   XFile? _imageFile1;
-  void _initializeCamera() async {
-    final cameras = await availableCameras();
-    final firstCamera = cameras.first;
-
-    _controller = CameraController(firstCamera, ResolutionPreset.high);
-
-    await _controller!.initialize();
-
-    if (!mounted) {
-      return;
-    }
-
-    setState(() {});
-  }
+  XFile? _imageFile2;
+  XFile? _imageFile3;
+  XFile? _imageFile4;
 
   Future<void> pushCatchOrder(bikeRequest request) async {
     try {
@@ -59,14 +46,10 @@ class _SCREENfillbikerequestState extends State<SCREENfillbikerequest> {
   }
 
   void _takePicture() async {
-    if (!_controller!.value.isInitialized) {
-      return;
-    }
-
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CameraPreviewScreen(controller: _controller!),
+        builder: (context) => CameraPreviewScreen(type: 1,),
       ),
     ).then((imagePath) {
       if (imagePath != null) {
@@ -78,14 +61,10 @@ class _SCREENfillbikerequestState extends State<SCREENfillbikerequest> {
   }
 
   void _takePicture1() async {
-    if (!_controller!.value.isInitialized) {
-      return;
-    }
-
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CameraPreviewScreen(controller: _controller!),
+        builder: (context) => CameraPreviewScreen(type: 1,),
       ),
     ).then((imagePath) {
       if (imagePath != null) {
@@ -95,6 +74,52 @@ class _SCREENfillbikerequestState extends State<SCREENfillbikerequest> {
       }
     });
   }
+
+  void _takePicture2() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CameraPreviewScreen(type: 1,),
+      ),
+    ).then((imagePath) {
+      if (imagePath != null) {
+        setState(() {
+          _imageFile2 = XFile(imagePath);
+        });
+      }
+    });
+  }
+
+  void _takePicture3() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CameraPreviewScreen(type: 1,),
+      ),
+    ).then((imagePath) {
+      if (imagePath != null) {
+        setState(() {
+          _imageFile3 = XFile(imagePath);
+        });
+      }
+    });
+  }
+
+  void _takePicture4() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CameraPreviewScreen(type: 2,),
+      ),
+    ).then((imagePath) {
+      if (imagePath != null) {
+        setState(() {
+          _imageFile4 = XFile(imagePath);
+        });
+      }
+    });
+  }
+
 
   void uploadImageToFirebaseStorage(XFile? imageFile, int type) async {
     if (imageFile == null) {
@@ -113,7 +138,22 @@ class _SCREENfillbikerequestState extends State<SCREENfillbikerequest> {
     final ref = FirebaseStorage.instance.ref().child('CCCD');
 
     // Tạo tên file ngẫu nhiên hoặc sử dụng tên file tùy ý
-    final fileName = (type == 1) ? currentAccount.id + '_T' : currentAccount.id + '_S';
+    String fileName = '';
+    if(type == 1) {
+      fileName = currentAccount.id + '_T';
+    }
+    if(type == 2) {
+      fileName = currentAccount.id + '_S';
+    }
+    if(type == 3) {
+      fileName = currentAccount.id + '_LT';
+    }
+    if(type == 4) {
+      fileName = currentAccount.id + '_LS';
+    }
+    if(type == 5) {
+      fileName = currentAccount.id + '_Ava';
+    }
 
     try {
       // Đọc dữ liệu của tệp ảnh
@@ -137,18 +177,6 @@ class _SCREENfillbikerequestState extends State<SCREENfillbikerequest> {
     } catch (e) {
       print('Lỗi khi tải ảnh lên Firebase Storage: $e');
     }
-  }
-
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeCamera();
   }
 
   @override
@@ -562,10 +590,10 @@ class _SCREENfillbikerequestState extends State<SCREENfillbikerequest> {
                           height: 160,
                           decoration: BoxDecoration(
                             border: Border.all(
-                              width: 2,
+                              width: 1,
                               color: Color.fromARGB(255, 244, 164, 84),
                             ),
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(0),
                           ),
                           child: Center(
                             child: _imageFile1 == null
@@ -612,10 +640,10 @@ class _SCREENfillbikerequestState extends State<SCREENfillbikerequest> {
                             height: 160,
                             decoration: BoxDecoration(
                               border: Border.all(
-                                width: 2,
+                                width: 1,
                                 color: Color.fromARGB(255, 244, 164, 84),
                               ),
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(0),
                             ),
                             child: Center(
                               child: _imageFile == null
@@ -661,6 +689,180 @@ class _SCREENfillbikerequestState extends State<SCREENfillbikerequest> {
 
             Padding(
               padding: EdgeInsets.only(left: 10, right: 10),
+              child: Container(
+                height: 200,
+                child: Stack(
+                  children:<Widget>[
+                    Positioned(
+                      top: 10,
+                      left: 0,
+                      child: GestureDetector(
+                        child: Container(
+                          width: (screenWidth - 30 - 20) / 2,
+                          height: 160,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 1,
+                              color: Color.fromARGB(255, 244, 164, 84),
+                            ),
+                            borderRadius: BorderRadius.circular(0),
+                          ),
+                          child: Center(
+                            child: _imageFile2 == null
+                                ? Text(
+                              '+',
+                              style: TextStyle(
+                                fontSize: 24,
+                                color: Color.fromARGB(255, 244, 164, 84),
+                              ),
+                            ): Image.file(File(_imageFile2!.path)),
+                          ),
+                        ),
+
+                        onTap: () {
+                          _takePicture2();
+                        },
+                      ),
+                    ),
+
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      child: Container(
+                        width: (screenWidth - 30 -20)/2,
+                        alignment: Alignment.center,
+                        child: Text(
+                          textAlign: TextAlign.center,
+                          'Mặt trước bằng lái',
+                          style: TextStyle(
+                              fontFamily: 'arial',
+                              color: Colors.black,
+                              fontSize: 13
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    Positioned(
+                      top: 10,
+                      right: 0,
+                      child: GestureDetector(
+                        child: Container(
+                          width: (screenWidth - 30 - 20) / 2,
+                          height: 160,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 1,
+                              color: Color.fromARGB(255, 244, 164, 84),
+                            ),
+                            borderRadius: BorderRadius.circular(0),
+                          ),
+                          child: Center(
+                            child: _imageFile3 == null
+                                ? Text(
+                              '+',
+                              style: TextStyle(
+                                fontSize: 24,
+                                color: Color.fromARGB(255, 244, 164, 84),
+                              ),
+                            ): Image.file(File(_imageFile3!.path)),
+                          ),
+                        ),
+
+                        onTap: () {
+                          _takePicture3();
+                        },
+                      ),
+                    ),
+
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: (screenWidth - 30 -20)/2,
+                        alignment: Alignment.center,
+                        child: Text(
+                          textAlign: TextAlign.center,
+                          'Mặt sau bằng lái',
+                          style: TextStyle(
+                              fontFamily: 'arial',
+                              color: Colors.black,
+                              fontSize: 13
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            Container(height: 30,),
+
+            Padding(
+              padding: EdgeInsets.only(left: 10, right: 10),
+              child: Container(
+                height: 200,
+                child: Stack(
+                  children:<Widget>[
+                    Positioned(
+                      top: 10,
+                      left: (screenWidth - ((screenWidth - 30 - 20) / 2))/2,
+                      child: GestureDetector(
+                        child: Container(
+                          width: (screenWidth - 30 - 20) / 2,
+                          height: 160,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 1,
+                              color: Color.fromARGB(255, 244, 164, 84),
+                            ),
+                            borderRadius: BorderRadius.circular(0),
+                          ),
+                          child: Center(
+                            child: _imageFile4 == null
+                                ? Text(
+                              '+',
+                              style: TextStyle(
+                                fontSize: 24,
+                                color: Color.fromARGB(255, 244, 164, 84),
+                              ),
+                            ): Image.file(File(_imageFile4!.path)),
+                          ),
+                        ),
+
+                        onTap: () {
+                          _takePicture4();
+                        },
+                      ),
+                    ),
+
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      child: Container(
+                        width: screenWidth,
+                        alignment: Alignment.center,
+                        child: Text(
+                          textAlign: TextAlign.center,
+                          'Ảnh chân dung',
+                          style: TextStyle(
+                              fontFamily: 'arial',
+                              color: Colors.black,
+                              fontSize: 13
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            Container(height: 30,),
+
+            Padding(
+              padding: EdgeInsets.only(left: 10, right: 10),
               child: ButtonType1(Height: 60, Width: screenWidth-20, color: Color.fromARGB(255, 244, 164, 84), radiusBorder: 30, title: 'Gửi yêu cầu', fontText: 'arial', colorText: Colors.white,
                   onTap: () async{
                      setState(() {
@@ -679,6 +881,9 @@ class _SCREENfillbikerequestState extends State<SCREENfillbikerequest> {
                              owner: currentAccount);
                          uploadImageToFirebaseStorage(_imageFile, 1);
                          uploadImageToFirebaseStorage(_imageFile1, 2);
+                         uploadImageToFirebaseStorage(_imageFile2, 3);
+                         uploadImageToFirebaseStorage(_imageFile3, 4);
+                         uploadImageToFirebaseStorage(_imageFile4, 5);
                          await pushCatchOrder(rq);
 
                          setState(() {

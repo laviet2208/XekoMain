@@ -29,7 +29,7 @@ final List<Product> cartList = [];
 final List<Product> storeList = [];
 
 //voucher đang chọn
-final Voucher chosenvoucher = Voucher(id: 'NA', totalmoney: 0, mincost: 0, startTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), endTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), useCount: 0, maxCount: 0, tenchuongtrinh: '', LocationId: '', type: 1, Otype: '');
+final Voucher chosenvoucher = Voucher(id: 'NA', totalmoney: 0, mincost: 0, startTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), endTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), useCount: 0, maxCount: 0, tenchuongtrinh: '', LocationId: '', type: 1, Otype: '', perCustom: 0, CustomList: [], maxSale: 0);
 final Cost bikeCost = Cost(departKM: 2, departCost: 25000, perKMcost: 15000, discount: 20);
 final Cost carCost = Cost(departKM: 2, departCost: 25000, perKMcost: 15000, discount: 20);
 final Cost FoodCost = Cost(departKM: 2, departCost: 25000, perKMcost: 15000, discount: 20);

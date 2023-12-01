@@ -1,4 +1,3 @@
-
 import 'package:xekomain/FINAL/finalClass.dart';
 
 import '../NormalUser/accountLocation.dart';
@@ -10,20 +9,20 @@ import 'Receiver.dart';
 import 'item_details.dart';
 
 class itemsendOrder {
-  final String id;
-  final accountLocation locationset;
-  final double cost;
-  final Time startTime;
-  final Time receiveTime;
-  final Time endTime;
-  final Time cancelTime;
-  final accountNormal owner;
-  final Receiver receiver;
-  final item_details itemdetails;
-  final accountNormal shipper;
-  final String status;
-  final Cost costFee;
-  final Voucher voucher;
+  String id;
+  accountLocation locationset;
+  double cost;
+  Time S1time;
+  Time S2time;
+  Time S3time;
+  Time S4time;
+  accountNormal owner;
+  Receiver receiver;
+  item_details itemdetails;
+  accountNormal shipper;
+  String status;
+  Cost costFee;
+  Voucher voucher;
 
   itemsendOrder({
     required this.id,
@@ -31,10 +30,10 @@ class itemsendOrder {
     required this.owner,
     required this.shipper,
     required this.status,
-    required this.endTime,
-    required this.startTime,
-    required this.cancelTime,
-    required this.receiveTime,
+    required this.S1time,
+    required this.S2time,
+    required this.S3time,
+    required this.S4time,
     required this.locationset,
     required this.receiver,
     required this.itemdetails,
@@ -46,10 +45,10 @@ class itemsendOrder {
     'id' : id,
     'locationset' : locationset.toJson(),
     'cost' : cost,
-    'startTime' : startTime.toJson(),
-    'receiveTime' : receiveTime.toJson(),
-    'endTime' : endTime.toJson(),
-    'cancelTime' : cancelTime.toJson(),
+    'S1time' : S1time.toJson(),
+    'S2time' : S2time.toJson(),
+    'S3time' : S3time.toJson(),
+    'S4time' : S4time.toJson(),
     'owner' : owner.toJson(),
     'receiver' : receiver.toJson(),
     'itemdetails' : itemdetails.toJson(),
@@ -58,6 +57,30 @@ class itemsendOrder {
     'voucher' : voucher.toJson(),
     'costFee' : costFee.toJson()
   };
+
+  void setDataFromJson(Map<dynamic, dynamic> json) {
+    accountNormal shipper;
+
+    if (json['shipper'] != null) {
+      shipper = accountNormal.fromJson(json['shipper']);
+    } else {
+      shipper = accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: currentAccount.Area);
+    }
+
+    id = json['id'].toString();
+    locationset = accountLocation.fromJson(json['locationset']);
+    cost = double.parse(json['cost'].toString());
+    owner = accountNormal.fromJson(json['owner']);
+    status = json['status'].toString();
+    S1time = Time.fromJson(json['S1time']);
+    S2time = Time.fromJson(json['S2time']);
+    S3time = Time.fromJson(json['S3time']);
+    S4time = Time.fromJson(json['S4time']);
+    receiver = Receiver.fromJson(json['receiver']);
+    itemdetails = item_details.fromJson(json['itemdetails']);
+    voucher = Voucher.fromJson(json['voucher']);
+    costFee = Cost.fromJson(json['costFee']);
+  }
 
   factory itemsendOrder.fromJson(Map<dynamic, dynamic> json) {
     accountNormal shipper;
@@ -73,10 +96,10 @@ class itemsendOrder {
       cost: double.parse(json['cost'].toString()),
       owner: accountNormal.fromJson(json['owner']),
       status: json['status'].toString(),
-      endTime: Time.fromJson(json['endTime']),
-      startTime: Time.fromJson(json['startTime']),
-      cancelTime: Time.fromJson(json['cancelTime']),
-      receiveTime: Time.fromJson(json['receiveTime']),
+      S1time: Time.fromJson(json['S1time']),
+      S2time: Time.fromJson(json['S2time']),
+      S3time: Time.fromJson(json['S3time']),
+      S4time: Time.fromJson(json['S4time']),
       shipper: shipper,
       locationset: accountLocation.fromJson(json['locationset']),
       receiver: Receiver.fromJson(json['receiver']),

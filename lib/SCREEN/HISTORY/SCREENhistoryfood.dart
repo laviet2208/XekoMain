@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:xekomain/GENERAL/NormalUser/accountNormal.dart';
+import 'package:xekomain/SCREEN/RESTAURANT/Chi%20ti%E1%BA%BFt%20l%E1%BB%8Bch%20s%E1%BB%AD.dart';
 
 
 import '../../FINAL/finalClass.dart';
@@ -115,6 +116,7 @@ class _SCREENhistorysendState extends State<SCREENhistoryfood> {
                 height: screenHeight - 100,
                 child: ListView.builder(
                   itemCount: dataList.length,
+                  padding: EdgeInsets.zero,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 0.0),
@@ -137,6 +139,9 @@ class _SCREENhistorysendState extends State<SCREENhistoryfood> {
                             }
                           },
                         ),
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENfoodHisDetail(id: dataList[index].id, diemdon: dataList[index].locationSet,diemtra: dataList[index].locationGet,)));
+                        },
                       ),
                     );
                   },

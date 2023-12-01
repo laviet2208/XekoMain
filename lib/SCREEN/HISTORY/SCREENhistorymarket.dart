@@ -116,6 +116,7 @@ class _SCREENhistorysendState extends State<SCREENhistorymarket> {
                 height: screenHeight - 100,
                 child: ListView.builder(
                   itemCount: dataList.length,
+                  padding: EdgeInsets.zero,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 0.0),

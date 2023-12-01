@@ -149,7 +149,7 @@ class ITEMhistoryfood extends StatelessWidget {
 
               ),
               child: Text(
-                getAllTimeString(order.startTime),
+                getAllTimeString(order.S1time),
                 style: TextStyle(
                     fontFamily: 'arial',
                     fontSize: 16,

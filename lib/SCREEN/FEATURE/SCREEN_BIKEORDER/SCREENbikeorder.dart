@@ -165,7 +165,7 @@ class _SCREENbikeorderState extends State<SCREENbikeorder> {
                               top: 50,
                               left: 20,
                               child: Text(
-                                "Di chuyển",
+                                "XEKO Bike",
                                 style: TextStyle(
                                     fontSize: 25,
                                     fontFamily: 'arial',

@@ -19,7 +19,7 @@ class ITEMproductIndirect extends StatefulWidget {
 }
 
 class _ITEMrestaurantIndirectState extends State<ITEMproductIndirect> {
-  final Product product = Product(id: '', name: '', content: '', owner: accountShop(openTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), closeTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), phoneNum: '', location: '', name: '', id: '', status: 1, avatarID: '', createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), password: '', isTop: 0, Type: 0, ListDirectory: [], Area: ''), cost: 0, imageList: '');
+  final Product product = Product(id: '', name: '', content: '', owner: accountShop(openTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), closeTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), phoneNum: '', location: '', name: '', id: '', status: 1, avatarID: '', createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), password: '', isTop: 0, Type: 0, ListDirectory: [], Area: ''), cost: 0, imageList: '', createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0));
   final QuantitySelector quantitySelector = QuantitySelector();
   void getData() {
     final reference = FirebaseDatabase.instance.reference();

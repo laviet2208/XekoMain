@@ -214,7 +214,7 @@ class _SCREENfillitemsendinfoState extends State<SCREENfillitemsendinfo> {
               Padding(
                 padding: EdgeInsets.only(left: 10),
                 child: Text(
-                  'Phí thu hộ (bắt buộc)',
+                  'Thu hộ COD (bắt buộc)',
                   style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,

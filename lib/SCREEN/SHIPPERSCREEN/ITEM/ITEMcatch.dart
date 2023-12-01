@@ -193,7 +193,7 @@ class ITEMcatch extends StatelessWidget {
                       ),
                     ),
                     TextSpan(
-                      text: getAllTimeString(order.startTime), // Phần còn lại viết bình thường
+                      text: getAllTimeString(order.S1time), // Phần còn lại viết bình thường
                       style: TextStyle(
                         fontSize: 15,
                         fontFamily: 'arial',

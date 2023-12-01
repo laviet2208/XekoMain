@@ -382,7 +382,7 @@ class _SCREENfillreceiverinforState extends State<SCREENfillreceiverinfor> {
                           ),
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            hintText: 'số điện thoại',
+                            hintText: 'Ghi chú',
                             hintStyle: TextStyle(
                               color: Colors.grey,
                               fontSize: 16,

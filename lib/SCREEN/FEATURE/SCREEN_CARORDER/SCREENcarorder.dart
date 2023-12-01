@@ -163,7 +163,7 @@ class _SCREENcarorderState extends State<SCREENcarorder> {
                                   top: 50,
                                   left: 20,
                                   child: Text(
-                                    "Xeko car",
+                                    "XEKO Car",
                                     style: TextStyle(
                                         fontSize: 25,
                                         fontFamily: 'arial',

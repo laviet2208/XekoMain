@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:xekomain/FINAL/finalClass.dart';
+import 'package:xekomain/GENERAL/Product/Danh%20m%E1%BB%A5c%20%C4%91%E1%BB%93%20%C4%83n.dart';
 import 'package:xekomain/GENERAL/Tool/Tool.dart';
 import 'package:xekomain/SCREEN/INUSER/PAGE_HOME/T%C3%ADnh%20kho%E1%BA%A3ng%20c%C3%A1ch.dart';
 import 'SCREENfoodcart.dart';
@@ -22,9 +23,14 @@ class SCREENshopview extends StatefulWidget {
 
 class _SCREENshopmainState extends State<SCREENshopview> {
   List<Product> productList = [];
+  List<FoodDirectory> foodDirecList = [];
+  List<FoodDirectory> chosenList = [];
+  FoodDirectory chosenDirectory = FoodDirectory(id: '', mainName: '', foodList: [], ownerID: '');
   double total1 = 0;
   String totalText = '0 .đ';
   accountShop selectShop = accountShop(openTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), closeTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), phoneNum: '', location: '', name: '', id: '', status: 1, avatarID: '', createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), password: '', isTop: 0, Type: 0, ListDirectory: [], Area: '');
+  int SelectIndex = 0;
+
   void getData() {
     final reference = FirebaseDatabase.instance.reference();
     reference.child("Restaurant/" + widget.currentShop).onValue.listen((event) {
@@ -42,6 +48,28 @@ class _SCREENshopmainState extends State<SCREENshopview> {
         setState(() {
 
         });
+    });
+  }
+
+  void getData1()  {
+    final reference = FirebaseDatabase.instance.reference();
+    reference.child("FoodDirectory").onValue.listen((event) {
+      foodDirecList.clear();
+      chosenList.clear();
+      foodDirecList.add(FoodDirectory(id: 'all', mainName: 'Tất cả', foodList: [], ownerID: ''));
+      final dynamic restaurant = event.snapshot.value;
+      restaurant.forEach((key, value) {
+        FoodDirectory acc = FoodDirectory.fromJson(value);
+        if (acc.ownerID == widget.currentShop) {
+          foodDirecList.add(acc);
+          chosenList.add(acc);
+        }
+
+        setState(() {
+          chosenDirectory = foodDirecList.first;
+        });
+      });
+
     });
   }
 
@@ -69,12 +97,58 @@ class _SCREENshopmainState extends State<SCREENshopview> {
     setState(() {});
   }
 
+  void dropdownCallback(FoodDirectory? selectedValue) {
+    if (selectedValue is FoodDirectory) {
+      chosenDirectory = selectedValue;
+      if (chosenDirectory.id == 'all') {
+        chosenList.clear();
+        for(int i = 0 ; i < foodDirecList.length ; i++) {
+          if (foodDirecList.elementAt(i).id != 'all') {
+            chosenList.add(foodDirecList.elementAt(i));
+            setState(() {
+
+            });
+          }
+
+        }
+        setState(() {
+
+        });
+      } else {
+        chosenList.clear();
+        setState(() {
+
+        });
+        for(int i = 0 ; i < foodDirecList.length ; i++) {
+          if (foodDirecList.elementAt(i).id == chosenDirectory.id) {
+            chosenList.add(foodDirecList.elementAt(i));
+            print(chosenList.first.toJson().toString());
+            print(chosenList.length);
+            setState(() {
+
+            });
+          }
+        }
+        setState(() {
+
+        });
+      }
+
+    }
+
+    setState(() {
+
+    });
+  }
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    selectShop.id = widget.currentShop;
     getData();
+    getData1();
   }
 
   @override
@@ -144,7 +218,10 @@ class _SCREENshopmainState extends State<SCREENshopview> {
                         color: Colors.white
                       ),
                       child: ListView(
+                        padding: EdgeInsets.zero,
                         children: [
+                          Container(height: 20,),
+
                           Padding(
                             padding: EdgeInsets.only(left: 10,right: 10),
                             child: Container(
@@ -211,28 +288,44 @@ class _SCREENshopmainState extends State<SCREENshopview> {
 
                           Container(height: 20,),
 
-                          Container(
-                            height: 340 * selectShop.ListDirectory.length.toDouble(),
-                            child: ListView.builder(
-                              itemCount: selectShop.ListDirectory.length,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemBuilder: (BuildContext context, int index) {
-                                return Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                                  child: InkWell(
-                                    onTap: () {
+                          Padding(
+                            padding: EdgeInsets.only(left: 15, right: 15),
+                            child: Container(
+                              height: 40,
+                              child: DropdownButton<FoodDirectory>(
+                                items: foodDirecList.map((e) => DropdownMenuItem<FoodDirectory>(
+                                  value: e,
+                                  child: Text(e.mainName),
+                                )).toList(),
+                                onChanged: (value) { dropdownCallback(value); },
+                                value: chosenDirectory,
+                                iconEnabledColor: Colors.redAccent,
+                                isExpanded: true,
+                                iconDisabledColor: Colors.grey,
+                              ),
+                            ),
+                          ),
 
-                                    },
-                                    child: ITEMdanhsachmonan(width: screenWidth, height: 340, id: selectShop.ListDirectory[index], ontap: () { setState(() {
-                                      total1 = 0;
-                                      for (int i = 0 ; i < cartList.length ; i++) {
-                                        total1 = total1 + cartList[i].cost;
-                                      }
-                                      totalText = getStringNumber(total1) + ' .đ';
-                                    }); },),
-                                  ),
-                                );
-                              },
+                          Container(height: 20,),
+
+                          Container(
+                            height: 340 * chosenList.length.toDouble(),
+                            child: Padding(
+                              padding: EdgeInsets.only(left: 10,right: 10),
+                              child: ListView.builder(
+                                padding: EdgeInsets.zero,
+                                itemCount: chosenList.length,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemBuilder: (context, index) {
+                                  return ITEMdanhsachmonan(width: screenWidth, height: 340, foodDirectory: chosenList[index], ontap: () { setState(() {
+                                    total1 = 0;
+                                    for (int i = 0 ; i < cartList.length ; i++) {
+                                      total1 = total1 + cartList[i].cost;
+                                    }
+                                    totalText = getStringNumber(total1) + ' .đ';
+                                  }); },);
+                                },
+                              ),
                             ),
                           )
                         ],

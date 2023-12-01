@@ -165,7 +165,7 @@ class _SCREENitemsendState extends State<SCREENitemsend> {
                                 top: 50,
                                 left: 20,
                                 child: Text(
-                                  "Xeko Express",
+                                  "XEKO Express",
                                   style: TextStyle(
                                       fontSize: 25,
                                       fontFamily: 'arial',
