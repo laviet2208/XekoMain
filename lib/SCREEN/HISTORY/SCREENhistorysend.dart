@@ -38,10 +38,27 @@ class _SCREENhistorysendState extends State<SCREENhistorysend> {
       }
       );
       setState(() {
-
+        sortChosenListByCreateTime(dataList);
       });
     });
 
+  }
+
+  void sortChosenListByCreateTime(List<itemsendOrder> chosenList) {
+    chosenList.sort((a, b) {
+      // Sắp xếp theo thời gian tạo giảm dần (mới nhất lên đầu)
+      return b.S1time.year.compareTo(a.S1time.year) != 0
+          ? b.S1time.year.compareTo(a.S1time.year)
+          : (b.S1time.month.compareTo(a.S1time.month) != 0
+          ? b.S1time.month.compareTo(a.S1time.month)
+          : (b.S1time.day.compareTo(a.S1time.day) != 0
+          ? b.S1time.day.compareTo(a.S1time.day)
+          : (b.S1time.hour.compareTo(a.S1time.hour) != 0
+          ? b.S1time.hour.compareTo(a.S1time.hour)
+          : (b.S1time.minute.compareTo(a.S1time.minute) != 0
+          ? b.S1time.minute.compareTo(a.S1time.minute)
+          : b.S1time.second.compareTo(a.S1time.second)))));
+    });
   }
 
   @override

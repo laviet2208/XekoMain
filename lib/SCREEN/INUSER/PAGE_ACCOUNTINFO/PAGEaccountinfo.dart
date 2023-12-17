@@ -17,6 +17,7 @@ import '../../HISTORY/SCREENhistorycatch.dart';
 import '../../HISTORY/SCREENhistoryfood.dart';
 import '../../HISTORY/SCREENhistorymarket.dart';
 import '../../HISTORY/SCREENhistorysend.dart';
+import '../Điều khoản và dịch vụ.dart';
 import 'Chỉnh sửa thông tin cá nhân.dart';
 
 class PAGEaccountinfo extends StatefulWidget {
@@ -297,7 +298,7 @@ class _PAGEaccountinfoState extends State<PAGEaccountinfo> {
                           ),
                         ),
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder:(context) => Viewpersonalinfo()));
+                          Navigator.push(context, MaterialPageRoute(builder:(context) => Viewpersonalinfo(type: 1,)));
                         },
                       ),
                     ),
@@ -466,6 +467,7 @@ class _PAGEaccountinfoState extends State<PAGEaccountinfo> {
                         ),
                       ),
                     ),
+
 
                     Container(height: 10,),
 
@@ -834,6 +836,80 @@ class _PAGEaccountinfoState extends State<PAGEaccountinfo> {
                                           fontWeight: FontWeight.bold
                                       ),
                                     )
+                                ),
+                              ),
+
+                              Positioned(
+                                top: 20,
+                                right: 0,
+                                child: Container(
+                                  height: 20,
+                                  width: 20,
+                                  decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: AssetImage('assets/image/righticon.png')
+                                      )
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    Padding(
+                      padding: EdgeInsets.only(left: 10, right: 10),
+                      child: Container(
+                        height: 2,
+                        decoration: BoxDecoration(
+                            color: Colors.grey,
+                            borderRadius: BorderRadius.circular(20)
+                        ),
+                      ),
+                    ),
+
+                    Container(height: 10,),
+
+                    Padding(
+                      padding: EdgeInsets.only(left: 10, right: 10),
+                      child: GestureDetector(
+                        child: Container(
+                          height: 60,
+                          child: Stack(
+                            children: <Widget>[
+                              Positioned(
+                                top: 15,
+                                left: 5,
+                                child: Icon(
+                                  Icons.policy_outlined,
+                                  size: 30,
+                                  color: Colors.redAccent,
+                                )
+                              ),
+
+                              Positioned(
+                                top: 0,
+                                left: 60,
+                                child: GestureDetector(
+                                  child: Container(
+                                      width: (screenWidth-30)/3*2,
+                                      height: 60,
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        'Điều khoản và phiên bản',
+                                        style: TextStyle(
+                                            fontFamily: 'arial',
+                                            fontSize: 15,
+                                            color: Color.fromARGB(255, 32, 32, 32),
+                                            fontWeight: FontWeight.bold
+                                        ),
+                                      )
+                                  ),
+                                  onTap: () {
+                                    Navigator.push(context, MaterialPageRoute(builder:(context) => Dieukhoandichvu(type: 1,)));
+                                  },
                                 ),
                               ),
 

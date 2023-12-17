@@ -1,15 +1,19 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:xekomain/GENERAL/Product/Danh%20m%E1%BB%A5c%20%C4%91%E1%BB%93%20%C4%83n.dart';
+import 'package:xekomain/GENERAL/ShopUser/accountShop.dart';
 
 import '../../../GENERAL/Tool/Tool.dart';
+import '../../RESTAURANT/Xem món ăn trong danh mục/Screen.dart';
 import 'Item sản phẩm trong danh mục.dart';
 
 class ITEMdanhsachsanpham extends StatefulWidget {
   final double width;
   final double height;
   final String id;
-  const ITEMdanhsachsanpham({Key? key, required this.width, required this.height, required this.id}) : super(key: key);
+  final accountShop shop;
+  final VoidCallback ontap;
+  const ITEMdanhsachsanpham({Key? key, required this.width, required this.height, required this.id, required this.ontap, required this.shop}) : super(key: key);
 
   @override
   State<ITEMdanhsachsanpham> createState() => _ITEMdanhsachmonanState();
@@ -75,6 +79,25 @@ class _ITEMdanhsachmonanState extends State<ITEMdanhsachsanpham> {
           ),
 
           Positioned(
+            top: 10,
+            right: 10,
+            child: GestureDetector(
+              child: Text(
+                'See all',
+                style: TextStyle(
+                    fontFamily: 'DMSans_regu',
+                    color: Colors.blueAccent,
+                    fontSize: widget.width/22,
+                    fontWeight: FontWeight.bold
+                ),
+              ),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder:(context) => Screenxemdanhmuc(name: widget.shop.name, shop: widget.shop, type: 0, foodDirectory: foodDirectory)));
+              },
+            ),
+          ),
+
+          Positioned(
             top: 50,
             left: 0,
             child: Container(
@@ -94,7 +117,7 @@ class _ITEMdanhsachmonanState extends State<ITEMdanhsachsanpham> {
                       onTap: () {
 
                       },
-                      child: ITEMproductIndirect(id: foodDirectory.foodList[index]),),
+                      child: ITEMproductIndirect(id: foodDirectory.foodList[index], ontap: () { widget.ontap(); },),),
                   );
                 },
               ),

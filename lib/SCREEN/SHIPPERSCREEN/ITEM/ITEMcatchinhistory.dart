@@ -20,10 +20,12 @@ class ITEMcatchinhistory extends StatelessWidget {
   Widget build(BuildContext context) {
     bool accecpt = false;
     double height1 = height;
-    Future<void> changeStatus(String sta) async {
+    Future<void> changeStatus(String sta, String time) async {
       try {
         DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
-        await databaseRef.child('catchOrder/' + order.id + '/status').set(sta);
+        await databaseRef.child('Order/catchOrder/' + order.id + '/status').set(sta);
+        databaseRef = FirebaseDatabase.instance.reference();
+        await databaseRef.child('Order/catchOrder/' + order.id + '/' + time).set(getCurrentTime().toJson());
       } catch (error) {
         print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
         throw error;
@@ -33,7 +35,7 @@ class ITEMcatchinhistory extends StatelessWidget {
     Future<void> changeShipper(accountNormal ship) async {
       try {
         DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
-        await databaseRef.child('catchOrder/' + order.id + '/shipper').set(ship.toJson());
+        await databaseRef.child('Order/catchOrder/' + order.id + '/shipper').set(ship.toJson());
       } catch (error) {
         print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
         throw error;
@@ -52,19 +54,11 @@ class ITEMcatchinhistory extends StatelessWidget {
     }
 
     String destination = '';
-    if (order.locationGet.firstText == 'NA') {
-      destination = order.locationGet.Latitude.toString() + ' , ' + order.locationGet.Longitude.toString();
-    } else {
-      destination = order.locationGet.firstText;
-    }
+    destination = order.locationGet.firstText.toString() + ' , ' + order.locationGet.secondaryText.toString();
 
     String locationSet = '';
     Color statusColor = Color.fromARGB(255, 0, 177, 79);
-    if (order.locationSet.firstText == 'NA') {
-      locationSet = order.locationSet.Latitude.toString() + ' , ' + order.locationSet.Longitude.toString();
-    } else {
-      locationSet = order.locationSet.firstText;
-    }
+    locationSet = order.locationSet.firstText.toString() + ' , ' + order.locationSet.secondaryText.toString();
 
     ///Phần button
     //nút hủy đơn
@@ -75,7 +69,7 @@ class ITEMcatchinhistory extends StatelessWidget {
     ///phần trạng thái
     String status = '';
     if (order.status == "B") {
-      status = "Mau chóng tới đón khách";
+      status = "Đang tới đón khách";
       statusColor = Color.fromARGB(255, 0, 177, 79);
       cancelbtnColor = Colors.redAccent;
       acceptText = 'Đã đón khách';
@@ -113,7 +107,6 @@ class ITEMcatchinhistory extends StatelessWidget {
 
     return Container(
       width: width,
-      height: height1,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -126,239 +119,404 @@ class ITEMcatchinhistory extends StatelessWidget {
           ),
         ],
       ),
-      child: Stack(
-        children: <Widget>[
-          Positioned(
-            top: 10,
-            left: 15,
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: AssetImage(imageType)
-                  )
-              ),
-            ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            height: 20,
           ),
 
-          Positioned(
-            top: 10,
-            left: 70,
+          Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
             child: Container(
-              width: width - 100,
-              height: 55,
-              decoration: BoxDecoration(
-
-              ),
-              child: Text(
-                'Chuyến đi tới : ' + destination,
-                style: TextStyle(
-                    fontFamily: 'arial',
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.black87
+              alignment: Alignment.centerLeft,
+              child: RichText(
+                textAlign: TextAlign.start,
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'Mã đơn : ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: order.id, // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.black,
+                        fontWeight: FontWeight.normal, // Để viết bình thường
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
 
-          Positioned(
-            top: 66,
-            left: 70,
-            child: Container(
-              width: width/3*2,
-              height: 20,
-              decoration: BoxDecoration(
+          Container(
+            height: 10,
+          ),
 
-              ),
-              child: Text(
-                'Thời gian đặt: ' + getAllTimeString(order.S1time),
-                style: TextStyle(
-                    fontFamily: 'arial',
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.grey
+          Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: Container(
+              alignment: Alignment.centerLeft,
+              child: RichText(
+                textAlign: TextAlign.start,
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'Điểm trả khách : ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: destination, // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.black,
+                        fontWeight: FontWeight.normal, // Để viết bình thường
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
 
-          Positioned(
-            top: 90,
-            left: 70,
-            child: Container(
-              width: width - 80,
-              height: 20,
-              decoration: BoxDecoration(
+          Container(
+            height: 10,
+          ),
 
-              ),
-              child: Text(
-                '+Số điện thoại liên lạc : ' + order.owner.phoneNum ,
-                style: TextStyle(
-                    fontFamily: 'arial',
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.grey
+          Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: Container(
+              alignment: Alignment.centerLeft,
+              child: RichText(
+                textAlign: TextAlign.start,
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'Điểm đón khách : ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: locationSet, // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.black,
+                        fontWeight: FontWeight.normal, // Để viết bình thường
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
 
-          Positioned(
-            top: 115,
-            left: 70,
-            child: Container(
-              width: width - 100,
-              height: 60,
-              decoration: BoxDecoration(
+          Container(
+            height: 10,
+          ),
 
-              ),
-              child: Text(
-                '+ Đón khách tại : ' + locationSet ,
-                style: TextStyle(
-                    fontFamily: 'arial',
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.grey
+          Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: Container(
+              alignment: Alignment.centerLeft,
+              child: RichText(
+                textAlign: TextAlign.start,
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'Số điện thoại : ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: order.owner.phoneNum[0] == '0' ? order.owner.phoneNum : '0' + order.owner.phoneNum, // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.redAccent,
+                        fontWeight: FontWeight.normal, // Để viết bình thường
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
 
-          Positioned(
-            top: 175,
-            left: 70,
-            child: Container(
-              width: width - 100,
-              height: 60,
-              decoration: BoxDecoration(
+          Container(
+            height: 10,
+          ),
 
-              ),
-              child: Text(
-                '+ Giá trị đơn : ' + getStringNumber(order.cost) + 'đ' ,
-                style: TextStyle(
-                    fontFamily: 'arial',
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.grey
+          Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: Container(
+              alignment: Alignment.centerLeft,
+              child: RichText(
+                textAlign: TextAlign.start,
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'Tên khách hàng : ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: order.owner.name, // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.black,
+                        fontWeight: FontWeight.normal, // Để viết bình thường
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
 
-          Positioned(
-            top: 203,
-            left: 70,
-            child: Container(
-              width: width - 100,
-              height: 60,
-              decoration: BoxDecoration(
+          Container(
+            height: 10,
+          ),
 
-              ),
-              child: Text(
-                '+ Trạng thái : ' + status ,
-                style: TextStyle(
-                    fontFamily: 'arial',
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal,
-                    color: statusColor
+          Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: Container(
+              alignment: Alignment.centerLeft,
+              child: RichText(
+                textAlign: TextAlign.start,
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'Giá trị đơn hàng : ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: getStringNumber(order.cost) + 'đ' + " ( - " + getStringNumber(order.voucher.totalmoney) + (order.voucher.type == 1 ? '%)' : 'đ)'), // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.deepPurple,
+                        fontWeight: FontWeight.normal, // Để viết bình thường
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
 
-          Positioned(
-            top: 235,
-            left: 70,
+          Container(
+            height: 10,
+          ),
+
+          Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
             child: Container(
-              width: (width - 110)/2,
-              height: 40,
-              child: ButtonType1(Height: 40, Width: (width - 110)/2, color: acceptbtnColor, radiusBorder: 20, title: acceptText, fontText: 'arial', colorText: Colors.white,
-                  onTap: () async {
-                    if (order.status == 'A') {
-                      toastMessage('đang nhận đơn');
-                      await changeShipper(currentAccount);
-                      await changeStatus('B');
-                      toastMessage('đã nhận đơn');
-                    }
-
-                    if (order.status == 'B') {
-                      toastMessage('đã đón khách');
-                      await changeStatus('C');
-                    }
-
-                    if (order.status == 'C') {
-                      toastMessage('đã hoàn thành');
-                      await changeStatus('D');
-                    }
-
-                    if (order.status == 'D') {
-                      toastMessage('Đơn đã hoàn thành rồi');
-                    }
-                  }),
+              alignment: Alignment.centerLeft,
+              child: RichText(
+                textAlign: TextAlign.start,
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'Trạng thái : ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: status, // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: statusColor,
+                        fontWeight: FontWeight.normal, // Để viết bình thường
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
 
-          Positioned(
-            top: 235,
-            left: 75 + (width - 110)/2,
+          Container(
+            height: (order.status == 'B' || order.status == 'C') ? 20 : 0,
+          ),
+
+          Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
             child: Container(
-              width: (width - 110)/2,
-              height: 40,
-              child: ButtonType1(Height: 40, Width: (width - 110)/2, color: cancelbtnColor, radiusBorder: 20, title: 'Hủy đơn', fontText: 'arial', colorText: Colors.white,
-                  onTap: () async {
-                    if (order.status == 'B') {
-                      toastMessage('đang hủy đơn');
-                      await changeShipper(currentAccount);
-                      await changeStatus('G');
-                      toastMessage('đã hủy đơn');
-                    }
-                  }),
+              alignment: Alignment.centerLeft,
+              child: Container(
+                height: (order.status == 'B' || order.status == 'C') ? 35 : 0,
+                child: ButtonType1(Height: (order.status == 'B' || order.status == 'C') ? 35 : 0, Width: width-40, color: acceptbtnColor, radiusBorder: 5, title: acceptText, fontText: 'arial', colorText: Colors.white,
+                    onTap: () async {
+                      if (order.status == 'B') {
+                        toastMessage('đã đón khách');
+                        await changeStatus('C', 'S3time');
+                      } else if (order.status == 'C') {
+                        toastMessage('đã hoàn thành');
+                        await changeStatus('D', 'S4time');
+                      } else if (order.status == 'D') {
+                        toastMessage('Đơn đã hoàn thành rồi');
+                      }
+                    }),
+              ),
             ),
           ),
 
-          Positioned(
-            top: 285,
-            left: 70,
+          Container(
+            height: 5,
+          ),
+
+          Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
             child: Container(
-              width: width/4,
-              height: 40,
-              child: ButtonType1(Height: 40, Width: width/4, color: Colors.blueAccent, radiusBorder: 20, title: 'Số điện thoại', fontText: 'arial', colorText: Colors.white,
-                  onTap: () {
-                    copyToClipboard(order.owner.phoneNum);
-                    toastMessage('đã copy số điện thoại');
-                  }),
+              alignment: Alignment.centerLeft,
+              child: Container(
+                child: ButtonType1(Height: order.status == 'B' ? 35 : 0, Width: width-40, color: cancelbtnColor, radiusBorder: 5, title: 'Hủy đơn', fontText: 'arial', colorText: Colors.white,
+                    onTap: () async {
+                      if (order.status == 'B') {
+                        toastMessage('đang hủy đơn');
+                        await changeShipper(currentAccount);
+                        await changeStatus('G', 'S4time');
+                        toastMessage('đã hủy đơn');
+                      }
+                    }),
+              ),
             ),
           ),
 
-          Positioned(
-            top: 285,
-            left: 70 + width/4 + 2,
+          Container(
+            height: 10,
+          ),
+
+          Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
             child: Container(
-              width: width/4,
-              height: 40,
-              child: ButtonType1(Height: 40, Width: width/4, color: Colors.blueAccent, radiusBorder: 20, title: 'Điểm đi', fontText: 'arial', colorText: Colors.white,
-                  onTap: () {
-                    copyToClipboard(locationSet);
-                    toastMessage('đã copy điểm đón');
-                  }),
+                height: (order.status == 'B' || order.status == 'C') ? 35 : 0,
+                child: Row(
+                  children: [
+                    GestureDetector(
+                        child:Container(
+                          width: (width - 65)/3,
+                          height: 35,
+                          decoration: BoxDecoration(
+                            color: Colors.blueAccent,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Số điện thoại',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontFamily: 'arial',
+                              color: Colors.white,
+                              fontWeight: FontWeight.normal, // Để viết bình thường
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          copyToClipboard((order.owner.phoneNum[0] == '0') ? order.owner.phoneNum : ('0' + order.owner.phoneNum));
+                          toastMessage('đã copy số điện thoại');
+                        }
+                    ),
+
+                    Container(width: 10,),
+
+                    GestureDetector(
+                        child:Container(
+                          width: (width - 65)/3,
+                          height: (order.status == 'B' || order.status == 'C') ? 35 : 0,
+                          decoration: BoxDecoration(
+                            color: Colors.blueAccent,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Điểm đón',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontFamily: 'arial',
+                              color: Colors.white,
+                              fontWeight: FontWeight.normal, // Để viết bình thường
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          copyToClipboard(locationSet);
+                          toastMessage('đã copy điểm đón');
+                        }),
+
+
+                    Container(width: 5,),
+
+                    GestureDetector(
+                        child:Container(
+                          width: (width - 65)/3,
+                          height: 35,
+                          decoration: BoxDecoration(
+                              color: Colors.blueAccent,
+                              borderRadius: BorderRadius.circular(5)
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Điểm đến',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontFamily: 'arial',
+                              color: Colors.white,
+                              fontWeight: FontWeight.normal, // Để viết bình thường
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          copyToClipboard(destination);
+                          toastMessage('đã copy điểm đến');
+                        }
+                    ),
+                  ],
+                )
             ),
           ),
 
-          Positioned(
-            top: 285,
-            left: 70 + width/2 + 4,
-            child: Container(
-              width: width/4 - 10,
-              height: 40,
-              child: ButtonType1(Height: 40, Width: width/4 - 10, color: Colors.blueAccent, radiusBorder: 20, title: 'Điểm đến', fontText: 'arial', colorText: Colors.white,
-                  onTap: () {
-                    copyToClipboard(destination);
-                    toastMessage('đã copy điểm đến');
-                  }),
-            ),
+          Container(
+            height: (order.status == 'B' || order.status == 'C') ? 20 : 0,
           ),
         ],
       ),

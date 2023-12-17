@@ -119,11 +119,7 @@ class _ItemdanhmucchinhState extends State<Itemdanhmucchinh> {
                 itemBuilder: (BuildContext context, int index) {
                   return Padding(
                     padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENshopview(currentShop: widget.restaurantDirectory.shopList[index],)));
-                      },
-                      child: ITEMrestaurantIndirect(id: widget.restaurantDirectory.shopList[index]),),
+                    child: ITEMrestaurantIndirect(id: widget.restaurantDirectory.shopList[index]),
                     );
                 },
               ),

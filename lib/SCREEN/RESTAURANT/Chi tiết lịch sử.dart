@@ -38,7 +38,7 @@ class _SCREENwaitbikerState extends State<SCREENfoodHisDetail> {
   PolylinePoints polylinePoints = PolylinePoints();
   String googleAPiKey = "AIzaSyBsVQaVVMXw-y3QgvCWwJe02FWkhqP_wRA";
 
-  foodOrder thiscatch = foodOrder(id: '', locationSet: accountLocation(phoneNum: "NA", LocationID: "NA", Latitude: -1, Longitude: -1, firstText: "NA", secondaryText: "NA"), locationGet: accountLocation(phoneNum: "NA", LocationID: "NA", Latitude: -1, Longitude: -1, firstText: "NA", secondaryText: "NA"), cost: -1, owner: accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: ''), shipper: accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: ''), status: 'o',shipcost: -1, voucher: Voucher(id: 'NA', totalmoney: 0, mincost: 0, startTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), endTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), useCount: 0, maxCount: 0, tenchuongtrinh: '', LocationId: '', type: 1, Otype: '', perCustom: 0, CustomList: [], maxSale: 0), costFee: Cost(departKM: 0, departCost: 0, perKMcost: 0, discount: 0), costBiker: Cost(departKM: 0, departCost: 0, perKMcost: 0, discount: 0), productList: [],
+  foodOrder thiscatch = foodOrder(id: '', locationSet: accountLocation(phoneNum: "NA", LocationID: "NA", Latitude: -1, Longitude: -1, firstText: "NA", secondaryText: "NA"), locationGet: accountLocation(phoneNum: "NA", LocationID: "NA", Latitude: -1, Longitude: -1, firstText: "NA", secondaryText: "NA"), cost: -1, owner: accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: '', license: '', WorkStatus: 0), shipper: accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: '', license: '', WorkStatus: 0), status: 'o',shipcost: -1, voucher: Voucher(id: 'NA', totalmoney: 0, mincost: 0, startTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), endTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), useCount: 0, maxCount: 0, tenchuongtrinh: '', LocationId: '', type: 1, Otype: '', perCustom: 0, CustomList: [], maxSale: 0), costFee: Cost(departKM: 0, departCost: 0, perKMcost: 0, discount: 0), costBiker: Cost(departKM: 0, departCost: 0, perKMcost: 0, discount: 0), productList: [],
     S1time: getCurrentTime(), S2time: getCurrentTime(),S3time: getCurrentTime(), S4time: getCurrentTime(),S5time: getCurrentTime(),);
 
   String startTime = "";
@@ -46,6 +46,24 @@ class _SCREENwaitbikerState extends State<SCREENfoodHisDetail> {
   String locationget = "";
   String Tmoney = "";
   String finalStatus = 'Hoàn thành';
+
+
+  double getVoucherSale(Voucher voucher) {
+    double money = 0;
+
+    if(voucher.totalmoney < 100) {
+      double mn = (thiscatch.shipcost + thiscatch.cost)/(1-(voucher.totalmoney/100))*(voucher.totalmoney/100);
+      if (mn <= voucher.maxSale) {
+        money = mn;
+      } else {
+        money = voucher.maxSale;
+      }
+    } else {
+      money = voucher.totalmoney;
+    }
+
+    return money;
+  }
 
   void getData(String id) {
     final reference = FirebaseDatabase.instance.reference();
@@ -443,7 +461,7 @@ class _SCREENwaitbikerState extends State<SCREENfoodHisDetail> {
                                     height: 30,
                                     width: (screenWidth - 40 - 20)/2,
                                     child: AutoSizeText(
-                                      'Chi phí vận chuyển',
+                                      'Mã khuyến mãi',
                                       style: TextStyle(
                                           fontFamily: 'arial',
                                           color: Colors.grey,
@@ -464,19 +482,64 @@ class _SCREENwaitbikerState extends State<SCREENfoodHisDetail> {
                                       text: TextSpan(
                                         children: [
                                           TextSpan(
-                                            text: getStringNumber(thiscatch.shipcost) + "đ",
+                                            text: '- ' + getStringNumber(getVoucherSale(thiscatch.voucher)) + 'đ',
                                             style: TextStyle(
                                               fontFamily: 'arial',
-                                              color: Colors.black,
+                                              color: Colors.redAccent,
                                               fontWeight: FontWeight.normal,
                                               fontSize: 14,
                                             ),
                                           ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          Container(height: 10,),
+
+                          Container(
+                            height: 30,
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 10,
+                                ),
+
+                                Padding(
+                                  padding: EdgeInsets.only(top: 7, bottom: 7),
+                                  child: Container(
+                                    height: 30,
+                                    width: (screenWidth - 40 - 20)/2,
+                                    child: AutoSizeText(
+                                      'Tổng thanh toán',
+                                      style: TextStyle(
+                                          fontFamily: 'arial',
+                                          color: Colors.grey,
+                                          fontSize: 200,
+                                          fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                Padding(
+                                  padding: EdgeInsets.only(top: 7, bottom: 7),
+                                  child: Container(
+                                    height: 30,
+                                    width: (screenWidth - 40 - 20)/2,
+                                    alignment: Alignment.centerRight,
+                                    child: RichText(
+                                      text: TextSpan(
+                                        children: [
                                           TextSpan(
-                                            text: "( - " + getStringNumber(thiscatch.voucher.totalmoney) + (thiscatch.voucher.type == 1 ? '%)' : 'đ)'),
+                                            text: getStringNumber(thiscatch.shipcost + thiscatch.cost - getVoucherSale(thiscatch.voucher)) + 'đ',
                                             style: TextStyle(
                                               fontFamily: 'arial',
-                                              color: Colors.red, // Đặt màu đỏ cho phần này
+                                              color: Colors.blueAccent,
                                               fontWeight: FontWeight.normal,
                                               fontSize: 14,
                                             ),
@@ -547,68 +610,6 @@ class _SCREENwaitbikerState extends State<SCREENfoodHisDetail> {
                                   decoration: BoxDecoration(
                                       image: DecorationImage(
                                           fit: BoxFit.cover,
-                                          image: (thiscatch.status == 'A') ? AssetImage('assets/image/redcircle.png') : AssetImage('assets/image/greycircle.png')
-                                      )
-                                  ),
-                                ),
-
-                                Container(
-                                  width: 10,
-                                ),
-
-                                Padding(
-                                  padding: EdgeInsets.only(top: 7, bottom: 7),
-                                  child: Container(
-                                    height: 30,
-                                    width: screenWidth - 40 - 30 - 30,
-                                    child: AutoSizeText(
-                                      'Đang đợi nhà hàng xác nhận',
-                                      style: TextStyle(
-                                          fontFamily: 'arial',
-                                          color: Colors.black,
-                                          fontSize: 200,
-                                          fontWeight: (thiscatch.status == 'A') ?  FontWeight.bold : FontWeight.normal
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                Container(
-                                  width: 10,
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          Container(
-                            height: 20,
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: EdgeInsets.only(left: 25, top: 4, bottom: 4),
-                              child: Container(
-                                alignment: Alignment.centerLeft,
-                                width: 1,
-                                decoration: BoxDecoration(
-                                    color: Colors.grey
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          Container(
-                            height: 30,
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 10,
-                                ),
-
-                                Container(
-                                  width: 30,
-                                  height: 30,
-                                  decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                          fit: BoxFit.cover,
                                           image: (thiscatch.status == 'B') ? AssetImage('assets/image/redcircle.png') : AssetImage('assets/image/greycircle.png')
                                       )
                                   ),
@@ -631,7 +632,7 @@ class _SCREENwaitbikerState extends State<SCREENfoodHisDetail> {
                                             height: 16,
                                             width: screenWidth - 40 - 30 - 30,
                                             child: AutoSizeText(
-                                              'Đã xác nhận , đợi tài xế',
+                                              'Đợi tài xế nhận đơn',
                                               style: TextStyle(
                                                   fontFamily: 'arial',
                                                   color: Colors.black,

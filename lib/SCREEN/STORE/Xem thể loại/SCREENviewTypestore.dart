@@ -7,6 +7,7 @@ import 'package:xekomain/SCREEN/INUSER/PAGE_HOME/ITEM%20nh%C3%A0%20h%C3%A0ng%20g
 import 'package:xekomain/SCREEN/INUSER/PAGE_HOME/T%C3%ADnh%20kho%E1%BA%A3ng%20c%C3%A1ch.dart';
 import 'package:xekomain/SCREEN/RESTAURANT/SCREENshopmain.dart';
 
+import '../SCREENstoremain.dart';
 import '../SCREENstoreview.dart';
 
 class SCREENviewTypestore extends StatefulWidget {
@@ -83,7 +84,7 @@ class _SCREENviewTypeshopState extends State<SCREENviewTypestore> {
                                 ),
                               ),
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENshopmain()));
+                              Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENstoremain()));
                             },
                           ),
                         ),

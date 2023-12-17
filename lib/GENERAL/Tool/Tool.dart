@@ -26,7 +26,7 @@ String getTimeString(Time time) {
 
 //chuyển 1 biến time qua String dưới dạng giờ phút giây ngày tháng năm
 String getAllTimeString(Time time) {
-  return time.hour.toString() + ":" + time.minute.toString() + ":" + time.second.toString() + " " + time.day.toString() + "/" + time.month.toString() + "/" + time.year.toString();
+  return (time.hour >= 10 ? time.hour.toString() : '0' + time.hour.toString()) + ":" + (time.minute >= 10 ? time.minute.toString() : '0' + time.minute.toString()) + " " + (time.day >= 10 ? time.day.toString() : '0' + time.day.toString()) + "/" + (time.month >= 10 ? time.month.toString() : '0' + time.month.toString()) + "/" + time.year.toString();
 }
 
 //chuyển 1 biến double qua string , phân tách hàng nghìn
@@ -129,4 +129,14 @@ Time getCurrentTime() {
   currentTime.year = now.year;
 
   return currentTime;
+}
+
+bool isCurrentTimeInRange(DateTime openTime, DateTime closeTime) {
+  DateTime currentTime = DateTime.now();
+  openTime = DateTime(2000,1,1,openTime.hour,openTime.minute);
+  closeTime = DateTime(2000,1,1,closeTime.hour,closeTime.minute);
+  currentTime = DateTime(2000,1,1,currentTime.hour,currentTime.minute);
+  print(currentTime.toString());
+  // Kiểm tra xem currentTime có nằm trong khoảng openTime và closeTime không
+  return currentTime.isAfter(openTime) && currentTime.isBefore(closeTime);
 }

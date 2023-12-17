@@ -1,10 +1,17 @@
+import 'dart:async';
+
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
+import '../../../FINAL/finalClass.dart';
+import '../../../GENERAL/Ads/ADStype1.dart';
 import '../../HISTORY/SCREENhistorycatch.dart';
 import '../../HISTORY/SCREENhistoryfood.dart';
 import '../../HISTORY/SCREENhistorymarket.dart';
 import '../../HISTORY/SCREENhistorysend.dart';
+import '../../RESTAURANT/SCREENshopview.dart';
+import '../PAGE_HOME/Item quảng cáo loại 1.dart';
 
 class PAGEactivity extends StatefulWidget {
   const PAGEactivity({Key? key}) : super(key: key);
@@ -14,6 +21,50 @@ class PAGEactivity extends StatefulWidget {
 }
 
 class _PAGEactivityState extends State<PAGEactivity> {
+  List<ADStype1> ADStype1List = [];
+
+  final PageController _pageController =
+  PageController(viewportFraction: 1, keepPage: true);
+  Timer? _timer;
+  int _currentPage = 0;
+
+  void getADStype1Data() {
+    final reference = FirebaseDatabase.instance.reference();
+    reference.child("ADStype1").onValue.listen((event) {
+      ADStype1List.clear();
+      final dynamic restaurant = event.snapshot.value;
+      restaurant.forEach((key, value) {
+        ADStype1 acc = ADStype1.fromJson(value);
+        if (acc.shop.Area == currentAccount.Area) {
+          ADStype1List.add(acc);
+        }
+
+      });
+      setState(() {
+
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getADStype1Data();
+    _timer = Timer.periodic(Duration(seconds: 3), (timer) {
+      if (_currentPage < ADStype1List.length - 1) {
+        _currentPage++;
+      } else {
+        _currentPage = 0;
+      }
+      _pageController.animateToPage(
+        _currentPage,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -23,7 +74,7 @@ class _PAGEactivityState extends State<PAGEactivity> {
         child: Stack(
           children: <Widget>[
             Positioned(
-              top: 50,
+              bottom: 20 + (screenWidth - 60)/2,
               left: 20,
               child: GestureDetector(
                 onTap: () {
@@ -86,7 +137,7 @@ class _PAGEactivityState extends State<PAGEactivity> {
             ),
 
             Positioned(
-              top: 50,
+              bottom: 20 + (screenWidth - 60)/2,
               right: 20,
               child: GestureDetector(
                 onTap: () {
@@ -149,7 +200,7 @@ class _PAGEactivityState extends State<PAGEactivity> {
             ),
 
             Positioned(
-              top: 60 + (screenWidth - 60)/2,
+              bottom: 10,
               left: 20,
               child: GestureDetector(
                 onTap: () {
@@ -212,7 +263,7 @@ class _PAGEactivityState extends State<PAGEactivity> {
             ),
 
             Positioned(
-              top: 60 + (screenWidth - 60)/2,
+              bottom: 10,
               right: 20,
               child: GestureDetector(
                 onTap: () {
@@ -273,6 +324,34 @@ class _PAGEactivityState extends State<PAGEactivity> {
                 ),
               ),
             ),
+
+            Positioned(
+              top: 50,
+              left: 0,
+              child: Container(
+                height:(screenWidth - 20)/(1200/630) + 100,
+                width: screenWidth,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 10, right: 10),
+                  child: Container(
+                    height: (screenWidth - 20)/(1200/630) + 100,
+                    child: PageView.builder(
+                      scrollDirection: Axis.horizontal,
+                      controller: _pageController,
+                      itemCount: ADStype1List.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          child: ITEMadsType1(width: screenWidth - 20, height: (screenWidth - 20)/(300/188), adStype1: ADStype1List[index]),
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENshopview(currentShop: ADStype1List[index].shop.id)));
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            )
           ],
         )
       ),

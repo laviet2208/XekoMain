@@ -20,12 +20,12 @@ class _PAGEhomeState extends State<PAGEitemsend> {
 
   void getData() {
     final reference = FirebaseDatabase.instance.reference();
-    reference.child("Order/itemsendOrder").onValue.listen((event) {
+    reference.child("Order/itemsendOrder").orderByChild('owner/Area').equalTo(currentAccount.Area).onValue.listen((event) {
       orderList.clear();
       final dynamic orders = event.snapshot.value;
       orders.forEach((key, value) {
         itemsendOrder itemorder = itemsendOrder.fromJson(value);
-        if (itemorder.status == "A" && itemorder.owner.Area == currentAccount.Area) {
+        if (itemorder.status == "A") {
           orderList.add(itemorder);
         }
       });

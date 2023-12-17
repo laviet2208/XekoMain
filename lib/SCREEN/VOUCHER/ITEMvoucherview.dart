@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:xekomain/GENERAL/Tool/Tool.dart';
 
 import '../../GENERAL/Product/Voucher.dart';
 
@@ -46,7 +47,7 @@ class ITENvoucherview extends StatelessWidget {
             top: 30,
             left: 10,
             child: Text(
-              "Giảm giá " + (voucher.totalmoney/1000).toString() + "K," + "đơn từ " +  (voucher.mincost/1000).toString() + "K",
+              voucher.totalmoney > 100 ? ("Giảm giá " + getStringNumber(voucher.totalmoney/1000).toString() + "K," + "đơn từ " +  getStringNumber(voucher.mincost/1000) + "K") : ("Giảm giá " + getStringNumber(voucher.totalmoney) + "%," + "đơn từ " +  getStringNumber(voucher.mincost/1000) + "K"),
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,

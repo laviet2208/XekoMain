@@ -4,10 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:xekomain/FINAL/finalClass.dart';
 import 'package:xekomain/SCREEN/INUSER/PAGE_HOME/T%C3%ADnh%20kho%E1%BA%A3ng%20c%C3%A1ch.dart';
 
+import '../../GENERAL/Product/Danh mục đồ ăn.dart';
 import '../../GENERAL/Product/Product.dart';
 import '../../GENERAL/ShopUser/accountShop.dart';
 import '../../GENERAL/Tool/Time.dart';
+import '../../GENERAL/Tool/Tool.dart';
+import '../../GENERAL/utils/utils.dart';
 import 'Quản lý danh mục/Item danh mục sản phẩm.dart';
+import 'SCREENstorecart.dart';
 import 'SCREENstoremain.dart';
 
 
@@ -21,7 +25,13 @@ class SCREENstoreview extends StatefulWidget {
 
 class _SCREENshopmainState extends State<SCREENstoreview> {
   List<Product> productList = [];
-  accountShop selectShop = accountShop(openTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), closeTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), phoneNum: '', location: '', name: '', id: '', status: 1, avatarID: '', createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), password: '', isTop: 0, Type: 0, ListDirectory: [], Area: '');
+  List<FoodDirectory> foodDirecList = [];
+  List<FoodDirectory> chosenList = [];
+  FoodDirectory chosenDirectory = FoodDirectory(id: '', mainName: '', foodList: [], ownerID: '');
+  String totalText = '0 .đ';
+  double total1 = 0;
+  int SelectIndex = 0;
+  accountShop selectShop = accountShop(openTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), closeTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), phoneNum: '', location: '', name: '', id: '', status: 1, avatarID: '', createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), password: '', isTop: 0, Type: 0, ListDirectory: [], Area: '', OpenStatus: 0);
   void getData() {
     final reference = FirebaseDatabase.instance.reference();
     reference.child("Store/" + widget.currentShop).onValue.listen((event) {
@@ -40,6 +50,77 @@ class _SCREENshopmainState extends State<SCREENstoreview> {
 
       });
     });
+  }
+
+  void getData1()  {
+    final reference = FirebaseDatabase.instance.reference();
+    reference.child("ProductDirectory").onValue.listen((event) {
+      foodDirecList.clear();
+      chosenList.clear();
+      foodDirecList.add(FoodDirectory(id: 'all', mainName: 'Tất cả', foodList: [], ownerID: ''));
+      final dynamic restaurant = event.snapshot.value;
+      restaurant.forEach((key, value) {
+        FoodDirectory acc = FoodDirectory.fromJson(value);
+        if (acc.ownerID == widget.currentShop) {
+          foodDirecList.add(acc);
+          chosenList.add(acc);
+        }
+
+        setState(() {
+          chosenDirectory = foodDirecList.first;
+        });
+      });
+
+    });
+  }
+
+  void dropdownCallback(FoodDirectory? selectedValue) {
+    if (selectedValue is FoodDirectory) {
+      chosenDirectory = selectedValue;
+      if (chosenDirectory.id == 'all') {
+        chosenList.clear();
+        for(int i = 0 ; i < foodDirecList.length ; i++) {
+          if (foodDirecList.elementAt(i).id != 'all') {
+            chosenList.add(foodDirecList.elementAt(i));
+            setState(() {
+
+            });
+          }
+
+        }
+        setState(() {
+
+        });
+      } else {
+        chosenList.clear();
+        setState(() {
+
+        });
+        for(int i = 0 ; i < foodDirecList.length ; i++) {
+          if (foodDirecList.elementAt(i).id == chosenDirectory.id) {
+            chosenList.add(foodDirecList.elementAt(i));
+            print(chosenList.first.toJson().toString());
+            print(chosenList.length);
+            setState(() {
+
+            });
+          }
+        }
+        setState(() {
+
+        });
+      }
+
+    }
+
+    setState(() {
+
+    });
+  }
+
+  void updateTotalText() {
+    // Gọi setState để cập nhật giao diện
+    setState(() {});
   }
 
   List<int> parseDateString(String dateString) {
@@ -66,13 +147,18 @@ class _SCREENshopmainState extends State<SCREENstoreview> {
     // TODO: implement initState
     super.initState();
     getData();
+    getData1();
   }
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-
+    total1 = 0;
+    for (int i = 0 ; i < storeList.length ; i++) {
+      total1 = total1 + storeList[i].cost;
+    }
+    totalText = getStringNumber(total1) + ' .đ';
     return WillPopScope(
       child: Scaffold(
           body: Container(
@@ -198,10 +284,30 @@ class _SCREENshopmainState extends State<SCREENstoreview> {
 
                           Container(height: 20,),
 
+                          Padding(
+                            padding: EdgeInsets.only(left: 15, right: 15),
+                            child: Container(
+                              height: 40,
+                              child: DropdownButton<FoodDirectory>(
+                                items: foodDirecList.map((e) => DropdownMenuItem<FoodDirectory>(
+                                  value: e,
+                                  child: Text(e.mainName),
+                                )).toList(),
+                                onChanged: (value) { dropdownCallback(value); },
+                                value: chosenDirectory,
+                                iconEnabledColor: Colors.redAccent,
+                                isExpanded: true,
+                                iconDisabledColor: Colors.grey,
+                              ),
+                            ),
+                          ),
+
+                          Container(height: 20,),
+
                           Container(
-                            height: 340 * selectShop.ListDirectory.length.toDouble(),
+                            height: 340 * chosenList.length.toDouble(),
                             child: ListView.builder(
-                              itemCount: selectShop.ListDirectory.length,
+                              itemCount: chosenList.length,
                               physics: NeverScrollableScrollPhysics(),
                               itemBuilder: (BuildContext context, int index) {
                                 return Padding(
@@ -210,16 +316,124 @@ class _SCREENshopmainState extends State<SCREENstoreview> {
                                     onTap: () {
 
                                     },
-                                    child: ITEMdanhsachsanpham(width: screenWidth, height: 340, id: selectShop.ListDirectory[index]),
+                                    child: ITEMdanhsachsanpham(width: screenWidth, height: 340, id: chosenList[index].id, ontap: () { setState(() {
+                                      total1 = 0;
+                                      for (int i = 0 ; i < storeList.length ; i++) {
+                                        total1 = total1 + storeList[i].cost;
+                                      }
+                                      totalText = getStringNumber(total1) + ' .đ';
+                                    }); }, shop: selectShop,),
                                   ),
                                 );
                               },
                             ),
-                          )
+                          ),
+
+                          Container(height: 70,),
                         ],
                       ),
                     ),
-                  )
+                  ),
+
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    child: GestureDetector(
+                      child: Container(
+                        width: screenWidth,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 2,
+                              blurRadius: 7,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Stack(
+                          children: <Widget>[
+                            Positioned(
+                              top: 10,
+                              left: 10,
+                              child: GestureDetector(
+                                child: Container(
+                                  width: screenWidth - 20,
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: Color.fromARGB(255, 244, 164, 84),
+                                  ),
+                                  child: Stack(
+                                    children: <Widget>[
+                                      Positioned(
+                                        top: 20,
+                                        left: 20,
+                                        child: Container(
+                                          width: screenWidth - 20 - 40,
+                                          height: 20,
+                                          child: RichText(
+                                            text: TextSpan(
+                                              style: TextStyle(
+                                                fontFamily: 'arial',
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold, // Cài đặt FontWeight.bold cho phần còn lại
+                                                color: Colors.white,
+                                              ),
+                                              children: <TextSpan>[
+                                                TextSpan(
+                                                  text: 'Giỏ hàng   |  ',
+                                                ),
+                                                TextSpan(
+                                                  text: storeList.length.toString() + ' món',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.normal, // Cài đặt FontWeight.normal cho "món"
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
+                                      Positioned(
+                                        top: 20,
+                                        right: 20,
+                                        child: Container(
+                                          width: screenWidth - 20 - 40,
+                                          height: 20,
+                                          alignment: Alignment.centerRight,
+                                          child: Text(
+                                            totalText,
+                                            style: TextStyle(
+                                              fontFamily: 'arial',
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold, // Cài đặt FontWeight.bold cho phần còn lại
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      onTap: () {
+                        if (storeList.length == 0) {
+                          toastMessage('Giỏ hàng chưa có sản phẩm nào');
+                        } else {
+                          Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENstorecart()));
+                        }
+                      },
+                    ),
+                  ),
+
                 ],
               )
           )

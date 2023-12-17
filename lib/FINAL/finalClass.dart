@@ -10,7 +10,7 @@ import '../GENERAL/Product/Product.dart';
 import '../GENERAL/Product/Voucher.dart';
 import '../GENERAL/Tool/Time.dart';
 
-final accountNormal currentAccount = accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: '');
+final accountNormal currentAccount = accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: '', license: '', WorkStatus: 0);
 
 //Các controllerTextbike
 final startcontroller = TextEditingController();
@@ -34,3 +34,7 @@ final Cost bikeCost = Cost(departKM: 2, departCost: 25000, perKMcost: 15000, dis
 final Cost carCost = Cost(departKM: 2, departCost: 25000, perKMcost: 15000, discount: 20);
 final Cost FoodCost = Cost(departKM: 2, departCost: 25000, perKMcost: 15000, discount: 20);
 final Cost ItemCost = Cost(departKM: 2, departCost: 25000, perKMcost: 15000, discount: 20);
+
+final Time currentPage = Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0);
+
+final accountLocation currentLocatio = accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: '');

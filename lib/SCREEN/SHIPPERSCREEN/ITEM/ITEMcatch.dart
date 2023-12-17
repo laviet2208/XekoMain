@@ -22,6 +22,8 @@ class ITEMcatch extends StatelessWidget {
       try {
         DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
         await databaseRef.child('Order/catchOrder/' + order.id + '/status').set(sta);
+        databaseRef = FirebaseDatabase.instance.reference();
+        await databaseRef.child('Order/catchOrder/' + order.id + '/S2time').set(getCurrentTime().toJson());
       } catch (error) {
         print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
         throw error;
@@ -60,19 +62,12 @@ class ITEMcatch extends StatelessWidget {
     }
 
     String destination = '';
-    if (order.locationGet.firstText == 'NA') {
-      destination = order.locationGet.Latitude.toString() + ' , ' + order.locationGet.Longitude.toString();
-    } else {
-      destination = order.locationGet.firstText;
-    }
+    destination = order.locationGet.firstText.toString() + ' , ' + order.locationGet.secondaryText.toString();
 
     String locationSet = '';
     Color statusColor = Color.fromARGB(255, 0, 177, 79);
-    if (order.locationSet.firstText == 'NA') {
-      locationSet = order.locationSet.Latitude.toString() + ' , ' + order.locationSet.Longitude.toString();
-    } else {
-      locationSet = order.locationSet.firstText;
-    }
+    locationSet = order.locationSet.firstText.toString() + ' , ' + order.locationSet.secondaryText.toString();
+
 
     ///Phần button
     //nút hủy đơn
@@ -120,7 +115,6 @@ class ITEMcatch extends StatelessWidget {
 
     return Container(
       width: width,
-      height: height,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -133,59 +127,24 @@ class ITEMcatch extends StatelessWidget {
           ),
         ],
       ),
-      child: Stack(
-        children: <Widget>[
-          Positioned(
-            top: 10,
-            left: 15,
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: AssetImage(imageType)
-                  )
-              ),
-            ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            height: 20,
           ),
 
-          Positioned(
-            top: 10,
-            left: 70,
+          Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
             child: Container(
-              width: width - 100,
-              height: 55,
-              decoration: BoxDecoration(
-
-              ),
-              child: Text(
-                compactString(40, 'Chuyến đi tới: ' + destination),
-                style: TextStyle(
-                    fontFamily: 'arial',
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.black87
-                ),
-              ),
-            ),
-          ),
-
-          Positioned(
-            top: 34,
-            left: 70,
-            child: Container(
-              width: width/3*2,
-              height: 20,
-              decoration: BoxDecoration(
-
-              ),
+              alignment: Alignment.centerLeft,
               child: RichText(
+                textAlign: TextAlign.start,
                 text: TextSpan(
                   style: DefaultTextStyle.of(context).style,
                   children: <TextSpan>[
                     TextSpan(
-                      text: 'Thời gian đặt : ',
+                      text: 'Điểm trả khách : ',
                       style: TextStyle(
                         fontSize: 15,
                         fontFamily: 'arial',
@@ -193,7 +152,7 @@ class ITEMcatch extends StatelessWidget {
                       ),
                     ),
                     TextSpan(
-                      text: getAllTimeString(order.S1time), // Phần còn lại viết bình thường
+                      text: destination, // Phần còn lại viết bình thường
                       style: TextStyle(
                         fontSize: 15,
                         fontFamily: 'arial',
@@ -207,21 +166,21 @@ class ITEMcatch extends StatelessWidget {
             ),
           ),
 
-          Positioned(
-            top: 58,
-            left: 70,
-            child: Container(
-              width: width - 80,
-              height: 20,
-              decoration: BoxDecoration(
+          Container(
+            height: 10,
+          ),
 
-              ),
+          Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: Container(
+              alignment: Alignment.centerLeft,
               child: RichText(
+                textAlign: TextAlign.start,
                 text: TextSpan(
                   style: DefaultTextStyle.of(context).style,
                   children: <TextSpan>[
                     TextSpan(
-                      text: '+ SĐT khách hàng: ',
+                      text: 'Điểm đón khách : ',
                       style: TextStyle(
                         fontSize: 15,
                         fontFamily: 'arial',
@@ -229,7 +188,43 @@ class ITEMcatch extends StatelessWidget {
                       ),
                     ),
                     TextSpan(
-                      text: (order.owner.phoneNum[0] == '0') ? order.owner.phoneNum : ('0' + order.owner.phoneNum), // Phần còn lại viết bình thường
+                      text: locationSet, // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.black,
+                        fontWeight: FontWeight.normal, // Để viết bình thường
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          Container(
+            height: 10,
+          ),
+
+          Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: Container(
+              alignment: Alignment.centerLeft,
+              child: RichText(
+                textAlign: TextAlign.start,
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'Số điện thoại : ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: order.owner.phoneNum[0] == '0' ? order.owner.phoneNum : '0' + order.owner.phoneNum, // Phần còn lại viết bình thường
                       style: TextStyle(
                         fontSize: 15,
                         fontFamily: 'arial',
@@ -243,21 +238,21 @@ class ITEMcatch extends StatelessWidget {
             ),
           ),
 
-          Positioned(
-            top: 82,
-            left: 70,
-            child: Container(
-              width: width - 80,
-              height: 60,
-              decoration: BoxDecoration(
+          Container(
+            height: 10,
+          ),
 
-              ),
+          Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: Container(
+              alignment: Alignment.centerLeft,
               child: RichText(
+                textAlign: TextAlign.start,
                 text: TextSpan(
                   style: DefaultTextStyle.of(context).style,
                   children: <TextSpan>[
                     TextSpan(
-                      text: '+ Đón tại: ',
+                      text: 'Tên khách hàng : ',
                       style: TextStyle(
                         fontSize: 15,
                         fontFamily: 'arial',
@@ -265,7 +260,43 @@ class ITEMcatch extends StatelessWidget {
                       ),
                     ),
                     TextSpan(
-                      text: compactString(25, locationSet), // Phần còn lại viết bình thường
+                      text: order.owner.name, // Phần còn lại viết bình thường
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        color: Colors.black,
+                        fontWeight: FontWeight.normal, // Để viết bình thường
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          Container(
+            height: 10,
+          ),
+
+          Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: Container(
+              alignment: Alignment.centerLeft,
+              child: RichText(
+                textAlign: TextAlign.start,
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'Giá trị đơn hàng : ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'arial',
+                        fontWeight: FontWeight.bold, // Để in đậm
+                      ),
+                    ),
+                    TextSpan(
+                      text: getStringNumber(order.cost) + 'đ' + " ( - " + getStringNumber(order.voucher.totalmoney) + (order.voucher.type == 1 ? '%)' : 'đ)'), // Phần còn lại viết bình thường
                       style: TextStyle(
                         fontSize: 15,
                         fontFamily: 'arial',
@@ -279,21 +310,21 @@ class ITEMcatch extends StatelessWidget {
             ),
           ),
 
-          Positioned(
-            top: 106,
-            left: 70,
-            child: Container(
-              width: width - 100,
-              height: 60,
-              decoration: BoxDecoration(
+          Container(
+            height: 10,
+          ),
 
-              ),
+          Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: Container(
+              alignment: Alignment.centerLeft,
               child: RichText(
+                textAlign: TextAlign.start,
                 text: TextSpan(
                   style: DefaultTextStyle.of(context).style,
                   children: <TextSpan>[
                     TextSpan(
-                      text: '+ Giá trị đơn: ',
+                      text: 'Chiết khấu : ',
                       style: TextStyle(
                         fontSize: 15,
                         fontFamily: 'arial',
@@ -301,12 +332,12 @@ class ITEMcatch extends StatelessWidget {
                       ),
                     ),
                     TextSpan(
-                      text: getStringNumber(order.cost) + '.đ', // Phần còn lại viết bình thường
+                      text: getStringNumber(order.cost * (order.costFee.discount/100)) + '.đ (chiết khấu ' + order.costFee.discount.toInt().toString() + '%)', // Phần còn lại viết bình thường
                       style: TextStyle(
                         fontSize: 15,
                         fontFamily: 'arial',
-                        color: Colors.blueAccent,
-                        fontWeight: FontWeight.bold, // Để viết bình thường
+                        color: Colors.deepPurple,
+                        fontWeight: FontWeight.normal, // Để viết bình thường
                       ),
                     ),
                   ],
@@ -315,49 +346,15 @@ class ITEMcatch extends StatelessWidget {
             ),
           ),
 
-          Positioned(
-            top: 130,
-            left: 70,
-            child: Container(
-              width: width - 100,
-              height: 60,
-              decoration: BoxDecoration(
-
-              ),
-              child: RichText(
-                text: TextSpan(
-                  style: DefaultTextStyle.of(context).style,
-                  children: <TextSpan>[
-                    TextSpan(
-                      text: '+ Chiết khấu: ',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontFamily: 'arial',
-                        fontWeight: FontWeight.bold, // Để in đậm
-                      ),
-                    ),
-                    TextSpan(
-                      text: getStringNumber(order.cost * (order.costFee.discount/100)) + '.đ (' + order.costFee.discount.toInt().toString() + '%)', // Phần còn lại viết bình thường
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontFamily: 'arial',
-                        color: Colors.blueAccent,
-                        fontWeight: FontWeight.bold, // Để viết bình thường
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+          Container(
+            height: 20,
           ),
 
-          Positioned(
-            top: 215,
-            left: 70,
+          Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
             child: Container(
-              width: width - 95,
               height: 40,
-              child: ButtonType1(Height: 40, Width: width - 95, color: Color.fromARGB(255, 0, 177, 79), radiusBorder: 20, title: acceptText, fontText: 'arial', colorText: Colors.white,
+              child: ButtonType1(Height: 40, Width: width - 40, color: Color.fromARGB(255, 0, 177, 79), radiusBorder: 0, title: acceptText, fontText: 'arial', colorText: Colors.white,
                   onTap: () async {
                     if ((order.cost * (order.costFee.discount/100)) <= currentAccount.totalMoney) {
                       if (order.status == 'A') {
@@ -375,48 +372,101 @@ class ITEMcatch extends StatelessWidget {
             ),
           ),
 
+          Container(
+            height: 15,
+          ),
 
-
-          Positioned(
-            top: 265,
-            left: 70,
+          Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
             child: Container(
-              width: width/4,
               height: 40,
-              child: ButtonType1(Height: 40, Width: width/4, color: Colors.blueAccent, radiusBorder: 20, title: 'Số điện thoại', fontText: 'arial', colorText: Colors.white,
-                  onTap: () {
-                    copyToClipboard((order.owner.phoneNum[0] == '0') ? order.owner.phoneNum : ('0' + order.owner.phoneNum));
-                    toastMessage('đã copy số điện thoại');
-                  }),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    child:Container(
+                      width: (width - 65)/3,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.redAccent,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Số điện thoại',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontFamily: 'arial',
+                          color: Colors.white,
+                          fontWeight: FontWeight.normal, // Để viết bình thường
+                        ),
+                      ),
+                    ),
+              onTap: () {
+                copyToClipboard((order.owner.phoneNum[0] == '0') ? order.owner.phoneNum : ('0' + order.owner.phoneNum));
+                toastMessage('đã copy số điện thoại');
+              }
+              ),
+
+                  Container(width: 10,),
+
+                  GestureDetector(
+                      child:Container(
+                        width: (width - 65)/3,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.redAccent,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          'Điểm đón',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontFamily: 'arial',
+                            color: Colors.white,
+                            fontWeight: FontWeight.normal, // Để viết bình thường
+                          ),
+                        ),
+                      ),
+                      onTap: () {
+                        copyToClipboard(locationSet);
+                        toastMessage('đã copy điểm đón');
+                      }),
+
+
+                  Container(width: 10,),
+
+                  GestureDetector(
+                      child:Container(
+                        width: (width - 65)/3,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.redAccent,
+                          borderRadius: BorderRadius.circular(5)
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          'Số điện thoại',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontFamily: 'arial',
+                            color: Colors.white,
+                            fontWeight: FontWeight.normal, // Để viết bình thường
+                          ),
+                        ),
+                      ),
+                      onTap: () {
+                        copyToClipboard(destination);
+                        toastMessage('đã copy điểm đến');
+                      }
+                  ),
+                ],
+              )
             ),
           ),
 
-          Positioned(
-            top: 265,
-            left: 70 + width/4 + 2,
-            child: Container(
-              width: width/4,
-              height: 40,
-              child: ButtonType1(Height: 40, Width: width/4, color: Colors.blueAccent, radiusBorder: 20, title: 'Điểm đi', fontText: 'arial', colorText: Colors.white,
-                  onTap: () {
-                    copyToClipboard(locationSet);
-                    toastMessage('đã copy điểm đón');
-                  }),
-            ),
-          ),
-
-          Positioned(
-            top: 265,
-            left: 70 + width/2 + 4,
-            child: Container(
-              width: width/4,
-              height: 40,
-              child: ButtonType1(Height: 40, Width: width/4, color: Colors.blueAccent, radiusBorder: 20, title: 'Điểm đến', fontText: 'arial', colorText: Colors.white,
-                  onTap: () {
-                    copyToClipboard(destination);
-                    toastMessage('đã copy điểm đến');
-                  }),
-            ),
+          Container(
+            height: 20,
           ),
         ],
       ),

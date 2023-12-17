@@ -9,9 +9,10 @@ class Product {
   double cost;
   String imageList;
   Time createTime;
+  int OpenStatus; // 0 : đang đóng , 1 : đang mở
   accountShop owner;
 
-  Product({required this.id, required this.name, required this.content, required this.owner, required this.cost, required this.imageList, required this.createTime});
+  Product({required this.id, required this.name, required this.content, required this.owner, required this.cost, required this.imageList, required this.createTime, required this.OpenStatus});
 
   Map<dynamic, dynamic> toJson() => {
     'id' : id,
@@ -20,7 +21,8 @@ class Product {
     'cost' : cost,
     'owner' : owner.toJson(),
     'imageList' : imageList,
-    'createTime' : createTime.toJson()
+    'createTime' : createTime.toJson(),
+    'OpenStatus' : OpenStatus
   };
 
   factory Product.fromJson(Map<dynamic, dynamic> json) {
@@ -31,7 +33,8 @@ class Product {
         owner: accountShop.fromJson(json['owner']),
         cost: double.parse(json['cost'].toString()),
         imageList: json['imageList'].toString(),
-        createTime: Time.fromJson(json['createTime'])
+        createTime: Time.fromJson(json['createTime']),
+        OpenStatus: int.parse(json['OpenStatus'].toString())
     );
   }
 }

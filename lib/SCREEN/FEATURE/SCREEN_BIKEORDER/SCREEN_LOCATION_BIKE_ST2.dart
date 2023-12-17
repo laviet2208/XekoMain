@@ -316,7 +316,7 @@ class _SCREENlocationbikest2State extends State<SCREENlocationbikest2> {
                             child: Stack(
                               children: <Widget>[
                                 Positioned(
-                                  bottom: 10 + screenHeight/15 + 20 + 30,
+                                  bottom: 20 + screenHeight/15 + 20 + 30,
                                   left: 20,
                                   child: Container(
                                     child: Text(
@@ -332,7 +332,7 @@ class _SCREENlocationbikest2State extends State<SCREENlocationbikest2> {
                                 ),
 
                                 Positioned(
-                                  bottom: 10 + screenHeight/15 + 20 + 30,
+                                  bottom: 20 + screenHeight/15 + 20 + 30,
                                   right: 10,
                                   child: Text(
                                     getStringNumber(cost) + ".đ",
@@ -346,7 +346,7 @@ class _SCREENlocationbikest2State extends State<SCREENlocationbikest2> {
                                 ),
 
                                 Positioned(
-                                  bottom: 10 + screenHeight/15 + 20,
+                                  bottom: 2 + screenHeight/15 + 20,
                                   left: 20,
                                   child: Container(
                                     child: Text(
@@ -362,25 +362,16 @@ class _SCREENlocationbikest2State extends State<SCREENlocationbikest2> {
                                 ),
 
                                 Positioned(
-                                  bottom: 10 + screenHeight/15 + 20,
+                                  bottom: 2 + screenHeight/15 + 20,
                                   right: 10,
                                   child: RichText(
                                     text: TextSpan(
                                       children: [
                                         TextSpan(
-                                          text: getStringNumber(cost) + "đ",
+                                          text: getStringNumber(getLastCost(cost, chosenVoucher)) + "đ",
                                           style: TextStyle(
                                             fontFamily: 'arial',
                                             color: Colors.black,
-                                            fontWeight: FontWeight.normal,
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: " - " + voucherController.text.toString(),
-                                          style: TextStyle(
-                                            fontFamily: 'arial',
-                                            color: Colors.red, // Đặt màu đỏ cho phần này
                                             fontWeight: FontWeight.normal,
                                             fontSize: 14,
                                           ),
@@ -390,6 +381,57 @@ class _SCREENlocationbikest2State extends State<SCREENlocationbikest2> {
                                   ),
 
                                 ),
+
+                                Positioned(
+                                  bottom: 25 + screenHeight/15 + 20,
+                                  left: 10,
+                                  right: 10,
+                                  child: Container(
+                                    width: screenWidth,
+                                    height: 18,
+                                    child: Stack(
+                                      children: <Widget>[
+                                        Positioned(
+                                          top: 0,
+                                          left: 0,
+                                          child: Container(
+                                            width: screenWidth,
+                                            height: 18,
+                                            child: AutoSizeText(
+                                              '  Mã khuyến mãi',
+                                              style: TextStyle(
+                                                  fontFamily: 'arial',
+                                                  color: Colors.grey,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 180
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+
+                                        Positioned(
+                                          top: 0,
+                                          right: 0,
+                                          child: Container(
+                                            width: screenWidth-10,
+                                            height: 18,
+                                            child: AutoSizeText(
+                                              "- " + voucherController.text,
+                                              textAlign: TextAlign.end,
+                                              style: TextStyle(
+                                                  fontFamily: 'arial',
+                                                  color: Colors.redAccent,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+
 
                                 Positioned(
                                   top: screenHeight/19,
@@ -543,7 +585,7 @@ class _SCREENlocationbikest2State extends State<SCREENlocationbikest2> {
                                         setState(() {
                                           Loading1 = true;
                                         });
-                                        accountNormal shipper = accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: '');
+                                        accountNormal shipper = accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: '', license: '', WorkStatus: 0);
 
                                         catchOrder thiscatch = catchOrder(
                                             id: generateID(10),

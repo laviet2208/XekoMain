@@ -1,5 +1,9 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:xekomain/GENERAL/NormalUser/accountLocation.dart';
 import 'package:xekomain/SCREEN/INUSER/PAGE_HOME/ITEM%20nh%C3%A0%20h%C3%A0ng%20g%E1%BA%A7n.dart';
@@ -15,6 +19,7 @@ import '../../../GENERAL/ShopUser/accountShop.dart';
 import '../../../GENERAL/Tool/Tool.dart';
 import '../../../GENERAL/utils/utils.dart';
 import '../../../ITEM/ITEMrestaurant.dart';
+import '../../GENERAL/Ads/Topbanner.dart';
 import 'SCREEN_loginbyphonenum.dart';
 
 class ScreenWait extends StatefulWidget {
@@ -25,6 +30,10 @@ class ScreenWait extends StatefulWidget {
 }
 
 class _PAGEhomeState extends State<ScreenWait> {
+  final PageController _pageController =
+  PageController(viewportFraction: 1, keepPage: true);
+  Timer? _timer;
+  int _currentPage = 0;
   final nameController = TextEditingController();
   final accountLocation diemdon = accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: '');
   final accountLocation diemtra = accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: '');
@@ -71,13 +80,37 @@ class _PAGEhomeState extends State<ScreenWait> {
     }
   }
 
+  Future<Position> getCurrentLocation() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Chưa cho phép vị trí');
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        toastMessage('Để tiếp tục bạn cần cho phép truy cập vị trí của bạn');
+        exit(0);
+        return Future.error('Từ chối cho phép vị trí');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      toastMessage('Để tiếp tục bạn cần cho phép truy cập vị trí của bạn');
+      exit(0);
+      return Future.error('Bạn cần cho phép ứng dụng truy cập vào vị trí');
+    }
+
+    return await Geolocator.getCurrentPosition();
+  }
 
   int ads1 = 0;
   String ads1text = "...";
-  String adsTOP = 'https://firebasestorage.googleapis.com/v0/b/xekoship-a0057.appspot.com/o/ADS%2Fbanner-uu-dai.png?alt=media&token=1e98d81f-8ae5-4d8f-9f08-6386efa9f792';
   List<accountShop> shopList = [];
   List<ADStype1> ADStype1List = [];
   List<ADStype2> ADStype2List = [];
+  List<Topbanner> TopbannerList = [];
 
   // Hàm sắp xếp danh sách nhà hàng dựa trên khoảng cách tới vị trí hiện tại
   void sortRestaurantsByDistance(List<accountShop> restaurants, double currentLat, double currentLon) {
@@ -93,7 +126,6 @@ class _PAGEhomeState extends State<ScreenWait> {
     sortRestaurantsByDistance(restaurants, currentLat, currentLon);
   }
 
-
   void getADStype1Data() {
     final reference = FirebaseDatabase.instance.reference();
     reference.child("ADStype1").onValue.listen((event) {
@@ -102,6 +134,21 @@ class _PAGEhomeState extends State<ScreenWait> {
       restaurant.forEach((key, value) {
         ADStype1 acc = ADStype1.fromJson(value);
         ADStype1List.add(acc);
+      });
+      setState(() {
+
+      });
+    });
+  }
+
+  void getADStop() {
+    final reference = FirebaseDatabase.instance.reference();
+    reference.child("adsTOP").onValue.listen((event) {
+      TopbannerList.clear();
+      final dynamic restaurant = event.snapshot.value;
+      restaurant.forEach((key, value) {
+        Topbanner acc = Topbanner.fromJson(value);
+        TopbannerList.add(acc);
       });
       setState(() {
 
@@ -140,16 +187,7 @@ class _PAGEhomeState extends State<ScreenWait> {
     });
   }
 
-  void getADStop() {
-    final reference = FirebaseDatabase.instance.reference();
-    reference.child("adsTOP/top").onValue.listen((event) {
-      final dynamic product = event.snapshot.value;
-      adsTOP = product.toString();
-      setState(() {
 
-      });
-    });
-  }
 
   @override
   void initState() {
@@ -159,6 +197,18 @@ class _PAGEhomeState extends State<ScreenWait> {
     getADStop();
     getADStype1Data();
     getADStype2Data();
+    _timer = Timer.periodic(Duration(seconds: 3), (timer) {
+      if (_currentPage < TopbannerList.length - 1) {
+        _currentPage++;
+      } else {
+        _currentPage = 0;
+      }
+      _pageController.animateToPage(
+        _currentPage,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeInSine,
+      );
+    });
   }
 
   @override
@@ -195,12 +245,27 @@ class _PAGEhomeState extends State<ScreenWait> {
                             child: Container(
                               height: screenWidth/(1920/668),
                               width: screenWidth,
-                              decoration: BoxDecoration(
-                                  color: Color.fromARGB(255, 255, 255, 255),
-                                  image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: NetworkImage(adsTOP)
-                                  )
+                              child: PageView.builder(
+                                scrollDirection: Axis.horizontal,
+                                controller: _pageController,
+                                itemCount: TopbannerList.length,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    child: Container(
+                                      height: screenWidth/(1920/668),
+                                      width: screenWidth,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: NetworkImage(TopbannerList[index].URLimage)
+                                        )
+                                      ),
+                                    ),
+                                    onTap: () {
+
+                                    },
+                                  );
+                                },
                               ),
                             ),
                           ),
@@ -269,6 +334,16 @@ class _PAGEhomeState extends State<ScreenWait> {
                             width: 56,
                             child: GestureDetector(
                               onTap: () {
+                                getCurrentLocation().then((value) {
+                                  currentLocatio.Longitude = value.longitude;
+                                  currentLocatio.Latitude = value.latitude;
+                                  print(currentLocatio.toJson().toString());
+                                });
+                                                                getCurrentLocation().then((value) {
+                                  currentLocatio.Longitude = value.longitude;
+                                  currentLocatio.Latitude = value.latitude;
+                                  print(currentLocatio.toJson().toString());
+                                });
                                 Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
                               },
                               child: Stack(
@@ -316,7 +391,12 @@ class _PAGEhomeState extends State<ScreenWait> {
                           Container(
                             width: 56,
                             child: GestureDetector(
-                              onTap: () async {
+                              onTap: () {
+                                                                getCurrentLocation().then((value) {
+                                  currentLocatio.Longitude = value.longitude;
+                                  currentLocatio.Latitude = value.latitude;
+                                  print(currentLocatio.toJson().toString());
+                                });
                                 Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
                               },
                               child: Stack(
@@ -365,6 +445,11 @@ class _PAGEhomeState extends State<ScreenWait> {
                             width: 56,
                             child: GestureDetector(
                               onTap: () async {
+                                                                getCurrentLocation().then((value) {
+                                  currentLocatio.Longitude = value.longitude;
+                                  currentLocatio.Latitude = value.latitude;
+                                  print(currentLocatio.toJson().toString());
+                                });
                                 Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
                               },
                               child: Stack(
@@ -506,6 +591,11 @@ class _PAGEhomeState extends State<ScreenWait> {
                             width: 56,
                             child: GestureDetector(
                               onTap: () {
+                                                                getCurrentLocation().then((value) {
+                                  currentLocatio.Longitude = value.longitude;
+                                  currentLocatio.Latitude = value.latitude;
+                                  print(currentLocatio.toJson().toString());
+                                });
                                 Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
                               },
                               child: Stack(
@@ -713,6 +803,11 @@ class _PAGEhomeState extends State<ScreenWait> {
                             return GestureDetector(
                               child: ITEMadsType1(width: screenWidth - 20, height: (screenWidth - 20)/(300/188), adStype1: ADStype1List[index]),
                               onTap: () {
+                                                                getCurrentLocation().then((value) {
+                                  currentLocatio.Longitude = value.longitude;
+                                  currentLocatio.Latitude = value.latitude;
+                                  print(currentLocatio.toJson().toString());
+                                });
                                 Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
                               },
                             );
@@ -767,7 +862,12 @@ class _PAGEhomeState extends State<ScreenWait> {
                               right: 10,
                               child: GestureDetector(
                                 onTap: () {
-                                  Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
+                                                                  getCurrentLocation().then((value) {
+                                  currentLocatio.Longitude = value.longitude;
+                                  currentLocatio.Latitude = value.latitude;
+                                  print(currentLocatio.toJson().toString());
+                                });
+                                Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
 
                                 },
                                 child: Text(
@@ -804,7 +904,12 @@ class _PAGEhomeState extends State<ScreenWait> {
                                       padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                                       child: InkWell(
                                         onTap: () {
-                                          Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
+                                                                          getCurrentLocation().then((value) {
+                                  currentLocatio.Longitude = value.longitude;
+                                  currentLocatio.Latitude = value.latitude;
+                                  print(currentLocatio.toJson().toString());
+                                });
+                                Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
                                         },
                                         child: ITEMnearsrestaurant(currentshop: shopList[index], distance: CaculateDistance.calculateDistance(CaculateDistance.parseDoubleString(shopList[index].location)[0], CaculateDistance.parseDoubleString(shopList[index].location)[1], currentAccount.locationHis.Latitude, currentAccount.locationHis.Longitude),),
                                       ),
@@ -891,7 +996,12 @@ class _PAGEhomeState extends State<ScreenWait> {
               left: 30,
               child: GestureDetector(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
+                                                  getCurrentLocation().then((value) {
+                                  currentLocatio.Longitude = value.longitude;
+                                  currentLocatio.Latitude = value.latitude;
+                                  print(currentLocatio.toJson().toString());
+                                });
+                                Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENlogin()));
                 },
                 child: Container(
                   width: screenWidth - 60,

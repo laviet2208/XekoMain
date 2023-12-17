@@ -1,7 +1,10 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:xekomain/SCREEN/SHIPPERSCREEN/INUSER/Page%20v%C3%AD%20ti%E1%BB%81n/Page%20v%C3%AD%20ti%E1%BB%81n.dart';
 import 'package:xekomain/SCREEN/SHIPPERSCREEN/INUSER/Th%C3%B4ng%20tin%20t%C3%A0i%20kho%E1%BA%A3n/yeucauruttien.dart';
+
+import '../SCREEN_MAIN/SCREENmain.dart';
 
 class SCREENnaptien extends StatefulWidget {
   const SCREENnaptien({Key? key}) : super(key: key);
@@ -56,6 +59,9 @@ class _SCREENnaptienState extends State<SCREENnaptien> {
                             )
                           ),
                         ),
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder:(context) => Pagevitien()));
+                        },
                       ),
                     ),
 

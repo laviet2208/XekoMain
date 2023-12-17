@@ -8,6 +8,7 @@ class bikeRequest {
   String phoneNumber;
   String cmnd;
   String address;
+  String license;
   int type;
   accountNormal owner;
 
@@ -18,7 +19,8 @@ class bikeRequest {
     required this.name,
     required this.address,
     required this.type,
-    required this.owner
+    required this.owner,
+    required this.license
   });
 
   Map<dynamic, dynamic> toJson() => {
@@ -28,18 +30,20 @@ class bikeRequest {
     'name' : name,
     'cmnd' : cmnd,
     'type' : type,
-    'owner' : owner.toJson()
+    'owner' : owner.toJson(),
+    'license' : license
   };
 
   factory bikeRequest.fromJson(Map<dynamic, dynamic> json) {
     return bikeRequest(
-      id: json['id'],
-      address: json['address'].toString(),
-      phoneNumber: json['phoneNumber'].toString(),
-      name: json['name'].toString(),
-      cmnd: json['cmnd'].toString(),
-      type: int.parse(json['type'].toString()),
-      owner: accountNormal.fromJson(json['owner'])
+        id: json['id'],
+        address: json['address'].toString(),
+        phoneNumber: json['phoneNumber'].toString(),
+        name: json['name'].toString(),
+        cmnd: json['cmnd'].toString(),
+        type: int.parse(json['type'].toString()),
+        owner: accountNormal.fromJson(json['owner']),
+        license: json['license'].toString()
     );
   }
 }

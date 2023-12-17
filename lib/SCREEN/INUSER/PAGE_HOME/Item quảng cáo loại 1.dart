@@ -57,27 +57,6 @@ class ITEMadsType1 extends StatelessWidget {
             left: 0,
             child: Container(
               width: width,
-              height: 20,
-              child: Container(
-                height: 20,
-                width: width,
-                child: AutoSizeText(
-                  adStype1.mainContent,
-                  style: TextStyle(
-                      fontFamily: 'arial',
-                      fontSize: 100,
-                      fontWeight: FontWeight.bold
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          Positioned(
-            top: 35 + width/(1200/630) + 35,
-            left: 0,
-            child: Container(
-              width: width,
               height: 18,
               child: Container(
                 height: 18,

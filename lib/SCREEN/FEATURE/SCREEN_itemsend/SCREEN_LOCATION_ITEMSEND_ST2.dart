@@ -955,6 +955,7 @@ class _SCREENlocationitemsendst2State extends State<SCREENlocationitemsendst2> {
                                                     child: Form(
                                                       child: TextFormField(
                                                         controller: Weighttroller,
+                                                        keyboardType: TextInputType.number,
                                                         style: TextStyle(
                                                           color: Colors.black,
                                                           fontSize: 16,
@@ -962,7 +963,7 @@ class _SCREENlocationitemsendst2State extends State<SCREENlocationitemsendst2> {
                                                         ),
                                                         decoration: InputDecoration(
                                                           border: InputBorder.none,
-                                                          hintText: 'Cân nặng(kg)',
+                                                          hintText: 'Chỉ nhập số',
                                                           hintStyle: TextStyle(
                                                             color: Colors.grey,
                                                             fontSize: 16,
@@ -1026,7 +1027,7 @@ class _SCREENlocationitemsendst2State extends State<SCREENlocationitemsendst2> {
                                                         ),
                                                         decoration: InputDecoration(
                                                           border: InputBorder.none,
-                                                          hintText: 'ví dụ : thực phẩm , đồ gia dụng , ...',
+                                                          hintText: 'Ví dụ : thực phẩm , đồ gia dụng , ...',
                                                           hintStyle: TextStyle(
                                                             color: Colors.grey,
                                                             fontSize: 16,
@@ -1083,6 +1084,7 @@ class _SCREENlocationitemsendst2State extends State<SCREENlocationitemsendst2> {
                                                     child: Form(
                                                       child: TextFormField(
                                                         controller: Feecontroller,
+                                                        keyboardType: TextInputType.number,
                                                         style: TextStyle(
                                                           color: Colors.black,
                                                           fontSize: 16,
@@ -1090,7 +1092,7 @@ class _SCREENlocationitemsendst2State extends State<SCREENlocationitemsendst2> {
                                                         ),
                                                         decoration: InputDecoration(
                                                           border: InputBorder.none,
-                                                          hintText: 'Phí thu hộ tối thiểu là 1.000 VND hoặc 0 VND',
+                                                          hintText: 'Tối thiểu 0đ,chỉ nhập số',
                                                           hintStyle: TextStyle(
                                                             color: Colors.grey,
                                                             fontSize: 16,
@@ -1199,7 +1201,7 @@ class _SCREENlocationitemsendst2State extends State<SCREENlocationitemsendst2> {
                 ),
 
                 Positioned(
-                  bottom: screenHeight/6,
+                  bottom: 115,
                   left: 20,
                   child: Container(
                     child: Text(
@@ -1215,25 +1217,67 @@ class _SCREENlocationitemsendst2State extends State<SCREENlocationitemsendst2> {
                 ),
 
                 Positioned(
-                  bottom: screenHeight/6,
+                  bottom: 140,
+                  left: 10,
+                  right: 10,
+                  child: Container(
+                    width: screenWidth,
+                    height: 18,
+                    child: Stack(
+                      children: <Widget>[
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          child: Container(
+                            width: screenWidth,
+                            height: 18,
+                            child: AutoSizeText(
+                              '  Mã khuyến mãi',
+                              style: TextStyle(
+                                  fontFamily: 'arial',
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 180
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        Positioned(
+                          top: 0,
+                          right: 10,
+                          child: Container(
+                            width: screenWidth-10,
+                            height: 18,
+                            child: AutoSizeText(
+                              "- " + voucherController.text,
+                              textAlign: TextAlign.end,
+                              style: TextStyle(
+                                  fontFamily: 'arial',
+                                  color: Colors.redAccent,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+
+                Positioned(
+                  bottom: 115,
                   right: 18,
                   child: RichText(
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: getStringNumber(cost) + "đ",
+                          text: getStringNumber(getLastCost(cost, chosenVoucher)) + "đ",
                           style: TextStyle(
                             fontFamily: 'arial',
                             color: Colors.black,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 14,
-                          ),
-                        ),
-                        TextSpan(
-                          text: " - " + voucherController.text.toString(),
-                          style: TextStyle(
-                            fontFamily: 'arial',
-                            color: Colors.red, // Đặt màu đỏ cho phần này
                             fontWeight: FontWeight.normal,
                             fontSize: 14,
                           ),
@@ -1244,7 +1288,7 @@ class _SCREENlocationitemsendst2State extends State<SCREENlocationitemsendst2> {
                 ),
 
                 Positioned(
-                  bottom: 60,
+                  bottom: 40,
                   left: 18,
                   child: Container(
                     width: screenWidth/2 - 28,
@@ -1261,7 +1305,7 @@ class _SCREENlocationitemsendst2State extends State<SCREENlocationitemsendst2> {
                                    id: generateID(20),
                                    cost: getLastCost(cost, chosenVoucher),
                                    owner: currentAccount,
-                                   shipper: accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: ''),
+                                   shipper: accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: '', license: '', WorkStatus: 0),
                                    status: 'A',
                                    S2time: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
                                    S1time: getCurrentTime(),
@@ -1310,7 +1354,7 @@ class _SCREENlocationitemsendst2State extends State<SCREENlocationitemsendst2> {
 
                 //Nút ưu đãi
                 Positioned(
-                  bottom: 60,
+                  bottom: 40,
                   right: 18,
                   child: Container(
                     width: screenWidth/2 - 28,

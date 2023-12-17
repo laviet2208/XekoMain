@@ -94,6 +94,23 @@ class _SCREENlocationbikest2State extends State<SCREENlocationfood1> {
     return cost;
   }
 
+  double getVoucherSale(Voucher voucher, double cost) {
+    double money = 0;
+
+    if(voucher.totalmoney < 100) {
+      double mn = cost/(1-(voucher.totalmoney/100))*(voucher.totalmoney/100);
+      if (mn <= voucher.maxSale) {
+        money = mn;
+      } else {
+        money = voucher.maxSale;
+      }
+    } else {
+      money = voucher.totalmoney;
+    }
+
+    return money;
+  }
+
   void VoucherChange() {
     if (chosenVoucher.id != '') {
       voucherController.text = (chosenVoucher.type == 0) ? (getStringNumber(chosenVoucher.totalmoney) + 'đ') : (getStringNumber(chosenVoucher.totalmoney) + '%');
@@ -168,7 +185,6 @@ class _SCREENlocationbikest2State extends State<SCREENlocationfood1> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-
     return WillPopScope(
       child: SafeArea(
         child: Scaffold(
@@ -280,20 +296,6 @@ class _SCREENlocationbikest2State extends State<SCREENlocationfood1> {
                                       ),
                                     ),
                                   ),
-
-                                  Positioned(
-                                    bottom: (screenHeight/10)/5,
-                                    right: 10,
-                                    child: Text(
-                                      "- " + voucherController.text,
-                                      style: TextStyle(
-                                          fontFamily: 'arial',
-                                          color: Colors.redAccent,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14
-                                      ),
-                                    ),
-                                  ),
                                 ],
                               ),
                             ),
@@ -361,7 +363,56 @@ class _SCREENlocationbikest2State extends State<SCREENlocationfood1> {
                           ),
 
                           Positioned(
-                            top: 50 +  screenHeight/5 + 30,
+                            top: 45 +  screenHeight/5 + 30,
+                            left: 0,
+                            child: Container(
+                              width: screenWidth,
+                              height: 18,
+                              child: Stack(
+                                children: <Widget>[
+                                  Positioned(
+                                    top: 0,
+                                    left: 0,
+                                    child: Container(
+                                      width: screenWidth,
+                                      height: 18,
+                                      child: AutoSizeText(
+                                        '  Mã khuyến mãi',
+                                        style: TextStyle(
+                                            fontFamily: 'arial',
+                                            color: Colors.grey,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 180
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+
+                                  Positioned(
+                                    top: 0,
+                                    right: 10,
+                                    child: Container(
+                                      width: screenWidth-10,
+                                      height: 18,
+                                      child: AutoSizeText(
+                                        "- " + voucherController.text + (chosenVoucher.type == 1 ? '(' + getStringNumber(getVoucherSale(chosenVoucher, total + getCost(widget.Distance).toDouble())) + ')' : ''),
+                                        textAlign: TextAlign.end,
+                                        style: TextStyle(
+                                            fontFamily: 'arial',
+                                            color: Colors.redAccent,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          Positioned(
+                            top: 70 +  screenHeight/5 + 30,
                             left: 0,
                             child: Container(
                               width: screenWidth,
@@ -393,7 +444,7 @@ class _SCREENlocationbikest2State extends State<SCREENlocationfood1> {
                                       width: screenWidth-10,
                                       height: 18,
                                       child: AutoSizeText(
-                                        getStringNumber(getLastCost(getCost(widget.Distance).toDouble(), chosenVoucher) + total) + 'đ',
+                                        getStringNumber(getLastCost(getCost(widget.Distance).toDouble() + total, chosenVoucher)) + 'đ',
                                         textAlign: TextAlign.end,
                                         style: TextStyle(
                                             fontFamily: 'arial',
@@ -486,15 +537,15 @@ class _SCREENlocationbikest2State extends State<SCREENlocationfood1> {
                                                 locationGet: widget.diemtra,
                                                 cost: total,
                                                 owner: currentAccount,
-                                                shipper: accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: ''),
-                                                status: 'A',
-                                                S2time: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
+                                                shipper: accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: '', license: '', WorkStatus: 0),
+                                                status: 'B',
+                                                S2time: getCurrentTime(),
                                                 S1time: getCurrentTime(),
                                                 productList: cartList,
                                                 S3time: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
                                                 S4time: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
                                                 S5time: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0),
-                                                shipcost: getLastCost(getCost(widget.Distance).toDouble(), chosenVoucher),
+                                                shipcost: getCost(widget.Distance).toDouble(),
                                                 voucher: chosenVoucher,
                                                 costFee: FoodCost,
                                                 costBiker: bikeCost
@@ -545,7 +596,6 @@ class _SCREENlocationbikest2State extends State<SCREENlocationfood1> {
                                                   setstateEvent: () {
                                                     setState(() {
                                                       VoucherChange();
-                                                      print(chosenVoucher.toJson().toString());
                                                     });
                                                   }, cost: getCost(widget.Distance).toDouble(), voucherController: voucherController, Otype: '3',);
                                               },

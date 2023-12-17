@@ -125,14 +125,9 @@ class _SCREENviewTypeshopState extends State<SCREENviewTypeshop> {
                           childAspectRatio: 0.73, // tỷ lệ chiều rộng và chiều cao
                         ),
                         itemBuilder: (context, index) {
-                          return GestureDetector(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                              child: ITEMnearsrestaurant(currentshop: shopList[index], distance : CaculateDistance.calculateDistance(CaculateDistance.parseDoubleString(shopList[index].location)[0], CaculateDistance.parseDoubleString(shopList[index].location)[1], currentAccount.locationHis.Latitude, currentAccount.locationHis.Longitude)),
-                            ),
-                            onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENshopview(currentShop: shopList[index].id,)));
-                            },
+                          return Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                            child: ITEMnearsrestaurant(currentshop: shopList[index], distance : CaculateDistance.calculateDistance(CaculateDistance.parseDoubleString(shopList[index].location)[0], CaculateDistance.parseDoubleString(shopList[index].location)[1], currentAccount.locationHis.Latitude, currentAccount.locationHis.Longitude)),
                           );
                         },
                       )

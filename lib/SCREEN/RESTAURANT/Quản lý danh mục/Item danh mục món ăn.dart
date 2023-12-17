@@ -2,15 +2,18 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:xekomain/GENERAL/Product/Danh%20m%E1%BB%A5c%20%C4%91%E1%BB%93%20%C4%83n.dart';
 
+import '../../../GENERAL/ShopUser/accountShop.dart';
 import '../../../GENERAL/Tool/Tool.dart';
+import '../Xem món ăn trong danh mục/Screen.dart';
 import 'Item món ăn trong danh mục.dart';
 
 class ITEMdanhsachmonan extends StatefulWidget {
   final double width;
   final double height;
   final FoodDirectory foodDirectory;
+  final accountShop shop;
   final VoidCallback ontap;
-  const ITEMdanhsachmonan({Key? key, required this.width, required this.height, required this.foodDirectory, required this.ontap}) : super(key: key);
+  const ITEMdanhsachmonan({Key? key, required this.width, required this.height, required this.foodDirectory, required this.ontap, required this.shop}) : super(key: key);
 
   @override
   State<ITEMdanhsachmonan> createState() => _ITEMdanhsachmonanState();
@@ -60,6 +63,25 @@ class _ITEMdanhsachmonanState extends State<ITEMdanhsachmonan> {
           ),
 
           Positioned(
+            top: 10,
+            right: 10,
+            child: GestureDetector(
+              child: Text(
+                'See all',
+                style: TextStyle(
+                    fontFamily: 'DMSans_regu',
+                    color: Colors.blueAccent,
+                    fontSize: widget.width/22,
+                    fontWeight: FontWeight.bold
+                ),
+              ),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder:(context) => Screenxemdanhmuc(name: widget.shop.name, shop: widget.shop, type: 0, foodDirectory: widget.foodDirectory)));
+              },
+            ),
+          ),
+
+          Positioned(
             top: 50,
             left: 0,
             child: Container(
@@ -75,11 +97,7 @@ class _ITEMdanhsachmonanState extends State<ITEMdanhsachmonan> {
                 itemBuilder: (BuildContext context, int index) {
                   return Padding(
                     padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                    child: InkWell(
-                      onTap: () {
-
-                      },
-                      child: ITEMfoodIndirect(id: widget.foodDirectory.foodList[index], ontap: () { widget.ontap(); },),),
+                    child: ITEMfoodIndirect(id: widget.foodDirectory.foodList[index], ontap: () { widget.ontap(); },),
                   );
                 },
               ),

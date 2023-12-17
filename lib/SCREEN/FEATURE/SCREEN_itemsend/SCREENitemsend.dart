@@ -24,7 +24,7 @@ class SCREENitemsend extends StatefulWidget {
 
 class _SCREENitemsendState extends State<SCREENitemsend> {
   final accountLocation diemdonkhach = accountLocation(phoneNum: currentAccount.phoneNum, LocationID: '', Latitude: currentAccount.locationHis.Latitude, Longitude: currentAccount.locationHis.Longitude, firstText: currentAccount.locationHis.firstText, secondaryText: currentAccount.locationHis.secondaryText);
-  final accountLocation diemtrakhach = accountLocation(phoneNum: currentAccount.phoneNum, LocationID: '', Latitude: 0, Longitude: 0, firstText: 'Bạn muốn đi đến đâu ?', secondaryText: '');
+  final accountLocation diemtrakhach = accountLocation(phoneNum: currentAccount.phoneNum, LocationID: '', Latitude: 0, Longitude: 0, firstText: 'Bạn muốn giao tới đâu ?', secondaryText: '');
   final textcontroller = TextEditingController();
   var uuid = Uuid();
 
@@ -262,7 +262,7 @@ class _SCREENitemsendState extends State<SCREENitemsend> {
                                             width: screenWidth - 56,
                                             height: 20,
                                             child: AutoSizeText(
-                                              'Điểm đón',
+                                              'Điểm lấy hàng',
                                               style: TextStyle(
                                                   fontSize: 100,
                                                   fontFamily: 'arial',
@@ -315,7 +315,7 @@ class _SCREENitemsendState extends State<SCREENitemsend> {
                                                       decoration: InputDecoration(
                                                         filled: true,
                                                         fillColor: Colors.white,
-                                                        hintText: 'Tìm kiếm điểm đón',
+                                                        hintText: 'Tìm kiếm điểm lấy hàng',
                                                         focusedBorder: OutlineInputBorder(
                                                           borderSide: BorderSide(color: Colors.white),
                                                           borderRadius: BorderRadius.circular(25.7),
@@ -407,7 +407,7 @@ class _SCREENitemsendState extends State<SCREENitemsend> {
                                             width: screenWidth - 56,
                                             height: 20,
                                             child: AutoSizeText(
-                                              'Điểm đến',
+                                              'Giao tới',
                                               style: TextStyle(
                                                   fontSize: 100,
                                                   fontFamily: 'arial',
@@ -461,7 +461,7 @@ class _SCREENitemsendState extends State<SCREENitemsend> {
                                                       decoration: InputDecoration(
                                                         filled: true,
                                                         fillColor: Colors.white,
-                                                        hintText: 'Tìm kiếm điểm đón',
+                                                        hintText: 'Tìm kiếm điểm lấy hàng',
                                                         focusedBorder: OutlineInputBorder(
                                                           borderSide: BorderSide(color: Colors.white),
                                                           borderRadius: BorderRadius.circular(25.7),

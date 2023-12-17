@@ -12,14 +12,15 @@ import '../../INUSER/PAGE_HOME/Tính khoảng cách.dart';
 import '../../RESTAURANT/Khung tăng giảm số lượng.dart';
 class ITEMproductIndirect extends StatefulWidget {
   final String id;
-  const ITEMproductIndirect({Key? key, required this.id}) : super(key: key);
+  final VoidCallback ontap;
+  const ITEMproductIndirect({Key? key, required this.id, required this.ontap}) : super(key: key);
 
   @override
   State<ITEMproductIndirect> createState() => _ITEMrestaurantIndirectState();
 }
 
 class _ITEMrestaurantIndirectState extends State<ITEMproductIndirect> {
-  final Product product = Product(id: '', name: '', content: '', owner: accountShop(openTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), closeTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), phoneNum: '', location: '', name: '', id: '', status: 1, avatarID: '', createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), password: '', isTop: 0, Type: 0, ListDirectory: [], Area: ''), cost: 0, imageList: '', createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0));
+  final Product product = Product(id: '', name: '', content: '', owner: accountShop(openTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), closeTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), phoneNum: '', location: '', name: '', id: '', status: 1, avatarID: '', createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), password: '', isTop: 0, Type: 0, ListDirectory: [], Area: '', OpenStatus: 0), cost: 0, imageList: '', createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), OpenStatus: 0);
   final QuantitySelector quantitySelector = QuantitySelector();
   void getData() {
     final reference = FirebaseDatabase.instance.reference();
@@ -32,6 +33,7 @@ class _ITEMrestaurantIndirectState extends State<ITEMproductIndirect> {
       product.cost = acc.cost;
       product.content = acc.content;
       product.imageList = acc.imageList;
+      product.OpenStatus = acc.OpenStatus;
       setState(() {});
     });
   }
@@ -184,128 +186,135 @@ class _ITEMrestaurantIndirectState extends State<ITEMproductIndirect> {
         ),
       ),
       onTap: () async {
-        quantitySelector.data.second = 0;
-        showModalBottomSheet(
-            context: context,
-            builder: (BuildContext context) {
-              return Container(
-                child: ListView(
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.width/2,
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              fit: BoxFit.fitWidth,
-                              image: NetworkImage(product.imageList)
-                          )
-                      ),
-                    ),
-
-                    Container(
-                      height: 10,
-                    ),
-
-                    Container(
-                      height: 30,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 10, right: 10),
-                        child: AutoSizeText(
-                          product.name,
-                          style: TextStyle(
-                            fontFamily: 'arial',
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                            fontSize: 100
-                          ),
+        if (product.OpenStatus == 0) {
+          toastMessage('Sản phẩm tạm hết');
+        } else {
+          quantitySelector.data.second = 0;
+          showModalBottomSheet(
+              context: context,
+              builder: (BuildContext context) {
+                return Container(
+                  child: ListView(
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.width/2,
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                                fit: BoxFit.fitWidth,
+                                image: NetworkImage(product.imageList)
+                            )
                         ),
                       ),
-                    ),
 
-                    Container(
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 10, right: 10),
-                        child: Text(
-                          product.content,
-                          style: TextStyle(
-                              fontFamily: 'arial',
-                              fontWeight: FontWeight.normal,
-                              color: Colors.grey,
-                              fontSize: 14
-                          ),
-                        ),
+                      Container(
+                        height: 10,
                       ),
-                    ),
 
-                    Container(
-                      height: 10,
-                    ),
-
-                    Container(
-                      height: 40,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: MediaQuery.of(context).size.width/3 , right: MediaQuery.of(context).size.width/3),
-                        child: quantitySelector,
-                      ),
-                    ),
-
-                    Container(
-                      height: 10,
-                    ),
-
-                    Container(
-                      height: 40,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 10, right: 10),
-                        child: GestureDetector(
-                          child: Container(
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: Color.fromARGB(255, 244, 164, 84),
-                              borderRadius: BorderRadius.circular(100)
+                      Container(
+                        height: 30,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 10, right: 10),
+                          child: AutoSizeText(
+                            product.name,
+                            style: TextStyle(
+                                fontFamily: 'arial',
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                                fontSize: 100
                             ),
-                            alignment: Alignment.center,
-                            child: Padding(
-                              padding: EdgeInsets.only(left: 10,right: 10, top: 10, bottom: 10),
-                              child: AutoSizeText(
-                                'Thêm vào giỏ hàng',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.white,
-                                  fontFamily: 'arial',
-                                  fontSize: 100
+                          ),
+                        ),
+                      ),
+
+                      Container(
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 10, right: 10),
+                          child: Text(
+                            product.content,
+                            style: TextStyle(
+                                fontFamily: 'arial',
+                                fontWeight: FontWeight.normal,
+                                color: Colors.grey,
+                                fontSize: 14
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      Container(
+                        height: 10,
+                      ),
+
+                      Container(
+                        height: 40,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: MediaQuery.of(context).size.width/3 , right: MediaQuery.of(context).size.width/3),
+                          child: quantitySelector,
+                        ),
+                      ),
+
+                      Container(
+                        height: 10,
+                      ),
+
+                      Container(
+                        height: 40,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 10, right: 10),
+                          child: GestureDetector(
+                            child: Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                  color: Color.fromARGB(255, 244, 164, 84),
+                                  borderRadius: BorderRadius.circular(100)
+                              ),
+                              alignment: Alignment.center,
+                              child: Padding(
+                                padding: EdgeInsets.only(left: 10,right: 10, top: 10, bottom: 10),
+                                child: AutoSizeText(
+                                  'Thêm vào giỏ hàng',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.white,
+                                      fontFamily: 'arial',
+                                      fontSize: 100
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
 
-                          onTap: () {
-                            if (storeList.isEmpty) {
-                              for (int i = 0 ; i < quantitySelector.data.second ; i++) {
-                                storeList.add(product);
-                              }
-                              toastMessage('Bạn đã thêm ' + quantitySelector.data.second.toString() + " " + product.name);
-                              Navigator.of(context).pop();
-                            } else {
-                              if (product.owner.id == storeList[0].owner.id) {
+                            onTap: () {
+                              if (storeList.isEmpty) {
                                 for (int i = 0 ; i < quantitySelector.data.second ; i++) {
                                   storeList.add(product);
                                 }
                                 toastMessage('Bạn đã thêm ' + quantitySelector.data.second.toString() + " " + product.name);
+                                widget.ontap();
                                 Navigator.of(context).pop();
                               } else {
-                                toastMessage('Bạn không thể thêm món từ 2 cửa hàng khác nhau');
+                                if (product.owner.id == storeList[0].owner.id) {
+                                  for (int i = 0 ; i < quantitySelector.data.second ; i++) {
+                                    storeList.add(product);
+                                  }
+                                  toastMessage('Bạn đã thêm ' + quantitySelector.data.second.toString() + " " + product.name);
+                                  widget.ontap();
+                                  Navigator.of(context).pop();
+                                } else {
+                                  toastMessage('Bạn không thể thêm món từ 2 cửa hàng khác nhau');
+                                }
                               }
-                            }
-                          },
+                            },
+                          ),
                         ),
-                      ),
-                    )
-                  ],
-                ),
-              );
-            }
-        );
+                      )
+                    ],
+                  ),
+                );
+              }
+          );
+        }
+
       },
     );
   }

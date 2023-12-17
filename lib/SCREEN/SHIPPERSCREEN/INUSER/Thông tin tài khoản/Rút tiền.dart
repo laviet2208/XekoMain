@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:xekomain/FINAL/finalClass.dart';
 import 'package:xekomain/GENERAL/Tool/Tool.dart';
 import 'package:xekomain/GENERAL/utils/utils.dart';
+import 'package:xekomain/SCREEN/SHIPPERSCREEN/INUSER/Page%20v%C3%AD%20ti%E1%BB%81n/Page%20v%C3%AD%20ti%E1%BB%81n.dart';
 import 'package:xekomain/SCREEN/SHIPPERSCREEN/INUSER/Th%C3%B4ng%20tin%20t%C3%A0i%20kho%E1%BA%A3n/yeucauruttien.dart';
 
 import '../SCREEN_MAIN/SCREENmain.dart';
@@ -72,7 +73,7 @@ class _ScreenRutTienState extends State<ScreenRutTien> {
                         ),
 
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENmainshipping()));
+                          Navigator.push(context, MaterialPageRoute(builder:(context) => Pagevitien()));
                         },
                       ),
                     ),
@@ -422,7 +423,7 @@ class _ScreenRutTienState extends State<ScreenRutTien> {
                                   );
                                   await pushData(request);
                                   toastMessage('Gửi yêu cầu thành công');
-                                  Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENmainshipping()));
+                                  Navigator.push(context, MaterialPageRoute(builder:(context) => Pagevitien()));
                                 } else {
                                   toastMessage('Số tiền phải > 0 và < số tiền hiện tại');
                                 }

@@ -303,6 +303,7 @@ class _PAGEhistoryState extends State<PAGEhistory> {
                 height: screenHeight/1.5,
                 width: screenWidth,
                   child: ListView.builder(
+                    padding: EdgeInsets.zero,
                     itemCount: itemcount,
                     itemBuilder: (context, index) {
                       return getPadding(typeIndex, index, screenWidth);

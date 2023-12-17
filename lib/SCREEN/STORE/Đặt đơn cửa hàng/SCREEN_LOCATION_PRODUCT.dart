@@ -124,7 +124,7 @@ class _SCREENlocationitemsendst1State extends State<SCREENlocationstore> {
   }
 
   final accountLocation diemnhahang = accountLocation(phoneNum: currentAccount.phoneNum, LocationID: '', Latitude: currentAccount.locationHis.Latitude, Longitude: currentAccount.locationHis.Longitude, firstText: currentAccount.locationHis.firstText, secondaryText: currentAccount.locationHis.secondaryText);
-  final accountLocation diemtra = accountLocation(phoneNum: currentAccount.phoneNum, LocationID: '', Latitude: 0, Longitude: 0, firstText: 'Bạn muốn giao tới đâu ?', secondaryText: '');
+  final accountLocation diemtra = accountLocation(phoneNum: currentAccount.phoneNum, LocationID: currentAccount.locationHis.LocationID, Latitude: currentAccount.locationHis.Latitude, Longitude: currentAccount.locationHis.Longitude, firstText: currentAccount.locationHis.firstText, secondaryText: currentAccount.locationHis.secondaryText);
 
 
 

@@ -42,8 +42,8 @@ class _SCREENwaitbikerState extends State<SCREENitemHisDetail> {
   itemsendOrder thiscatch = itemsendOrder(
     id: '',
     cost: -1,
-    owner: accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: ''),
-    shipper: accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: ''), status: '',
+    owner: accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: '', license: '', WorkStatus: 0),
+    shipper: accountNormal(id: "NA", avatarID: "NA", createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), status: 1, name: "NA", phoneNum: "NA", type: 0, locationHis: accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: ''), voucherList: [], totalMoney: 0, Area: '', license: '', WorkStatus: 0), status: '',
     locationset: accountLocation(phoneNum: "NA", LocationID: "NA", Latitude: -1, Longitude: -1, firstText: "NA", secondaryText: "NA"), receiver: Receiver(location: accountLocation(phoneNum: "NA", LocationID: "NA", Latitude: -1, Longitude: -1, firstText: "NA", secondaryText: "NA"), locationNote: '', name: '', phoneNum: '', note: ''),
     itemdetails: item_details(weight: 0, type: '', codFee: 0),
     voucher: Voucher(id: 'NA', totalmoney: 0, mincost: 0, startTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), endTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), useCount: 0, maxCount: 0, tenchuongtrinh: '', LocationId: '', type: 1, Otype: '', perCustom: 0, CustomList: [], maxSale: 0),
@@ -102,6 +102,23 @@ class _SCREENwaitbikerState extends State<SCREENitemHisDetail> {
         }
       });
     });
+  }
+
+  double getVoucherSale(Voucher voucher) {
+    double money = 0;
+
+    if(voucher.totalmoney < 100) {
+      double mn = (thiscatch.cost + thiscatch.cost)/(1-(voucher.totalmoney/100))*(voucher.totalmoney/100);
+      if (mn <= voucher.maxSale) {
+        money = mn;
+      } else {
+        money = voucher.maxSale;
+      }
+    } else {
+      money = voucher.totalmoney;
+    }
+
+    return money;
   }
 
   Future<void> changeStatus(itemsendOrder order, String status) async {
@@ -409,7 +426,7 @@ class _SCREENwaitbikerState extends State<SCREENitemHisDetail> {
                                     width: (screenWidth - 40 - 20)/2,
                                     alignment: Alignment.centerRight,
                                     child: AutoSizeText(
-                                      getStringNumber(thiscatch.cost) + '.đ',
+                                      getStringNumber(thiscatch.cost + getVoucherSale(thiscatch.voucher)) + '.đ',
                                       style: TextStyle(
                                           fontFamily: 'arial',
                                           color: Colors.black,
@@ -437,6 +454,7 @@ class _SCREENwaitbikerState extends State<SCREENitemHisDetail> {
 
                           Container(height: 10,),
 
+
                           Container(
                             height: 30,
                             child: Row(
@@ -451,7 +469,61 @@ class _SCREENwaitbikerState extends State<SCREENitemHisDetail> {
                                     height: 30,
                                     width: (screenWidth - 40 - 20)/2,
                                     child: AutoSizeText(
-                                      'Chi phí vận chuyển',
+                                      'Khuyễn mãi',
+                                      style: TextStyle(
+                                          fontFamily: 'arial',
+                                          color: Colors.grey,
+                                          fontSize: 200,
+                                          fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                Padding(
+                                  padding: EdgeInsets.only(top: 7, bottom: 7),
+                                  child: Container(
+                                    height: 30,
+                                    width: (screenWidth - 40 - 20)/2,
+                                    alignment: Alignment.centerRight,
+                                    child: RichText(
+                                      text: TextSpan(
+                                        children: [
+                                          TextSpan(
+                                            text:'-' + getStringNumber(getVoucherSale(thiscatch.voucher)) + "đ",
+                                            style: TextStyle(
+                                              fontFamily: 'arial',
+                                              color: Colors.redAccent,
+                                              fontWeight: FontWeight.normal,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          Container(height: 10,),
+
+                          Container(
+                            height: 30,
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 10,
+                                ),
+
+                                Padding(
+                                  padding: EdgeInsets.only(top: 7, bottom: 7),
+                                  child: Container(
+                                    height: 30,
+                                    width: (screenWidth - 40 - 20)/2,
+                                    child: AutoSizeText(
+                                      'Chi phí sau cùng',
                                       style: TextStyle(
                                           fontFamily: 'arial',
                                           color: Colors.grey,
@@ -475,16 +547,7 @@ class _SCREENwaitbikerState extends State<SCREENitemHisDetail> {
                                             text: getStringNumber(thiscatch.cost) + "đ",
                                             style: TextStyle(
                                               fontFamily: 'arial',
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.normal,
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                          TextSpan(
-                                            text: "( - " + getStringNumber(thiscatch.voucher.totalmoney) + (thiscatch.voucher.type == 1 ? '%)' : 'đ)'),
-                                            style: TextStyle(
-                                              fontFamily: 'arial',
-                                              color: Colors.red, // Đặt màu đỏ cho phần này
+                                              color: Colors.blueAccent,
                                               fontWeight: FontWeight.normal,
                                               fontSize: 14,
                                             ),
@@ -1010,6 +1073,7 @@ class _SCREENwaitbikerState extends State<SCREENitemHisDetail> {
                           Padding(
                             padding: EdgeInsets.only(left: 50, right: 10),
                             child: Container(
+                              alignment: Alignment.centerLeft,
                               child: Text(
                                 thiscatch.receiver.location.firstText + ',' + thiscatch.receiver.location.secondaryText,
                                 style: TextStyle(
@@ -1070,7 +1134,6 @@ class _SCREENwaitbikerState extends State<SCREENitemHisDetail> {
     Marker(markerId: markerId, icon: descriptor, position: position);
     markers[markerId] = marker;
   }
-
 
   _addPolyLine() {
     PolylineId id = PolylineId("poly");

@@ -28,7 +28,7 @@ class _SCREENshopmainState extends State<SCREENshopview> {
   FoodDirectory chosenDirectory = FoodDirectory(id: '', mainName: '', foodList: [], ownerID: '');
   double total1 = 0;
   String totalText = '0 .đ';
-  accountShop selectShop = accountShop(openTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), closeTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), phoneNum: '', location: '', name: '', id: '', status: 1, avatarID: '', createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), password: '', isTop: 0, Type: 0, ListDirectory: [], Area: '');
+  accountShop selectShop = accountShop(openTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), closeTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), phoneNum: '', location: '', name: '', id: '', status: 1, avatarID: '', createTime: Time(second: 0, minute: 0, hour: 0, day: 0, month: 0, year: 0), password: '', isTop: 0, Type: 0, ListDirectory: [], Area: '', OpenStatus: 0);
   int SelectIndex = 0;
 
   void getData() {
@@ -160,6 +160,7 @@ class _SCREENshopmainState extends State<SCREENshopview> {
       total1 = total1 + cartList[i].cost;
     }
     totalText = getStringNumber(total1) + ' .đ';
+
     return WillPopScope(
       child: Scaffold(
           body: Container(
@@ -323,7 +324,7 @@ class _SCREENshopmainState extends State<SCREENshopview> {
                                       total1 = total1 + cartList[i].cost;
                                     }
                                     totalText = getStringNumber(total1) + ' .đ';
-                                  }); },);
+                                  }); }, shop: selectShop,);
                                 },
                               ),
                             ),
@@ -430,7 +431,7 @@ class _SCREENshopmainState extends State<SCREENshopview> {
                         }
                       },
                     ),
-                  )
+                  ),
                 ],
               )
           )

@@ -24,6 +24,7 @@ class _LoginScreenMobiState extends State<SCREENlogin> {
   var phone = "";
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String verificationId = "";
+  int index = 0;
   bool loading = false;
 
   Future<bool> checkData(String phoneNumber) async {
@@ -33,9 +34,10 @@ class _LoginScreenMobiState extends State<SCREENlogin> {
     return snapshot.snapshot.value != null;
   }
 
+
   Future<void> getData(String phoneNumber) async {
     final reference = FirebaseDatabase.instance.reference();
-    reference.child('normalUser').onValue.listen((event) {
+    reference.child('normalUser').orderByChild(phoneNumber).onValue.listen((event) {
       final dynamic account = event.snapshot.value;
       account.forEach((key, value) {
         if (value['phoneNum'].toString() == phoneNumber) {
@@ -101,12 +103,94 @@ class _LoginScreenMobiState extends State<SCREENlogin> {
                 "Đăng nhập bằng số điện thoại",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
+
               SizedBox(
                 height: 10,
               ),
+
+              Container(
+                height: 50,
+                decoration: BoxDecoration(
+
+                ),
+                child: Stack(
+                  children: <Widget>[
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      child: GestureDetector(
+                        child: Container(
+                          height: 50,
+                          width: (screenWidth-50)/2,
+                          decoration: BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                                      width: 1.5,
+                                      color: index == 0 ? Color.fromARGB(255, 244, 164, 84) : Colors.white
+                                  )
+                              )
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Khách hàng',
+                            style: TextStyle(
+                                fontFamily: 'roboto',
+                                color: Colors.black,
+                                fontSize: 14
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          setState(() {
+                            index = 0;
+                          });
+                        },
+                      ),
+                    ),
+
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: GestureDetector(
+                        child: Container(
+                          height: 50,
+                          width: (screenWidth-50)/2,
+                          decoration: BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                                      width: 1.5,
+                                      color: index == 1 ? Color.fromARGB(255, 244, 164, 84) : Colors.white
+                                  )
+                              )
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Tài xế',
+                            style: TextStyle(
+                                fontFamily: 'roboto',
+                                color: Colors.black,
+                                fontSize: 14
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          setState(() {
+                            index = 1;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(
+                height: 10,
+              ),
+
               Text.rich(
                 TextSpan(
-                  text: "Nhập số điện thoại chính xác của bạn để đăng nhập ",
+                  text: index == 0 ? "Nhập số điện thoại chính xác của bạn để đăng nhập ứng dụng " : "Nhập số điện thoại chính xác của bạn để đăng nhập tài khoản tài xế ",
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.black,
@@ -164,7 +248,7 @@ class _LoginScreenMobiState extends State<SCREENlogin> {
                         keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: "Số điện thoại",
+                          hintText: index == 0 ? "Số điện thoại của bạn" : "Số điện thoại tài xế",
                         ),
                       ),
                     ),

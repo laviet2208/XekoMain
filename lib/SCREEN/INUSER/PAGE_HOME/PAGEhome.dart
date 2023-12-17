@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -9,6 +11,7 @@ import 'package:xekomain/SCREEN/INUSER/PAGE_HOME/T%C3%ADnh%20kho%E1%BA%A3ng%20c%
 import '../../../FINAL/finalClass.dart';
 import '../../../GENERAL/Ads/ADStype1.dart';
 import '../../../GENERAL/Ads/ADStype2.dart';
+import '../../../GENERAL/Ads/Topbanner.dart';
 import '../../../GENERAL/NormalUser/accountNormal.dart';
 import '../../../GENERAL/Order/catchOrder.dart';
 import '../../../GENERAL/Product/Voucher.dart';
@@ -35,6 +38,15 @@ class PAGEhome extends StatefulWidget {
 
 class _PAGEhomeState extends State<PAGEhome> {
   final nameController = TextEditingController();
+  final PageController _pageController =
+  PageController(viewportFraction: 1, keepPage: true);
+
+  final PageController _pageController1 =
+  PageController(viewportFraction: 1, keepPage: true);
+  Timer? _timer1;
+  int _currentPage1 = 0;
+  Timer? _timer;
+  int _currentPage = 0;
   final accountLocation diemdon = accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: '');
   final accountLocation diemtra = accountLocation(phoneNum: '', LocationID: '', Latitude: 0, Longitude: 0, firstText: '', secondaryText: '');
   bool iscar = false;
@@ -83,10 +95,10 @@ class _PAGEhomeState extends State<PAGEhome> {
 
   int ads1 = 0;
   String ads1text = "...";
-  String adsTOP = 'https://firebasestorage.googleapis.com/v0/b/xekoship-a0057.appspot.com/o/ADS%2Fbanner-uu-dai.png?alt=media&token=1e98d81f-8ae5-4d8f-9f08-6386efa9f792';
   List<accountShop> shopList = [];
   List<ADStype1> ADStype1List = [];
   List<ADStype2> ADStype2List = [];
+  List<Topbanner> TopbannerList = [];
 
   int voucherCount = 0;
   String VoucherCountText = '';
@@ -113,7 +125,10 @@ class _PAGEhomeState extends State<PAGEhome> {
       final dynamic restaurant = event.snapshot.value;
       restaurant.forEach((key, value) {
         ADStype1 acc = ADStype1.fromJson(value);
-        ADStype1List.add(acc);
+        if (acc.shop.Area == currentAccount.Area) {
+          ADStype1List.add(acc);
+        }
+
       });
       setState(() {
 
@@ -152,17 +167,6 @@ class _PAGEhomeState extends State<PAGEhome> {
     });
   }
 
-  void getADStop() {
-    final reference = FirebaseDatabase.instance.reference();
-    reference.child("adsTOP/top").onValue.listen((event) {
-      final dynamic product = event.snapshot.value;
-      adsTOP = product.toString();
-      setState(() {
-
-      });
-    });
-  }
-
   void getVoucherData() {
     final reference = FirebaseDatabase.instance.reference();
     reference.child("VoucherStorage").onValue.listen((event) {
@@ -180,6 +184,21 @@ class _PAGEhomeState extends State<PAGEhome> {
     });
   }
 
+  void getADStop() {
+    final reference = FirebaseDatabase.instance.reference();
+    reference.child("adsTOP").onValue.listen((event) {
+      TopbannerList.clear();
+      final dynamic restaurant = event.snapshot.value;
+      restaurant.forEach((key, value) {
+        Topbanner acc = Topbanner.fromJson(value);
+        TopbannerList.add(acc);
+      });
+      setState(() {
+
+      });
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -189,6 +208,37 @@ class _PAGEhomeState extends State<PAGEhome> {
     getADStype1Data();
     getADStype2Data();
     getVoucherData();
+    getADStop();
+    _timer = Timer.periodic(Duration(seconds: 3), (timer) {
+      if (_currentPage < ADStype1List.length - 1) {
+        _currentPage++;
+      } else {
+        _currentPage = 0;
+      }
+
+      if (_currentPage1 < TopbannerList.length - 1) {
+        _currentPage1++;
+      } else {
+        _currentPage1 = 0;
+      }
+      _pageController1.animateToPage(
+        _currentPage1,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.linear,
+      );
+
+      _pageController.animateToPage(
+        _currentPage,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -217,12 +267,27 @@ class _PAGEhomeState extends State<PAGEhome> {
                     child: Container(
                       height: screenWidth/(1920/668),
                       width: screenWidth,
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(adsTOP)
-                        )
+                      child: PageView.builder(
+                        scrollDirection: Axis.horizontal,
+                        controller: _pageController1,
+                        itemCount: TopbannerList.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            child: Container(
+                              height: screenWidth/(1920/668),
+                              width: screenWidth,
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(TopbannerList[index].URLimage)
+                                  )
+                              ),
+                            ),
+                            onTap:() async {
+                              await _launchInBrowser(Uri.parse(TopbannerList[index].URL));
+                            },
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -530,55 +595,6 @@ class _PAGEhomeState extends State<PAGEhome> {
                     width: 25,
                   ),
 
-                  //Mục ưu đãi
-                  Container(
-                    width: 56,
-                    child: GestureDetector(
-                      onTap: () {
-                        chosenvoucher.changeToDefault();
-                        Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENvoucherview()));
-                      },
-                      child: Stack(
-                        children: <Widget>[
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            child: Container(
-                              width: 56,
-                              height: 56,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage('assets/image/iconoffer.png'),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            child: Container(
-                              width: 56,
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Ưu đãi',
-                                style: TextStyle(
-                                  fontFamily: 'arial',
-                                  fontSize: 12,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  Container(
-                    width: 25,
-                  ),
-
                   //mục mua sắm
                   Container(
                     width: 56,
@@ -611,6 +627,55 @@ class _PAGEhomeState extends State<PAGEhome> {
                               alignment: Alignment.center,
                               child: Text(
                                 'Cửa hàng',
+                                style: TextStyle(
+                                  fontFamily: 'arial',
+                                  fontSize: 12,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  Container(
+                    width: 25,
+                  ),
+
+                  //Mục ưu đãi
+                  Container(
+                    width: 56,
+                    child: GestureDetector(
+                      onTap: () {
+                        chosenvoucher.changeToDefault();
+                        Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENvoucherview()));
+                      },
+                      child: Stack(
+                        children: <Widget>[
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            child: Container(
+                              width: 56,
+                              height: 56,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: AssetImage('assets/image/iconoffer.png'),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            child: Container(
+                              width: 56,
+                              alignment: Alignment.center,
+                              child: Text(
+                                'Ưu đãi',
                                 style: TextStyle(
                                   fontFamily: 'arial',
                                   fontSize: 12,
@@ -735,8 +800,9 @@ class _PAGEhomeState extends State<PAGEhome> {
               padding: EdgeInsets.only(left: 10, right: 10),
               child: Container(
                 height: (screenWidth - 20)/(1200/630) + 100,
-                child: ListView.builder(
+                child: PageView.builder(
                   scrollDirection: Axis.horizontal,
+                  controller: _pageController,
                   itemCount: ADStype1List.length,
                   itemBuilder: (context, index) {
                     return GestureDetector(
@@ -830,12 +896,7 @@ class _PAGEhomeState extends State<PAGEhome> {
                           itemBuilder: (BuildContext context, int index) {
                             return Padding(
                               padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENshopview(currentShop: shopList[index].id)));
-                                },
-                                child: ITEMnearsrestaurant(currentshop: shopList[index], distance: CaculateDistance.calculateDistance(CaculateDistance.parseDoubleString(shopList[index].location)[0], CaculateDistance.parseDoubleString(shopList[index].location)[1], currentAccount.locationHis.Latitude, currentAccount.locationHis.Longitude),),
-                              ),
+                              child: ITEMnearsrestaurant(currentshop: shopList[index], distance: CaculateDistance.calculateDistance(CaculateDistance.parseDoubleString(shopList[index].location)[0], CaculateDistance.parseDoubleString(shopList[index].location)[1], currentAccount.locationHis.Latitude, currentAccount.locationHis.Longitude),),
                             );
                           },
                         ),

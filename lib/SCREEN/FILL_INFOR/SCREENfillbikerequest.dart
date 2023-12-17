@@ -26,6 +26,7 @@ class _SCREENfillbikerequestState extends State<SCREENfillbikerequest> {
   final cmndcontroller = TextEditingController();
   final addresscontroller = TextEditingController();
   final typecontroller = TextEditingController();
+  final biensocontroller = TextEditingController();
   bool loading = false;
 
   XFile? _imageFile;
@@ -573,6 +574,70 @@ class _SCREENfillbikerequestState extends State<SCREENfillbikerequest> {
                 )
             ),
 
+            Container(height: 20,),
+
+            Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: Text(
+                'Biển số xe',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontFamily: 'arial',
+                    fontWeight: FontWeight.normal
+                ),
+              ),
+            ),
+
+            Container(height: 10,),
+
+            Padding(
+                padding: EdgeInsets.only(left: 10, right: 10),
+                child: Container(
+                  height: 50,
+                  alignment: Alignment.centerLeft,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.3),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                      border: Border.all(
+                        width: 2,
+                        color: Colors.grey,
+                      )
+                  ),
+
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 10),
+                    child: Form(
+                      child: TextFormField(
+                        controller: biensocontroller,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontFamily: 'arial',
+                        ),
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'nhập biển số xe',
+                          hintStyle: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 16,
+                            fontFamily: 'arial',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+            ),
+
             Container(height: 30,),
 
             Padding(
@@ -869,7 +934,7 @@ class _SCREENfillbikerequestState extends State<SCREENfillbikerequest> {
                        loading = true;
                      });
 
-                     if(namecontroller.text.isNotEmpty && phonecontroller.text.isNotEmpty && cmndcontroller.text.isNotEmpty && addresscontroller.text.isNotEmpty && typecontroller.text.isNotEmpty) {
+                     if(namecontroller.text.isNotEmpty && phonecontroller.text.isNotEmpty && cmndcontroller.text.isNotEmpty && addresscontroller.text.isNotEmpty && typecontroller.text.isNotEmpty && biensocontroller.text.isNotEmpty) {
                        if (typecontroller.text.toString() == '1' || typecontroller.text.toString() == '2') {
                          bikeRequest rq = bikeRequest(
                              id: generateID(12),
@@ -878,7 +943,7 @@ class _SCREENfillbikerequestState extends State<SCREENfillbikerequest> {
                              name: namecontroller.text.toString(),
                              address: addresscontroller.text.toString(),
                              type: int.parse(typecontroller.text.toString()),
-                             owner: currentAccount);
+                             owner: currentAccount, license: biensocontroller.text.toString());
                          uploadImageToFirebaseStorage(_imageFile, 1);
                          uploadImageToFirebaseStorage(_imageFile1, 2);
                          uploadImageToFirebaseStorage(_imageFile2, 3);

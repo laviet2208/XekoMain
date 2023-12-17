@@ -5,10 +5,12 @@ import 'package:xekomain/FINAL/finalClass.dart';
 import 'package:xekomain/GENERAL/utils/utils.dart';
 import 'package:xekomain/OTHER/Button/Buttontype1.dart';
 
+import '../../SHIPPERSCREEN/INUSER/SCREEN_MAIN/SCREENmain.dart';
 import '../SCREEN_MAIN/SCREENmain.dart';
 
 class Viewpersonalinfo extends StatefulWidget {
-  const Viewpersonalinfo({Key? key}) : super(key: key);
+  final int type;
+  const Viewpersonalinfo({Key? key, required this.type}) : super(key: key);
 
   @override
   State<Viewpersonalinfo> createState() => _ViewpersonalinfoState();
@@ -68,7 +70,12 @@ class _ViewpersonalinfoState extends State<Viewpersonalinfo> {
                         left: 10,
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENmain()));
+                            if (widget.type == 1) {
+                              Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENmain()));
+                            } else {
+                              Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENmainshipping()));
+                            }
+
                           },
                           child: Container(
                             width: 40,

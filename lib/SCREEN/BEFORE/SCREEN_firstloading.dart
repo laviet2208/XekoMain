@@ -21,13 +21,13 @@ class SCREENfirstloading extends StatefulWidget {
 }
 
 class _SCREENfirstloadingState extends State<SCREENfirstloading> {
+
   Future<void> getData(String phoneNumber) async {
     final reference = FirebaseDatabase.instance.reference();
     await reference.child('normalUser').onValue.listen((event) {
       final dynamic account = event.snapshot.value;
       account.forEach((key, value) {
         if ('+84' + value['phoneNum'].toString() == phoneNumber) {
-          accountNormal thisacc = accountNormal.fromJson(value);
           currentAccount.changeData(value);
           if (currentAccount.status == 0) {
             Navigator.push(context, MaterialPageRoute(builder:(context) => SCREENentername()));

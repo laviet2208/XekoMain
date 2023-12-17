@@ -1,11 +1,15 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:xekomain/SCREEN/SHIPPERSCREEN/INUSER/Th%C3%B4ng%20tin%20t%C3%A0i%20kho%E1%BA%A3n/PAGEaccountinfo.dart';
+import 'package:xekomain/SCREEN/SHIPPERSCREEN/INUSER/Page%20l%E1%BB%8Bch%20s%E1%BB%AD/Page%20L%E1%BB%8Bch%20s%E1%BB%AD.dart';
+import '../../../../FINAL/finalClass.dart';
 import '../PAGE_COMMINGSOON/PAGEcommingsoon.dart';
 import '../PAGE_FOOD/PAGEfood.dart';
 import '../PAGE_HISTORY/PAGEhistory.dart';
 import '../PAGE_HOME/PAGEhome.dart';
 import '../PAGE_itemsend/PAGEitemsend.dart';
+import '../Page thông báo/PageNotification.dart';
+import '../Page tài khoản/Page thông tin tài khoản.dart';
 
 class SCREENmainshipping extends StatefulWidget {
   const SCREENmainshipping({Key? key}) : super(key: key);
@@ -18,22 +22,37 @@ class _SCREENmainState extends State<SCREENmainshipping> {
   int selectedIndex = 0;
   String title = 'Đơn xe ôm , taxi';
 
+  Future<void> pushData(int status) async{
+    try {
+      DatabaseReference databaseRef = FirebaseDatabase.instance.reference();
+      await databaseRef.child('normalUser/' + currentAccount.id + '/WorkStatus').set(status);
+    } catch (error) {
+      print('Đã xảy ra lỗi khi đẩy catchOrder: $error');
+      throw error;
+    }
+  }
+
   Widget getBodyWidget() {
     // Dựa vào selectedIndex, trả về phần body tương ứng
     switch (selectedIndex) {
       case 0 :
         return PAGEhome();
       case 1 :
-        return PAGEitemsend();
+        return Pagelichsu();
       case 2 :
-        return PAGEfood();
+        return PageNotification();
       case 3 :
-        return PAGEhistory();
-      case 4 :
-        return PAGEaccountinfo();
+        return Pagethongtintaikhoan();
       default:
         return PAGEcommingsoon();
     }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    selectedIndex = currentPage.second;
   }
 
   @override
@@ -42,9 +61,9 @@ class _SCREENmainState extends State<SCREENmainshipping> {
     double screenHeight = MediaQuery.of(context).size.height;
     return WillPopScope(
         child: Scaffold(
-          appBar: AppBar(
+          appBar: selectedIndex != 0 ?  AppBar(
             backgroundColor: Colors.white,
-            title: Row(
+            title: selectedIndex != 0 ? Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
@@ -59,8 +78,8 @@ class _SCREENmainState extends State<SCREENmainshipping> {
 
                 SizedBox(width: screenWidth/5,)
               ],
-            ),
-          ),
+            ) : null,
+          ) : null,
 
 
       body: getBodyWidget(),
@@ -78,11 +97,12 @@ class _SCREENmainState extends State<SCREENmainshipping> {
             onTabChange: (index) {
               setState(() {
                 selectedIndex = index;
+                //currentPage.second = index;
                 if (index == 0) {
                   title = 'ĐƠN XE ÔM , TAXI';
                 }
                 if (index == 1) {
-                  title = 'ĐƠN GIAO HÀNG';
+                  title = 'Lịch sử';
                 }
                 if (index == 2) {
                   title = 'ĐƠN ĐỒ ĂN';
@@ -99,23 +119,18 @@ class _SCREENmainState extends State<SCREENmainshipping> {
             padding: EdgeInsets.all(12),
             tabs: const [
               GButton(
-                icon: Icons.electric_bike,
-                text: ("Xe ôm, taxi"),
-              ),
-
-              GButton(
-                icon: Icons.local_shipping,
-                text: ("Giao hàng"),
-              ),
-
-              GButton(
-                icon: Icons.fastfood_rounded,
-                text: ("Đồ ăn"),
+                icon: Icons.rocket,
+                text: ("Trang chủ"),
               ),
 
               GButton(
                 icon: Icons.history,
                 text: ("Lịch sử"),
+              ),
+
+              GButton(
+                icon: Icons.notifications_active_outlined,
+                text: ("Thông báo"),
               ),
 
               GButton(
